@@ -1,12 +1,9 @@
-package com.qw.recyclerview.sample;
+package com.qw.recyclerview.core;
 
 import android.content.Context;
 
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-
-import com.qw.recyclerview.core.OnLoadMoreListener;
-import com.qw.recyclerview.core.OnRefreshListener;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,22 +19,8 @@ import static org.junit.Assert.*;
 public class ExampleInstrumentedTest {
     @Test
     public void useAppContext() {
-        QRecyclerView mRecyclerView = new QRecyclerView();
-        mRecyclerView.attachTo();
-        mRecyclerView.setOnRefreshListener(new OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-
-            }
-        });
-        mRecyclerView.setOnLoadMoreListener(new OnLoadMoreListener() {
-            @Override
-            public void onLoadMore() {
-
-            }
-        });
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        assertEquals("com.qw.recyclerview.sample", appContext.getPackageName());
+        assertEquals("com.qw.recyclerview.core.test", appContext.getPackageName());
     }
 }
