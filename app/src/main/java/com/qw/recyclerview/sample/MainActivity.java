@@ -1,16 +1,17 @@
 package com.qw.recyclerview.sample;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.qw.recyclerview.sample.databinding.ActivityMainBinding;
 
@@ -27,6 +28,20 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         bind = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(bind.getRoot());
+
+        bind.mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                bind.mSwipeRefreshLayout.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(MainActivity.this, "onRefresh", Toast.LENGTH_SHORT).show();
+                        bind.mSwipeRefreshLayout.setRefreshing(false);
+                    }
+                }, 3000);
+            }
+        });
+
         adapter = new QAdapter();
         bind.mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         bind.mRecyclerView.setAdapter(adapter);
@@ -34,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
             modules.add("" + i);
         }
         adapter.notifyDataSetChanged();
+
     }
 
     private class QAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
