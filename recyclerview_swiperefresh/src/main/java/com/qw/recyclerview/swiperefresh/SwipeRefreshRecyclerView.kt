@@ -4,10 +4,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.qw.recyclerview.core.BaseViewHolder
-import com.qw.recyclerview.core.OnLoadMoreListener
-import com.qw.recyclerview.core.OnRefreshListener
-import com.qw.recyclerview.core.SmartRefreshable
+import com.qw.recyclerview.core.*
 
 /**
  * Created by qinwei on 2021/6/29 21:44
@@ -46,6 +43,10 @@ class SwipeRefreshRecyclerView(private val mRecyclerView: RecyclerView, private 
         state = SmartRefreshable.REFRESH_IDLE
     }
 
+    override fun setAdapter(adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>) {
+        mRecyclerView.adapter = adapter
+    }
+
     private fun checkedIsNeedLoadMore(): Boolean {
         var lastVisiblePosition = 0
         val layoutManager: RecyclerView.LayoutManager = mRecyclerView.layoutManager!!
@@ -56,10 +57,6 @@ class SwipeRefreshRecyclerView(private val mRecyclerView: RecyclerView, private 
             lastVisiblePosition = sdlm.findLastCompletelyVisibleItemPositions(null)[sdlm.findLastCompletelyVisibleItemPositions(null).size - 1]
         }
         return mRecyclerView.adapter!!.itemCount - lastVisiblePosition <= 5
-    }
-
-    override fun setAdapter(adapter: RecyclerView.Adapter<BaseViewHolder>) {
-        mRecyclerView.adapter = adapter
     }
 
     override fun getRecyclerView(): RecyclerView {

@@ -12,7 +12,7 @@ interface SmartRefreshable {
     /**
      *  设置适配器
      */
-    fun setAdapter(adapter: RecyclerView.Adapter<BaseViewHolder>)
+    fun setAdapter(adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>)
 
     fun getRecyclerView(): RecyclerView
 

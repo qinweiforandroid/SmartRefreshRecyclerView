@@ -11,7 +11,7 @@ class SmartRefreshHelper : SmartRefreshable {
         mSmartRefreshable = smartRefreshable
     }
 
-    override fun setAdapter(adapter: RecyclerView.Adapter<BaseViewHolder>) {
+    override fun setAdapter(adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>) {
         mSmartRefreshable.setAdapter(adapter)
     }
 
