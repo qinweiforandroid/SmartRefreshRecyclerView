@@ -4,7 +4,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.qw.recyclerview.core.*
+import com.qw.recyclerview.core.OnLoadMoreListener
+import com.qw.recyclerview.core.OnRefreshListener
+import com.qw.recyclerview.core.SmartRefreshable
+import com.qw.recyclerview.core.State
 
 /**
  * Created by qinwei on 2021/6/29 21:44
@@ -99,11 +102,13 @@ class SwipeRefreshRecyclerView(private val mRecyclerView: RecyclerView, private 
         mLoadMoreEnable = isEnabled
     }
 
-    override fun setRefreshing(refreshing: Boolean) {
-        mSwipeRefreshLayout.isRefreshing = refreshing
-        if (!refreshing) {
-            markIdle()
-        }
+    override fun autoRefresh() {
+        mSwipeRefreshLayout.isRefreshing = true
+    }
+
+    override fun finishRefresh(success: Boolean) {
+        mSwipeRefreshLayout.isRefreshing = false
+        markIdle()
     }
 
     override fun setLoadMore(success: Boolean, noMoreData: Boolean) {

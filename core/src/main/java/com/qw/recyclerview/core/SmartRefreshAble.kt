@@ -47,9 +47,14 @@ interface SmartRefreshable {
     fun setLoadMoreEnable(isEnabled: Boolean)
 
     /**
-     * 设置刷新状态
+     * 自动刷新
      */
-    fun setRefreshing(refresh: Boolean)
+    fun autoRefresh()
+
+    /**
+     * 刷新完成更新ui
+     */
+    fun finishRefresh(success: Boolean)
 
     fun setLoadMore(success: Boolean, noMoreData: Boolean)
 }

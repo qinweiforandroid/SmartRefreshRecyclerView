@@ -43,9 +43,14 @@ class SmartRefreshHelper : SmartRefreshable {
         mSmartRefreshable.setLoadMoreEnable(isEnabled)
     }
 
-    override fun setRefreshing(refreshing: Boolean) {
-        mSmartRefreshable.setRefreshing(refreshing)
+    override fun autoRefresh() {
+        mSmartRefreshable.autoRefresh()
     }
+
+    override fun finishRefresh(success: Boolean) {
+        mSmartRefreshable.finishRefresh(success)
+    }
+
 
     override fun setLoadMore(success: Boolean, noMoreData: Boolean) {
         mSmartRefreshable.setLoadMore(success, noMoreData)

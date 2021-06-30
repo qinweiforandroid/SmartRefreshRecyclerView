@@ -1,31 +1,28 @@
 package com.qw.recyclerview.sample;
 
 import android.os.Bundle;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.qw.recyclerview.core.BaseViewHolder;
 import com.qw.recyclerview.core.OnLoadMoreListener;
 import com.qw.recyclerview.core.OnRefreshListener;
 import com.qw.recyclerview.core.SmartRefreshHelper;
 import com.qw.recyclerview.core.footer.FooterView;
-import com.qw.recyclerview.core.footer.IFooter;
-import com.qw.recyclerview.swiperefresh.BaseListAdapter;
-import com.qw.recyclerview.swiperefresh.SwipeRefreshRecyclerView;
+import com.qw.recyclerview.smartrefreshlayout.BaseListAdapter;
+import com.qw.recyclerview.smartrefreshlayout.SmartRefreshLayoutRecyclerView;
+import com.scwang.smart.refresh.layout.SmartRefreshLayout;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public abstract class BaseListActivity<T> extends AppCompatActivity implements FooterView.OnFooterViewListener, OnRefreshListener, OnLoadMoreListener {
+public abstract class BaseV2ListActivity<T> extends AppCompatActivity implements FooterView.OnFooterViewListener, OnRefreshListener, OnLoadMoreListener {
     protected SmartRefreshHelper smartRefreshHelper;
     protected ListAdapter adapter;
     protected ArrayList<T> modules = new ArrayList<>();
@@ -42,9 +39,10 @@ public abstract class BaseListActivity<T> extends AppCompatActivity implements F
 
     protected void initView() {
         RecyclerView mRecyclerView = findViewById(R.id.mRecyclerView);
-        SwipeRefreshLayout mSwipeRefreshLayout = findViewById(R.id.mSwipeRefreshLayout);
+        mRecyclerView.setOverScrollMode(RecyclerView.OVER_SCROLL_NEVER);
+        SmartRefreshLayout mSmartRefreshLayout = findViewById(R.id.mSmartRefreshLayout);
         smartRefreshHelper = new SmartRefreshHelper();
-        smartRefreshHelper.inject(new SwipeRefreshRecyclerView(mRecyclerView, mSwipeRefreshLayout));
+        smartRefreshHelper.inject(new SmartRefreshLayoutRecyclerView(mRecyclerView, mSmartRefreshLayout));
         smartRefreshHelper.setLayoutManager(new LinearLayoutManager(this));
         smartRefreshHelper.setRefreshEnable(true);
         smartRefreshHelper.setLoadMoreEnable(true);
@@ -82,52 +80,30 @@ public abstract class BaseListActivity<T> extends AppCompatActivity implements F
         @NonNull
         @Override
         protected BaseViewHolder onCreateBaseViewHolder(@NotNull ViewGroup parent, int viewType) {
-            return BaseListActivity.this.onCreateBaseViewHolder(parent, viewType);
+            return BaseV2ListActivity.this.onCreateBaseViewHolder(parent, viewType);
         }
 
         @NonNull
         @Override
         protected BaseViewHolder onCreateFooterHolder(@NotNull ViewGroup parent) {
-            BaseViewHolder baseViewHolder = BaseListActivity.this.onCreateFooterHolder(parent);
-            if (baseViewHolder == null) {
-                FooterView footerView = new FooterView(BaseListActivity.this);
-                footerView.setOnFooterViewListener(BaseListActivity.this);
-                footerView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-                return new ListAdapter.FooterViewHolder(footerView);
-            }
-            return baseViewHolder;
+            return BaseV2ListActivity.this.onCreateFooterHolder(parent);
         }
 
         @NonNull
         @Override
         protected BaseViewHolder onCreateHeaderHolder(@NotNull ViewGroup parent) {
-            return BaseListActivity.this.onCreateHeaderHolder(parent);
+            return BaseV2ListActivity.this.onCreateHeaderHolder(parent);
         }
 
-        public class FooterViewHolder extends BaseViewHolder {
-            private IFooter footer;
-
-            public FooterViewHolder(View itemView) {
-                super(itemView);
-                if (itemView instanceof IFooter) {
-                    footer = (IFooter) itemView;
-                } else {
-                    throw new IllegalArgumentException("the view must impl IFooter interface");
-                }
-            }
-
-            @Override
-            public void initData(int position) {
-                footer.onFooterChanged(adapter.getFooterState());
-            }
-        }
     }
 
-    protected BaseViewHolder onCreateHeaderHolder(ViewGroup parent) {
+    @Nullable
+    protected BaseViewHolder onCreateFooterHolder(ViewGroup parent) {
         return null;
     }
 
-    private BaseViewHolder onCreateFooterHolder(ViewGroup parent) {
+    @Nullable
+    protected BaseViewHolder onCreateHeaderHolder(ViewGroup parent) {
         return null;
     }
 

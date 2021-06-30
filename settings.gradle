@@ -1,3 +1,4 @@
+include ':recyclerview_smartrefreshlayout'
 include ':recyclerview_swiperefresh'
 include ':core'
 include ':app'
