@@ -8,8 +8,10 @@ import android.widget.LinearLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.qw.recyclerview.core.BaseViewHolder;
@@ -142,4 +144,33 @@ public abstract class BaseListActivity<T> extends AppCompatActivity implements F
 
     protected abstract BaseViewHolder onCreateBaseViewHolder(ViewGroup parent, int viewType);
 
+    /**
+     * 得到GridLayoutManager
+     *
+     * @param spanCount 列数
+     * @return
+     */
+    public GridLayoutManager getGridLayoutManager(int spanCount) {
+        final GridLayoutManager manager = new GridLayoutManager(this, spanCount);
+        manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position) {
+                if (adapter.isHeaderShow(position) || adapter.isFooterShow(position)) {
+                    return manager.getSpanCount();
+                }
+                return 1;
+            }
+        });
+        return manager;
+    }
+
+    /**
+     * 得到StaggeredGridLayoutManager
+     *
+     * @param spanCount 列数
+     * @return
+     */
+    public StaggeredGridLayoutManager getStaggeredGridLayoutManager(int spanCount) {
+        return new StaggeredGridLayoutManager(spanCount, StaggeredGridLayoutManager.VERTICAL);
+    }
 }

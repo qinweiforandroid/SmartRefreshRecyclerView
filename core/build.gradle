@@ -41,3 +41,4 @@ dependencies {
 repositories {
     mavenCentral()
 }
+apply from: '../nexus.gradle'

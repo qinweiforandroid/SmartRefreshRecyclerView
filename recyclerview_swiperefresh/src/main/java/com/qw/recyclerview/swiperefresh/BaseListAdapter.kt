@@ -48,11 +48,11 @@ abstract class BaseListAdapter : BaseListAdapter() {
         super.onBindViewHolder(holder, position)
     }
 
-    private fun isHeaderShow(position: Int): Boolean {
+    fun isHeaderShow(position: Int): Boolean {
         return isHeaderShow && position == 0
     }
 
-    private fun isFooterShow(position: Int): Boolean {
+    fun isFooterShow(position: Int): Boolean {
         return isFooterShow && position == itemCount - 1
     }
 

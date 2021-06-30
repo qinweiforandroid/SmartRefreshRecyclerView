@@ -1,0 +1,90 @@
+apply plugin: 'maven'
+
+def getRepositoryUrl() {
+    def repo = NEXUS_RELEASES
+
+    if (LIB_IS_LOCAL_REPO != null && LIB_IS_LOCAL_REPO.toBoolean()) {
+        repo = getMavenHome()
+    } else if (LIB_IS_RELEASE != null && !LIB_IS_RELEASE.toBoolean()) {
+        repo = NEXUS_SNAPSHOTS
+    }
+
+    return repo
+}
+
+def getVersionCode() {
+    return LIB_VERSION_CODE
+}
+
+def getVersionName() {
+    def version = LIB_VERSION_NAME
+
+    if (LIB_IS_RELEASE != null && !LIB_IS_RELEASE.toBoolean()) {
+        version = version + "-SNAPSHOT"
+    }
+
+    return version
+}
+
+static def getMavenHome() {
+    return 'file://' + new File(System.getProperty('user.home'), '.m2/repository').absolutePath
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from android.sourceSets.main.java.sourceFiles
+}
+
+task javadoc(type: Javadoc) {
+    source = android.sourceSets.main.java.sourceFiles
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    classpath += configurations.compile
+    options {
+        failOnError false
+        encoding "UTF-8"
+        charSet "UTF-8"
+        author true
+        version true
+        links "http://docs.oracle.com/javase/7/docs/api"
+    }
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = "javadoc"
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            def _aar_version = getVersionName()
+            def _repository_url = getRepositoryUrl()
+
+            println "[" + project.getName() + "] Repository: " + _repository_url
+            println "[" + project.getName() + "] AAR: " + LIB_GROUP + ":" + LIB_ARTIFACT + ":" + _aar_version
+
+            Properties properties = new Properties()
+            InputStream inputStream = project.rootProject.file('local.properties').newDataInputStream();
+            properties.load(inputStream)
+            def nexus_username = properties.getProperty('NEXUS_USERNAME')
+            def nexus_password = properties.getProperty('NEXUS_PASSWORD')
+            repository(url: _repository_url) {
+                authentication(userName: nexus_username, password: nexus_password)
+            }
+
+            pom.project {
+                name LIB_ARTIFACT
+                groupId LIB_GROUP
+                artifactId LIB_ARTIFACT
+                version _aar_version
+                packaging LIB_EXTENSION
+                description LIB_DES
+            }
+        }
+    }
+}
