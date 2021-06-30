@@ -12,7 +12,7 @@ interface SmartRefreshable {
     /**
      *  设置适配器
      */
-    fun setAdapter(adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>)
+    fun setAdapter(adapter: RecyclerView.Adapter<out RecyclerView.ViewHolder>)
 
     fun getRecyclerView(): RecyclerView
 
@@ -51,5 +51,5 @@ interface SmartRefreshable {
      */
     fun setRefreshing(refresh: Boolean)
 
-    fun setLoadMore(delayed: Int, success: Boolean, noMoreData: Boolean)
+    fun setLoadMore(success: Boolean, noMoreData: Boolean)
 }

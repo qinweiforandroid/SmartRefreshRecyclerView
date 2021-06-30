@@ -5,11 +5,9 @@ import androidx.recyclerview.widget.RecyclerView
 /**
  * Created by qinwei on 2021/6/30 12:17
  */
-abstract class BaseListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+abstract class BaseListAdapter : RecyclerView.Adapter<BaseViewHolder>() {
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        if(holder is BaseViewHolder){
-            holder.initData(position)
-        }
+    override fun onBindViewHolder(holder: BaseViewHolder, position: Int) {
+        holder.initData(position)
     }
 }

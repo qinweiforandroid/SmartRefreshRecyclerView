@@ -11,7 +11,7 @@ class SmartRefreshHelper : SmartRefreshable {
         mSmartRefreshable = smartRefreshable
     }
 
-    override fun setAdapter(adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>) {
+    override fun setAdapter(adapter: RecyclerView.Adapter<out RecyclerView.ViewHolder>) {
         mSmartRefreshable.setAdapter(adapter)
     }
 
@@ -47,7 +47,7 @@ class SmartRefreshHelper : SmartRefreshable {
         mSmartRefreshable.setRefreshing(refreshing)
     }
 
-    override fun setLoadMore(delayed: Int, success: Boolean, noMoreData: Boolean) {
-        mSmartRefreshable.setLoadMore(delayed, success, noMoreData)
+    override fun setLoadMore(success: Boolean, noMoreData: Boolean) {
+        mSmartRefreshable.setLoadMore(success, noMoreData)
     }
 }

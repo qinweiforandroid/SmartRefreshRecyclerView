@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -11,16 +12,21 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.qw.recyclerview.core.BaseListAdapter;
 import com.qw.recyclerview.core.BaseViewHolder;
 import com.qw.recyclerview.core.OnLoadMoreListener;
 import com.qw.recyclerview.core.OnRefreshListener;
 import com.qw.recyclerview.sample.databinding.ActivityMainBinding;
+import com.qw.recyclerview.swiperefresh.BaseListAdapter;
+import com.qw.recyclerview.swiperefresh.State;
 import com.qw.recyclerview.swiperefresh.SwipeRefreshRecyclerView;
+import com.qw.recyclerview.swiperefresh.footer.FooterView;
+import com.qw.recyclerview.swiperefresh.footer.IFooter;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements FooterView.OnFooterViewListener {
     private ActivityMainBinding bind;
     private ArrayList<String> modules = new ArrayList<>();
     private QAdapter adapter;
@@ -37,15 +43,16 @@ public class MainActivity extends AppCompatActivity {
         swipeRefreshRecyclerView.setOnRefreshListener(new OnRefreshListener() {
             @Override
             public void onRefresh() {
-                Toast.makeText(MainActivity.this, "start 刷新", Toast.LENGTH_SHORT).show();
                 bind.mSwipeRefreshLayout.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(MainActivity.this, "end 刷新", Toast.LENGTH_SHORT).show();
+                        modules.clear();
                         for (int i = 0; i < 20; i++) {
                             modules.add("" + i);
                         }
                         adapter.notifyDataSetChanged();
+                        Toast.makeText(MainActivity.this, "刷新", Toast.LENGTH_SHORT).show();
+                        adapter.notifyFooterDataSetChanged(State.IDLE);
                         swipeRefreshRecyclerView.setRefreshing(false);
                     }
                 }, 3000);
@@ -54,17 +61,20 @@ public class MainActivity extends AppCompatActivity {
         swipeRefreshRecyclerView.setOnLoadMoreListener(new OnLoadMoreListener() {
             @Override
             public void onLoadMore() {
-                Toast.makeText(MainActivity.this, "start 加载更多", Toast.LENGTH_SHORT).show();
                 bind.mRecyclerView.postDelayed(new Runnable() {
                     @Override
                     public void run() {
+
                         int size = modules.size();
                         for (int i = size; i < size + 10; i++) {
                             modules.add("" + i);
                         }
+                        if (modules.size() < 50) {
+                            swipeRefreshRecyclerView.setLoadMore(true, false);
+                        } else {
+                            swipeRefreshRecyclerView.setLoadMore(true, true);
+                        }
                         adapter.notifyDataSetChanged();
-                        Toast.makeText(MainActivity.this, "end 加载更多", Toast.LENGTH_SHORT).show();
-                        swipeRefreshRecyclerView.setLoadMore(0, true, false);
                     }
                 }, 3000);
             }
@@ -78,17 +88,56 @@ public class MainActivity extends AppCompatActivity {
         adapter.notifyDataSetChanged();
     }
 
+    @Override
+    public void onFooterClick() {
+
+    }
+
     private class QAdapter extends BaseListAdapter {
+
+        @Override
+        protected int getItemViewCount() {
+            return modules.size();
+        }
 
         @NonNull
         @Override
-        public BaseViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        protected BaseViewHolder onCreateBaseViewHolder(@NotNull ViewGroup parent, int viewType) {
             return new Holder(LayoutInflater.from(MainActivity.this).inflate(android.R.layout.simple_list_item_1, parent, false));
         }
 
+
+        @NonNull
         @Override
-        public int getItemCount() {
-            return modules.size();
+        protected BaseViewHolder onCreateFooterHolder(@NotNull ViewGroup parent) {
+            FooterView footerView = new FooterView(MainActivity.this);
+            footerView.setOnFooterViewListener(MainActivity.this);
+            footerView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+            return new FooterViewHolder(footerView);
+        }
+
+        @NonNull
+        @Override
+        protected BaseViewHolder onCreateHeaderHolder(@NotNull ViewGroup parent) {
+            return null;
+        }
+
+        public class FooterViewHolder extends BaseViewHolder {
+            private IFooter footer;
+
+            public FooterViewHolder(View itemView) {
+                super(itemView);
+                if (itemView instanceof IFooter) {
+                    footer = (IFooter) itemView;
+                } else {
+                    throw new IllegalArgumentException("the view must impl IFooter interface");
+                }
+            }
+
+            @Override
+            public void initData(int position) {
+                footer.onFooterChanged(getFooterState());
+            }
         }
 
         class Holder extends BaseViewHolder {

@@ -10,6 +10,7 @@ import com.qw.recyclerview.core.*
  * Created by qinwei on 2021/6/29 21:44
  */
 class SwipeRefreshRecyclerView(private val mRecyclerView: RecyclerView, private val mSwipeRefreshLayout: SwipeRefreshLayout) : SmartRefreshable {
+    private lateinit var adapter: BaseListAdapter
     private var mRefreshEnable: Boolean = false
     private var mLoadMoreEnable: Boolean = false
     private var onRefreshListener: OnRefreshListener? = null
@@ -26,8 +27,12 @@ class SwipeRefreshRecyclerView(private val mRecyclerView: RecyclerView, private 
                 if (state != SmartRefreshable.REFRESH_IDLE) {
                     return
                 }
+                if (!adapter.canLoadMore()) {
+                    return
+                }
                 if (newState == RecyclerView.SCROLL_STATE_IDLE && checkedIsNeedLoadMore()) {
                     state = SmartRefreshable.REFRESH_UP
+                    adapter.notifyFooterDataSetChanged(State.LOADING)
                     onLoadMoreListener?.onLoadMore()
                 }
             }
@@ -43,8 +48,14 @@ class SwipeRefreshRecyclerView(private val mRecyclerView: RecyclerView, private 
         state = SmartRefreshable.REFRESH_IDLE
     }
 
-    override fun setAdapter(adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>) {
+    override fun setAdapter(adapter: RecyclerView.Adapter<out RecyclerView.ViewHolder>) {
         mRecyclerView.adapter = adapter
+        if (adapter is BaseListAdapter) {
+            this.adapter = adapter
+        }
+        if (mLoadMoreEnable) {
+            this.adapter.isFooterShow = true
+        }
     }
 
     private fun checkedIsNeedLoadMore(): Boolean {
@@ -95,7 +106,22 @@ class SwipeRefreshRecyclerView(private val mRecyclerView: RecyclerView, private 
         }
     }
 
-    override fun setLoadMore(delayed: Int, success: Boolean, noMoreData: Boolean) {
-        markIdle()
+    override fun setLoadMore(success: Boolean, noMoreData: Boolean) {
+        if (!mLoadMoreEnable) {
+            return
+        }
+        getRecyclerView().postDelayed({
+            val state: State = if (success) {
+                if (noMoreData) {
+                    State.EMPTY
+                } else {
+                    State.IDLE
+                }
+            } else {
+                State.ERROR
+            }
+            adapter.notifyFooterDataSetChanged(state)
+            markIdle()
+        }, 200)
     }
 }
