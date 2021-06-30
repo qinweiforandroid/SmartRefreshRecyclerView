@@ -1,9 +1,10 @@
-package com.qw.recyclerview.sample
+package com.qw.recyclerview.swiperefresh
 
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.qw.recyclerview.core.BaseViewHolder
 import com.qw.recyclerview.core.OnLoadMoreListener
 import com.qw.recyclerview.core.OnRefreshListener
 import com.qw.recyclerview.core.SmartRefreshable
@@ -57,7 +58,7 @@ class SwipeRefreshRecyclerView(private val mRecyclerView: RecyclerView, private 
         return mRecyclerView.adapter!!.itemCount - lastVisiblePosition <= 5
     }
 
-    override fun setAdapter(adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>) {
+    override fun setAdapter(adapter: RecyclerView.Adapter<BaseViewHolder>) {
         mRecyclerView.adapter = adapter
     }
 

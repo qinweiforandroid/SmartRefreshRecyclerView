@@ -1,3 +1,4 @@
+include ':recyclerview_swiperefresh'
 include ':core'
 include ':app'
-rootProject.name = "QRecyclerView"
+rootProject.name = "SmartRefreshRecyclerView"

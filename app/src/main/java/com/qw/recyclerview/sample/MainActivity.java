@@ -1,7 +1,6 @@
 package com.qw.recyclerview.sample;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,12 +10,13 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
+import com.qw.recyclerview.core.BaseListAdapter;
+import com.qw.recyclerview.core.BaseViewHolder;
 import com.qw.recyclerview.core.OnLoadMoreListener;
 import com.qw.recyclerview.core.OnRefreshListener;
-import com.qw.recyclerview.core.QSmartRefreshHelper;
 import com.qw.recyclerview.sample.databinding.ActivityMainBinding;
+import com.qw.recyclerview.swiperefresh.SwipeRefreshRecyclerView;
 
 import java.util.ArrayList;
 
@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                         adapter.notifyDataSetChanged();
                         Toast.makeText(MainActivity.this, "end 加载更多", Toast.LENGTH_SHORT).show();
-                        swipeRefreshRecyclerView.setLoadMore(0,true,false);
+                        swipeRefreshRecyclerView.setLoadMore(0, true, false);
                     }
                 }, 3000);
             }
@@ -78,19 +78,12 @@ public class MainActivity extends AppCompatActivity {
         adapter.notifyDataSetChanged();
     }
 
-    private class QAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    private class QAdapter extends BaseListAdapter {
 
         @NonNull
         @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        public BaseViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             return new Holder(LayoutInflater.from(MainActivity.this).inflate(android.R.layout.simple_list_item_1, parent, false));
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-            if (holder instanceof Holder) {
-                ((Holder) holder).initData(position);
-            }
         }
 
         @Override
@@ -98,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
             return modules.size();
         }
 
-        class Holder extends RecyclerView.ViewHolder {
+        class Holder extends BaseViewHolder {
             private final TextView label;
 
             public Holder(@NonNull View itemView) {

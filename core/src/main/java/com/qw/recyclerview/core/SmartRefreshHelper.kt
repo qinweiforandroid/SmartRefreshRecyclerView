@@ -5,13 +5,13 @@ import androidx.recyclerview.widget.RecyclerView
 /**
  * Created by qinwei on 2021/6/29 21:08
  */
-class QSmartRefreshHelper : SmartRefreshable {
+class SmartRefreshHelper : SmartRefreshable {
     private lateinit var mSmartRefreshable: SmartRefreshable
     fun inject(smartRefreshable: SmartRefreshable) {
         mSmartRefreshable = smartRefreshable
     }
 
-    override fun setAdapter(adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>) {
+    override fun setAdapter(adapter: RecyclerView.Adapter<BaseViewHolder>) {
         mSmartRefreshable.setAdapter(adapter)
     }
 
@@ -48,6 +48,6 @@ class QSmartRefreshHelper : SmartRefreshable {
     }
 
     override fun setLoadMore(delayed: Int, success: Boolean, noMoreData: Boolean) {
-        mSmartRefreshable.setLoadMore(delayed,success,noMoreData)
+        mSmartRefreshable.setLoadMore(delayed, success, noMoreData)
     }
 }
