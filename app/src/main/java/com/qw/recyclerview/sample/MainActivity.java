@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.qw.recyclerview.core.BaseViewHolder;
 import com.qw.recyclerview.core.OnLoadMoreListener;
 import com.qw.recyclerview.core.OnRefreshListener;
+import com.qw.recyclerview.core.SmartRefreshHelper;
 import com.qw.recyclerview.sample.databinding.ActivityMainBinding;
 import com.qw.recyclerview.swiperefresh.BaseListAdapter;
 import com.qw.recyclerview.swiperefresh.State;
@@ -36,11 +37,12 @@ public class MainActivity extends AppCompatActivity implements FooterView.OnFoot
         super.onCreate(savedInstanceState);
         bind = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(bind.getRoot());
-        SwipeRefreshRecyclerView swipeRefreshRecyclerView = new SwipeRefreshRecyclerView(bind.mRecyclerView, bind.mSwipeRefreshLayout);
-        swipeRefreshRecyclerView.setRefreshEnable(true);
-        swipeRefreshRecyclerView.setLoadMoreEnable(true);
-        swipeRefreshRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        swipeRefreshRecyclerView.setOnRefreshListener(new OnRefreshListener() {
+        SmartRefreshHelper smartRefreshHelper = new SmartRefreshHelper();
+        smartRefreshHelper.inject(new SwipeRefreshRecyclerView(bind.mRecyclerView, bind.mSwipeRefreshLayout));
+        smartRefreshHelper.setRefreshEnable(true);
+        smartRefreshHelper.setLoadMoreEnable(true);
+        smartRefreshHelper.setLayoutManager(new LinearLayoutManager(this));
+        smartRefreshHelper.setOnRefreshListener(new OnRefreshListener() {
             @Override
             public void onRefresh() {
                 bind.mSwipeRefreshLayout.postDelayed(new Runnable() {
@@ -53,12 +55,12 @@ public class MainActivity extends AppCompatActivity implements FooterView.OnFoot
                         adapter.notifyDataSetChanged();
                         Toast.makeText(MainActivity.this, "刷新", Toast.LENGTH_SHORT).show();
                         adapter.notifyFooterDataSetChanged(State.IDLE);
-                        swipeRefreshRecyclerView.setRefreshing(false);
+                        smartRefreshHelper.setRefreshing(false);
                     }
                 }, 3000);
             }
         });
-        swipeRefreshRecyclerView.setOnLoadMoreListener(new OnLoadMoreListener() {
+        smartRefreshHelper.setOnLoadMoreListener(new OnLoadMoreListener() {
             @Override
             public void onLoadMore() {
                 bind.mRecyclerView.postDelayed(new Runnable() {
@@ -70,9 +72,9 @@ public class MainActivity extends AppCompatActivity implements FooterView.OnFoot
                             modules.add("" + i);
                         }
                         if (modules.size() < 50) {
-                            swipeRefreshRecyclerView.setLoadMore(true, false);
+                            smartRefreshHelper.setLoadMore(true, false);
                         } else {
-                            swipeRefreshRecyclerView.setLoadMore(true, true);
+                            smartRefreshHelper.setLoadMore(true, true);
                         }
                         adapter.notifyDataSetChanged();
                     }
@@ -80,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements FooterView.OnFoot
             }
         });
         adapter = new QAdapter();
-        swipeRefreshRecyclerView.setAdapter(adapter);
+        smartRefreshHelper.setAdapter(adapter);
         modules.clear();
         for (int i = 0; i < 20; i++) {
             modules.add("" + i);
