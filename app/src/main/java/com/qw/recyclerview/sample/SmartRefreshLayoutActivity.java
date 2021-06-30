@@ -70,7 +70,6 @@ public class SmartRefreshLayoutActivity extends BaseV2ListActivity<String> {
                 }
                 adapter.notifyDataSetChanged();
                 Toast.makeText(SmartRefreshLayoutActivity.this, "刷新", Toast.LENGTH_SHORT).show();
-                adapter.notifyFooterDataSetChanged(State.IDLE);
                 smartRefreshHelper.finishRefresh(true);
             }
         }, 3000);

@@ -77,6 +77,11 @@ public abstract class BaseV2ListActivity<T> extends AppCompatActivity implements
             return modules.size();
         }
 
+        @Override
+        public int getItemViewTypeByPosition(int position) {
+            return BaseV2ListActivity.this.getItemViewTypeByPosition(position);
+        }
+
         @NonNull
         @Override
         protected BaseViewHolder onCreateBaseViewHolder(@NotNull ViewGroup parent, int viewType) {
@@ -95,6 +100,11 @@ public abstract class BaseV2ListActivity<T> extends AppCompatActivity implements
             return BaseV2ListActivity.this.onCreateHeaderHolder(parent);
         }
 
+
+    }
+
+    protected int getItemViewTypeByPosition(int position) {
+        return 0;
     }
 
     @Nullable

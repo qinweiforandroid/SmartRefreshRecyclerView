@@ -56,11 +56,11 @@ abstract class BaseListAdapter : BaseListAdapter() {
         return isFooterShow && position == itemCount - 1
     }
 
-    override fun getItemCount(): Int {
+    final override fun getItemCount(): Int {
         return getItemViewCount() + (if (isHeaderShow) 1 else 0) + if (isFooterShow) 1 else 0
     }
 
-    override fun getItemViewType(position: Int): Int {
+    final override fun getItemViewType(position: Int): Int {
         var position = position
         if (isHeaderShow(position)) {
             return TYPE_HEADER
@@ -117,7 +117,7 @@ abstract class BaseListAdapter : BaseListAdapter() {
      * @param position
      * @return
      */
-    protected fun getItemViewTypeByPosition(position: Int): Int {
+    open fun getItemViewTypeByPosition(position: Int): Int {
         return 0
     }
 

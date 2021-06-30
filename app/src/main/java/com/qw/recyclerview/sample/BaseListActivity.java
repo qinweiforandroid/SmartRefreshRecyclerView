@@ -85,6 +85,11 @@ public abstract class BaseListActivity<T> extends AppCompatActivity implements F
             return BaseListActivity.this.onCreateBaseViewHolder(parent, viewType);
         }
 
+        @Override
+        public int getItemViewTypeByPosition(int position) {
+            return BaseListActivity.this.getItemViewTypeByPosition(position);
+        }
+
         @NonNull
         @Override
         protected BaseViewHolder onCreateFooterHolder(@NotNull ViewGroup parent) {
@@ -121,6 +126,10 @@ public abstract class BaseListActivity<T> extends AppCompatActivity implements F
                 footer.onFooterChanged(adapter.getFooterState());
             }
         }
+    }
+
+    protected int getItemViewTypeByPosition(int position) {
+        return 0;
     }
 
     protected BaseViewHolder onCreateHeaderHolder(ViewGroup parent) {

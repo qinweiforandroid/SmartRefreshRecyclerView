@@ -4,7 +4,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.qw.recyclerview.core.BaseListAdapter
 import com.qw.recyclerview.core.BaseViewHolder
-import com.qw.recyclerview.core.State
 
 /**
  * Created by qinwei on 2021/6/30 12:45
@@ -14,7 +13,6 @@ abstract class BaseListAdapter : BaseListAdapter() {
         const val TYPE_HEADER = -2
         const val TYPE_FOOTER = -1
     }
-
 
 
     /**
@@ -27,9 +25,8 @@ abstract class BaseListAdapter : BaseListAdapter() {
      */
     var isFooterShow = false
 
-    protected var footerState: State = State.IDLE
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
+    final override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
         return if (isHeaderShow && viewType == TYPE_HEADER) {
             onCreateHeaderHolder(parent)
         } else if (isFooterShow && viewType == TYPE_FOOTER) {
@@ -39,7 +36,7 @@ abstract class BaseListAdapter : BaseListAdapter() {
         }
     }
 
-    override fun onBindViewHolder(holder: BaseViewHolder, position: Int) {
+    final override fun onBindViewHolder(holder: BaseViewHolder, position: Int) {
         //数据下标重新计算
         var position = position
         if (isHeaderShow) {
@@ -56,11 +53,11 @@ abstract class BaseListAdapter : BaseListAdapter() {
         return isFooterShow && position == itemCount - 1
     }
 
-    override fun getItemCount(): Int {
+    final override fun getItemCount(): Int {
         return getItemViewCount() + (if (isHeaderShow) 1 else 0) + if (isFooterShow) 1 else 0
     }
 
-    override fun getItemViewType(position: Int): Int {
+    final override fun getItemViewType(position: Int): Int {
         var position = position
         if (isHeaderShow(position)) {
             return TYPE_HEADER
@@ -71,9 +68,6 @@ abstract class BaseListAdapter : BaseListAdapter() {
             position--
         }
         return getItemViewTypeByPosition(position)
-    }
-
-    fun notifyFooterDataSetChanged(state: State) {
     }
 
     /**
@@ -115,7 +109,7 @@ abstract class BaseListAdapter : BaseListAdapter() {
      * @param position
      * @return
      */
-    protected fun getItemViewTypeByPosition(position: Int): Int {
+    open fun getItemViewTypeByPosition(position: Int): Int {
         return 0
     }
 

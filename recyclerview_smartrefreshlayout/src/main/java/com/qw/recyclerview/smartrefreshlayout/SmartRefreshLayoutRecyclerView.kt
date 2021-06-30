@@ -21,7 +21,6 @@ class SmartRefreshLayoutRecyclerView(private val mRecyclerView: RecyclerView, pr
     init {
         mSmartRefreshLayout.setOnLoadMoreListener {
             state = SmartRefreshable.REFRESH_UP
-            adapter.notifyFooterDataSetChanged(State.LOADING)
             onLoadMoreListener?.onLoadMore()
         }
         mSmartRefreshLayout.setOnRefreshListener {
