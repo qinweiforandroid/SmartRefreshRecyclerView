@@ -1,4 +1,4 @@
-package com.qw.recyclerview.swiperefresh
+package com.qw.recyclerview.core
 
 enum class State {
     IDLE, LOADING, ERROR, EMPTY

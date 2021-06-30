@@ -1,4 +1,4 @@
-package com.qw.recyclerview.swiperefresh.footer;
+package com.qw.recyclerview.core.footer;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -8,8 +8,8 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.qw.recyclerview.swiperefresh.R;
-import com.qw.recyclerview.swiperefresh.State;
+import com.qw.recyclerview.core.R;
+import com.qw.recyclerview.core.State;
 
 
 /**
@@ -41,7 +41,7 @@ public class FooterView extends LinearLayout implements IFooter, View.OnClickLis
     }
 
     private void initializeView(Context context) {
-        LayoutInflater.from(context).inflate(R.layout.rs_widget_pulltorefresh_footer, this);
+        LayoutInflater.from(context).inflate(R.layout.sr_widget_pulltorefresh_footer, this);
         mProgressBar = (ProgressBar) findViewById(R.id.mProgressBar);
         mFooterLabel = (TextView) findViewById(R.id.mFooterLabel);
     }
@@ -78,7 +78,6 @@ public class FooterView extends LinearLayout implements IFooter, View.OnClickLis
                 break;
         }
     }
-
     public void setOnFooterViewListener(OnFooterViewListener listener) {
         this.listener = listener;
     }

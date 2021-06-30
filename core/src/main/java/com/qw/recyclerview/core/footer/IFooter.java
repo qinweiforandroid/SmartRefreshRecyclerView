@@ -1,6 +1,6 @@
-package com.qw.recyclerview.swiperefresh.footer;
+package com.qw.recyclerview.core.footer;
 
-import com.qw.recyclerview.swiperefresh.State;
+import com.qw.recyclerview.core.State;
 
 /**
  * 底部状态切换接口  你的自定义状态view需要impl此接口 框架会帮你call onFooterChanged 改变底部加载更多的ui

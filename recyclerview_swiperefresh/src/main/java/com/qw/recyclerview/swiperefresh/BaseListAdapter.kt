@@ -6,6 +6,7 @@ import androidx.annotation.NonNull
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.qw.recyclerview.core.BaseListAdapter
 import com.qw.recyclerview.core.BaseViewHolder
+import com.qw.recyclerview.core.State
 
 /**
  * Created by qinwei on 2021/6/30 12:45
@@ -28,7 +29,6 @@ abstract class BaseListAdapter : BaseListAdapter() {
 
     protected var footerState: State = State.IDLE
 
-    @NonNull
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
         return if (isHeaderShow && viewType == TYPE_HEADER) {
             onCreateHeaderHolder(parent)
@@ -93,7 +93,6 @@ abstract class BaseListAdapter : BaseListAdapter() {
      * @param viewType
      * @return
      */
-    @NonNull
     protected abstract fun onCreateBaseViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder
 
     /**
@@ -102,7 +101,6 @@ abstract class BaseListAdapter : BaseListAdapter() {
      * @param parent
      * @return
      */
-    @NonNull
     protected abstract fun onCreateHeaderHolder(parent: ViewGroup): BaseViewHolder
 
     /**
@@ -111,7 +109,6 @@ abstract class BaseListAdapter : BaseListAdapter() {
      * @param parent
      * @return
      */
-    @NonNull
     protected abstract fun onCreateFooterHolder(parent: ViewGroup): BaseViewHolder
 
     /**
@@ -132,7 +129,6 @@ abstract class BaseListAdapter : BaseListAdapter() {
         }
     }
 
-    @NonNull
     fun canLoadMore(): Boolean {
         return when (footerState) {
             State.IDLE, State.ERROR ->
