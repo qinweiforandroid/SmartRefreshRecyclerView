@@ -30,7 +30,7 @@ class SwipeRefreshRecyclerView(private val mRecyclerView: RecyclerView, private 
                 if (state != SmartRefreshable.REFRESH_IDLE) {
                     return
                 }
-                if (!adapter.canLoadMore()) {
+                if (mRecyclerView.adapter is BaseListAdapter&&!adapter.canLoadMore()) {
                     return
                 }
                 if (newState == RecyclerView.SCROLL_STATE_IDLE && checkedIsNeedLoadMore()) {
@@ -45,6 +45,10 @@ class SwipeRefreshRecyclerView(private val mRecyclerView: RecyclerView, private 
             onRefreshListener?.onRefresh()
         }
         mSwipeRefreshLayout.isEnabled = mRefreshEnable
+
+        if(mRecyclerView.adapter is BaseListAdapter){
+            this.adapter=mRecyclerView.adapter as BaseListAdapter
+        }
     }
 
     private fun markIdle() {
@@ -55,9 +59,6 @@ class SwipeRefreshRecyclerView(private val mRecyclerView: RecyclerView, private 
         mRecyclerView.adapter = adapter
         if (adapter is BaseListAdapter) {
             this.adapter = adapter
-        }
-        if (mLoadMoreEnable) {
-            this.adapter.isFooterShow = true
         }
     }
 
@@ -100,14 +101,22 @@ class SwipeRefreshRecyclerView(private val mRecyclerView: RecyclerView, private 
 
     override fun setLoadMoreEnable(isEnabled: Boolean) {
         mLoadMoreEnable = isEnabled
+        if (mLoadMoreEnable) {
+            this.adapter.isFooterShow = true
+        }
     }
 
     override fun autoRefresh() {
-        mSwipeRefreshLayout.isRefreshing = true
+        if(mRefreshEnable){
+            state = SmartRefreshable.REFRESH_PULL
+            mSwipeRefreshLayout.isRefreshing=true
+            this.onRefreshListener?.onRefresh()
+        }
     }
 
     override fun finishRefresh(success: Boolean) {
         mSwipeRefreshLayout.isRefreshing = false
+        adapter.notifyFooterDataSetChanged(State.IDLE)
         markIdle()
     }
 

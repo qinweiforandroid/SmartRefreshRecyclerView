@@ -1,4 +1,4 @@
-package com.qw.recyclerview.sample;
+package com.qw.recyclerview.sample.core;
 
 import android.os.Bundle;
 import android.view.ViewGroup;
@@ -14,6 +14,7 @@ import com.qw.recyclerview.core.OnLoadMoreListener;
 import com.qw.recyclerview.core.OnRefreshListener;
 import com.qw.recyclerview.core.SmartRefreshHelper;
 import com.qw.recyclerview.core.footer.FooterView;
+import com.qw.recyclerview.sample.R;
 import com.qw.recyclerview.smartrefreshlayout.BaseListAdapter;
 import com.qw.recyclerview.smartrefreshlayout.SmartRefreshLayoutRecyclerView;
 import com.scwang.smart.refresh.layout.SmartRefreshLayout;
@@ -22,7 +23,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public abstract class BaseV2ListActivity<T> extends AppCompatActivity implements FooterView.OnFooterViewListener, OnRefreshListener, OnLoadMoreListener {
+public abstract class BaseSmartRefreshLayoutListActivity<T> extends AppCompatActivity implements FooterView.OnFooterViewListener, OnRefreshListener, OnLoadMoreListener {
     protected SmartRefreshHelper smartRefreshHelper;
     protected ListAdapter adapter;
     protected ArrayList<T> modules = new ArrayList<>();
@@ -44,12 +45,14 @@ public abstract class BaseV2ListActivity<T> extends AppCompatActivity implements
         smartRefreshHelper = new SmartRefreshHelper();
         smartRefreshHelper.inject(new SmartRefreshLayoutRecyclerView(mRecyclerView, mSmartRefreshLayout));
         smartRefreshHelper.setLayoutManager(new LinearLayoutManager(this));
+
+        adapter = new ListAdapter();
+        smartRefreshHelper.setAdapter(adapter);
+
         smartRefreshHelper.setRefreshEnable(true);
         smartRefreshHelper.setLoadMoreEnable(true);
         smartRefreshHelper.setOnRefreshListener(this);
         smartRefreshHelper.setOnLoadMoreListener(this);
-        adapter = new ListAdapter();
-        smartRefreshHelper.setAdapter(adapter);
     }
 
     protected abstract void initData(Bundle savedInstanceState);
@@ -79,28 +82,26 @@ public abstract class BaseV2ListActivity<T> extends AppCompatActivity implements
 
         @Override
         public int getItemViewTypeByPosition(int position) {
-            return BaseV2ListActivity.this.getItemViewTypeByPosition(position);
+            return BaseSmartRefreshLayoutListActivity.this.getItemViewTypeByPosition(position);
         }
 
         @NonNull
         @Override
         protected BaseViewHolder onCreateBaseViewHolder(@NotNull ViewGroup parent, int viewType) {
-            return BaseV2ListActivity.this.onCreateBaseViewHolder(parent, viewType);
+            return BaseSmartRefreshLayoutListActivity.this.onCreateBaseViewHolder(parent, viewType);
         }
 
         @NonNull
         @Override
-        protected BaseViewHolder onCreateFooterHolder(@NotNull ViewGroup parent) {
-            return BaseV2ListActivity.this.onCreateFooterHolder(parent);
+        public BaseViewHolder onCreateFooterHolder(@NotNull ViewGroup parent) {
+            return BaseSmartRefreshLayoutListActivity.this.onCreateFooterHolder(parent);
         }
 
         @NonNull
         @Override
-        protected BaseViewHolder onCreateHeaderHolder(@NotNull ViewGroup parent) {
-            return BaseV2ListActivity.this.onCreateHeaderHolder(parent);
+        public BaseViewHolder onCreateHeaderHolder(@NotNull ViewGroup parent) {
+            return BaseSmartRefreshLayoutListActivity.this.onCreateHeaderHolder(parent);
         }
-
-
     }
 
     protected int getItemViewTypeByPosition(int position) {

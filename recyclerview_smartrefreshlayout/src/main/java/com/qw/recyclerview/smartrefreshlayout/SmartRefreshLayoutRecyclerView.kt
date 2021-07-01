@@ -27,7 +27,8 @@ class SmartRefreshLayoutRecyclerView(private val mRecyclerView: RecyclerView, pr
             state = SmartRefreshable.REFRESH_PULL
             onRefreshListener?.onRefresh()
         }
-        mSmartRefreshLayout.isEnabled = mRefreshEnable
+        mSmartRefreshLayout.setEnableRefresh(mRefreshEnable)
+        mSmartRefreshLayout.setEnableLoadMore(mLoadMoreEnable)
     }
 
     private fun markIdle() {
@@ -63,15 +64,18 @@ class SmartRefreshLayoutRecyclerView(private val mRecyclerView: RecyclerView, pr
 
     override fun setRefreshEnable(isEnabled: Boolean) {
         mRefreshEnable = isEnabled
-        mSmartRefreshLayout.isEnabled = isEnabled
+        mSmartRefreshLayout.setEnableRefresh(isEnabled)
     }
 
     override fun setLoadMoreEnable(isEnabled: Boolean) {
         mLoadMoreEnable = isEnabled
+        mSmartRefreshLayout.setEnableLoadMore(isEnabled)
     }
 
     override fun autoRefresh() {
-        mSmartRefreshLayout.autoRefresh()
+        if(mRefreshEnable){
+            mSmartRefreshLayout.autoRefresh()
+        }
     }
 
     override fun finishRefresh(success: Boolean) {

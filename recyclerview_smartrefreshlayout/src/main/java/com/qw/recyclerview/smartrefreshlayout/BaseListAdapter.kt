@@ -4,6 +4,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.qw.recyclerview.core.BaseListAdapter
 import com.qw.recyclerview.core.BaseViewHolder
+import java.lang.IllegalArgumentException
 
 /**
  * Created by qinwei on 2021/6/30 12:45
@@ -29,8 +30,10 @@ abstract class BaseListAdapter : BaseListAdapter() {
     final override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
         return if (isHeaderShow && viewType == TYPE_HEADER) {
             onCreateHeaderHolder(parent)
+                    ?: throw IllegalArgumentException("HeaderHolder must not be null")
         } else if (isFooterShow && viewType == TYPE_FOOTER) {
             onCreateFooterHolder(parent)
+                    ?: throw IllegalArgumentException("FooterHolder must not be null")
         } else {
             onCreateBaseViewHolder(parent, viewType)
         }
@@ -45,11 +48,11 @@ abstract class BaseListAdapter : BaseListAdapter() {
         super.onBindViewHolder(holder, position)
     }
 
-    private fun isHeaderShow(position: Int): Boolean {
+    fun isHeaderShow(position: Int): Boolean {
         return isHeaderShow && position == 0
     }
 
-    private fun isFooterShow(position: Int): Boolean {
+    fun isFooterShow(position: Int): Boolean {
         return isFooterShow && position == itemCount - 1
     }
 
@@ -92,7 +95,9 @@ abstract class BaseListAdapter : BaseListAdapter() {
      * @param parent
      * @return
      */
-    protected abstract fun onCreateHeaderHolder(parent: ViewGroup): BaseViewHolder
+    open fun onCreateHeaderHolder(parent: ViewGroup): BaseViewHolder? {
+        return null
+    }
 
     /**
      * 获取脚步视图
@@ -100,7 +105,9 @@ abstract class BaseListAdapter : BaseListAdapter() {
      * @param parent
      * @return
      */
-    protected abstract fun onCreateFooterHolder(parent: ViewGroup): BaseViewHolder
+    open fun onCreateFooterHolder(parent: ViewGroup): BaseViewHolder? {
+        return null
+    }
 
 
     /**

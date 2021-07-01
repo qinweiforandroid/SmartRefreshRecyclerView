@@ -2,7 +2,6 @@ package com.qw.recyclerview.swiperefresh
 
 import android.util.Log
 import android.view.ViewGroup
-import androidx.annotation.NonNull
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.qw.recyclerview.core.BaseListAdapter
 import com.qw.recyclerview.core.BaseViewHolder
@@ -29,16 +28,17 @@ abstract class BaseListAdapter : BaseListAdapter() {
 
     protected var footerState: State = State.IDLE
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
+    final override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
         return if (isHeaderShow && viewType == TYPE_HEADER) {
             onCreateHeaderHolder(parent)
+                    ?: throw IllegalArgumentException("HeaderHolder must not be null")
         } else if (isFooterShow && viewType == TYPE_FOOTER) {
             onCreateFooterHolder(parent)
+                    ?: throw IllegalArgumentException("FooterHolder must not be null")
         } else {
             onCreateBaseViewHolder(parent, viewType)
         }
     }
-
     override fun onBindViewHolder(holder: BaseViewHolder, position: Int) {
         //数据下标重新计算
         var position = position
@@ -101,7 +101,9 @@ abstract class BaseListAdapter : BaseListAdapter() {
      * @param parent
      * @return
      */
-    protected abstract fun onCreateHeaderHolder(parent: ViewGroup): BaseViewHolder
+    open fun onCreateHeaderHolder(parent: ViewGroup): BaseViewHolder? {
+        return null
+    }
 
     /**
      * 获取脚步视图
@@ -109,7 +111,9 @@ abstract class BaseListAdapter : BaseListAdapter() {
      * @param parent
      * @return
      */
-    protected abstract fun onCreateFooterHolder(parent: ViewGroup): BaseViewHolder
+    open fun onCreateFooterHolder(parent: ViewGroup): BaseViewHolder? {
+        return null
+    }
 
     /**
      * 根据position获取视图类型

@@ -1,0 +1,19 @@
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/action_linearLayout"
+        android:orderInCategory="100"
+        android:title="LinearLayoutManager"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_gridLayout"
+        android:orderInCategory="100"
+        android:title="GridLayoutManager"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_staggeredGridLayout"
+        android:orderInCategory="100"
+        android:title="StaggeredGridLayoutManager"
+        app:showAsAction="never" />
+</menu>
