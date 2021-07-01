@@ -25,6 +25,12 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(MainActivity.this, SwipeRefreshLayoutActivity.class));
             }
         });
+        bind.mSwipeRefreshRecyclerViewSample1Btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, SwipeRefreshLayout1Activity.class));
+            }
+        });
         bind.mSwipeRefreshRecyclerViewSamplePlusBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

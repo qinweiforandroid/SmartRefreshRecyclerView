@@ -4,14 +4,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.qw.recyclerview.core.OnLoadMoreListener
 import com.qw.recyclerview.core.OnRefreshListener
 import com.qw.recyclerview.core.SmartRefreshable
-import com.qw.recyclerview.core.State
 import com.scwang.smart.refresh.layout.SmartRefreshLayout
+import java.lang.IllegalArgumentException
 
 /**
  * Created by qinwei on 2021/6/30 17:47
  */
-class SmartRefreshLayoutRecyclerView(private val mRecyclerView: RecyclerView, private val mSmartRefreshLayout: SmartRefreshLayout):SmartRefreshable {
-    private lateinit var adapter: BaseListAdapter
+class SmartRefreshLayoutRecyclerView(private val mRecyclerView: RecyclerView, private val mSmartRefreshLayout: SmartRefreshLayout) : SmartRefreshable {
     private var mRefreshEnable: Boolean = false
     private var mLoadMoreEnable: Boolean = false
     private var onRefreshListener: OnRefreshListener? = null
@@ -29,17 +28,13 @@ class SmartRefreshLayoutRecyclerView(private val mRecyclerView: RecyclerView, pr
         }
         mSmartRefreshLayout.setEnableRefresh(mRefreshEnable)
         mSmartRefreshLayout.setEnableLoadMore(mLoadMoreEnable)
+        if (mRecyclerView.adapter == null) {
+            throw IllegalArgumentException("RecyclerView must be setAdapter")
+        }
     }
 
     private fun markIdle() {
         state = SmartRefreshable.REFRESH_IDLE
-    }
-
-    override fun setAdapter(adapter: RecyclerView.Adapter<out RecyclerView.ViewHolder>) {
-        mRecyclerView.adapter = adapter
-        if (adapter is BaseListAdapter) {
-            this.adapter = adapter
-        }
     }
 
     override fun getRecyclerView(): RecyclerView {
@@ -73,7 +68,7 @@ class SmartRefreshLayoutRecyclerView(private val mRecyclerView: RecyclerView, pr
     }
 
     override fun autoRefresh() {
-        if(mRefreshEnable){
+        if (mRefreshEnable) {
             mSmartRefreshLayout.autoRefresh()
         }
     }
@@ -87,6 +82,6 @@ class SmartRefreshLayoutRecyclerView(private val mRecyclerView: RecyclerView, pr
         if (!mLoadMoreEnable) {
             return
         }
-        mSmartRefreshLayout.finishLoadMore(300,success,noMoreData)
+        mSmartRefreshLayout.finishLoadMore(300, success, noMoreData)
     }
 }

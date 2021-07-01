@@ -40,15 +40,14 @@ public abstract class BaseSmartRefreshLayoutListActivity<T> extends AppCompatAct
 
     protected void initView() {
         RecyclerView mRecyclerView = findViewById(R.id.mRecyclerView);
+        adapter = new ListAdapter();
+        mRecyclerView.setAdapter(adapter);
+
         mRecyclerView.setOverScrollMode(RecyclerView.OVER_SCROLL_NEVER);
         SmartRefreshLayout mSmartRefreshLayout = findViewById(R.id.mSmartRefreshLayout);
         smartRefreshHelper = new SmartRefreshHelper();
         smartRefreshHelper.inject(new SmartRefreshLayoutRecyclerView(mRecyclerView, mSmartRefreshLayout));
         smartRefreshHelper.setLayoutManager(new LinearLayoutManager(this));
-
-        adapter = new ListAdapter();
-        smartRefreshHelper.setAdapter(adapter);
-
         smartRefreshHelper.setRefreshEnable(true);
         smartRefreshHelper.setLoadMoreEnable(true);
         smartRefreshHelper.setOnRefreshListener(this);
@@ -119,5 +118,4 @@ public abstract class BaseSmartRefreshLayoutListActivity<T> extends AppCompatAct
     }
 
     protected abstract BaseViewHolder onCreateBaseViewHolder(ViewGroup parent, int viewType);
-
 }

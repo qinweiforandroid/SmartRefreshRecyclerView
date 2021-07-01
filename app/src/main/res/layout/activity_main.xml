@@ -24,6 +24,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="impl" />
+        <Button
+            android:id="@+id/mSwipeRefreshRecyclerViewSample1Btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:text="impl1" />
 
         <Button
             android:id="@+id/mSwipeRefreshRecyclerViewSamplePlusBtn"

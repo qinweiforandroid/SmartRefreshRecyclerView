@@ -10,7 +10,7 @@ import com.qw.recyclerview.core.State
 /**
  * Created by qinwei on 2021/6/30 12:45
  */
-abstract class BaseListAdapter : BaseListAdapter() {
+abstract class BaseListAdapter : BaseListAdapter() , ILoadMore{
     companion object {
         const val TYPE_HEADER = -2
         const val TYPE_FOOTER = -1
@@ -73,12 +73,25 @@ abstract class BaseListAdapter : BaseListAdapter() {
         return getItemViewTypeByPosition(position)
     }
 
-    fun notifyFooterDataSetChanged(state: State) {
+    override fun notifyFooterDataSetChanged(state: State) {
         this.footerState = state
         Log.d("adapter", state.name + " count:$itemCount")
         notifyItemChanged(itemCount - 1)
     }
 
+    override fun canLoadMore(): Boolean {
+        return when (footerState) {
+            State.IDLE, State.ERROR ->
+                true
+            else -> {
+                false
+            }
+        }
+    }
+
+    override fun setShowLoadMoreFooter(show: Boolean) {
+        isFooterShow=show
+    }
     /**
      * 获取item视图个数
      *
@@ -133,13 +146,5 @@ abstract class BaseListAdapter : BaseListAdapter() {
         }
     }
 
-    fun canLoadMore(): Boolean {
-        return when (footerState) {
-            State.IDLE, State.ERROR ->
-                true
-            else -> {
-                false
-            }
-        }
-    }
+
 }

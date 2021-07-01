@@ -44,14 +44,13 @@ public abstract class BaseSwipeRefreshLayoutListActivity<T> extends AppCompatAct
 
     protected void initView() {
         RecyclerView mRecyclerView = findViewById(R.id.mRecyclerView);
+        adapter = new ListAdapter();
+        mRecyclerView.setAdapter(adapter);
+
         SwipeRefreshLayout mSwipeRefreshLayout = findViewById(R.id.mSwipeRefreshLayout);
         smartRefreshHelper = new SmartRefreshHelper();
         smartRefreshHelper.inject(new SwipeRefreshRecyclerView(mRecyclerView, mSwipeRefreshLayout));
         smartRefreshHelper.setLayoutManager(new LinearLayoutManager(this));
-
-        adapter = new ListAdapter();
-        smartRefreshHelper.setAdapter(adapter);
-
         smartRefreshHelper.setRefreshEnable(true);
         smartRefreshHelper.setLoadMoreEnable(true);
         smartRefreshHelper.setOnRefreshListener(this);

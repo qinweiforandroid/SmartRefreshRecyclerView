@@ -8,17 +8,18 @@ import com.qw.recyclerview.core.OnLoadMoreListener
 import com.qw.recyclerview.core.OnRefreshListener
 import com.qw.recyclerview.core.SmartRefreshable
 import com.qw.recyclerview.core.State
+import java.lang.IllegalArgumentException
 
 /**
  * Created by qinwei on 2021/6/29 21:44
  */
 class SwipeRefreshRecyclerView(private val mRecyclerView: RecyclerView, private val mSwipeRefreshLayout: SwipeRefreshLayout) : SmartRefreshable {
-    private lateinit var adapter: BaseListAdapter
     private var mRefreshEnable: Boolean = false
     private var mLoadMoreEnable: Boolean = false
     private var onRefreshListener: OnRefreshListener? = null
     private var onLoadMoreListener: OnLoadMoreListener? = null
     private var state = SmartRefreshable.REFRESH_IDLE
+    private var loadMore: ILoadMore? = null
 
     init {
         mRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -27,15 +28,18 @@ class SwipeRefreshRecyclerView(private val mRecyclerView: RecyclerView, private 
                 if (!mLoadMoreEnable) {
                     return
                 }
+                if(loadMore==null){
+                    return
+                }
                 if (state != SmartRefreshable.REFRESH_IDLE) {
                     return
                 }
-                if (mRecyclerView.adapter is BaseListAdapter&&!adapter.canLoadMore()) {
+                if (!loadMore!!.canLoadMore()) {
                     return
                 }
                 if (newState == RecyclerView.SCROLL_STATE_IDLE && checkedIsNeedLoadMore()) {
                     state = SmartRefreshable.REFRESH_UP
-                    adapter.notifyFooterDataSetChanged(State.LOADING)
+                    loadMore?.notifyFooterDataSetChanged(State.LOADING)
                     onLoadMoreListener?.onLoadMore()
                 }
             }
@@ -46,20 +50,20 @@ class SwipeRefreshRecyclerView(private val mRecyclerView: RecyclerView, private 
         }
         mSwipeRefreshLayout.isEnabled = mRefreshEnable
 
-        if(mRecyclerView.adapter is BaseListAdapter){
-            this.adapter=mRecyclerView.adapter as BaseListAdapter
+        if (mRecyclerView.adapter == null) {
+            throw IllegalArgumentException("RecyclerView must be setAdapter")
+        }
+
+        if (mRecyclerView.adapter is ILoadMore) {
+            loadMore = mRecyclerView.adapter as ILoadMore
+        } else {
+            //没有实现ILoadMore接口的adapter不具备加载更多功能
+            setLoadMoreEnable(false)
         }
     }
 
     private fun markIdle() {
         state = SmartRefreshable.REFRESH_IDLE
-    }
-
-    override fun setAdapter(adapter: RecyclerView.Adapter<out RecyclerView.ViewHolder>) {
-        mRecyclerView.adapter = adapter
-        if (adapter is BaseListAdapter) {
-            this.adapter = adapter
-        }
     }
 
     private fun checkedIsNeedLoadMore(): Boolean {
@@ -101,22 +105,20 @@ class SwipeRefreshRecyclerView(private val mRecyclerView: RecyclerView, private 
 
     override fun setLoadMoreEnable(isEnabled: Boolean) {
         mLoadMoreEnable = isEnabled
-        if (mLoadMoreEnable) {
-            this.adapter.isFooterShow = true
-        }
+        loadMore?.setShowLoadMoreFooter(mLoadMoreEnable)
     }
 
     override fun autoRefresh() {
-        if(mRefreshEnable){
+        if (mRefreshEnable) {
             state = SmartRefreshable.REFRESH_PULL
-            mSwipeRefreshLayout.isRefreshing=true
+            mSwipeRefreshLayout.isRefreshing = true
             this.onRefreshListener?.onRefresh()
         }
     }
 
     override fun finishRefresh(success: Boolean) {
         mSwipeRefreshLayout.isRefreshing = false
-        adapter.notifyFooterDataSetChanged(State.IDLE)
+        loadMore?.notifyFooterDataSetChanged(State.IDLE)
         markIdle()
     }
 
@@ -134,7 +136,7 @@ class SwipeRefreshRecyclerView(private val mRecyclerView: RecyclerView, private 
             } else {
                 State.ERROR
             }
-            adapter.notifyFooterDataSetChanged(state)
+            loadMore?.notifyFooterDataSetChanged(state)
             markIdle()
         }, 200)
     }

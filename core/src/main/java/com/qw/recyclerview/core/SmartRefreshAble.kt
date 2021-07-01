@@ -9,10 +9,6 @@ interface SmartRefreshable {
         const val REFRESH_UP = 2
     }
 
-    /**
-     *  设置适配器
-     */
-    fun setAdapter(adapter: RecyclerView.Adapter<out RecyclerView.ViewHolder>)
 
     fun getRecyclerView(): RecyclerView
 

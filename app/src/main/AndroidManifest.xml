@@ -19,6 +19,7 @@
 
         <activity android:name=".SmartRefreshLayoutActivity"/>
         <activity android:name=".SwipeRefreshLayoutActivity"/>
+        <activity android:name=".SwipeRefreshLayout1Activity"/>
         <activity android:name=".SmartRefreshLayoutPlusActivity"/>
         <activity android:name=".SwipeRefreshLayoutPlusActivity"/>
 
