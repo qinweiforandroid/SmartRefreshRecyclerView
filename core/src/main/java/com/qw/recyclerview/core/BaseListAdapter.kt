@@ -8,6 +8,10 @@ import androidx.recyclerview.widget.RecyclerView
 abstract class BaseListAdapter : RecyclerView.Adapter<BaseViewHolder>() {
 
     override fun onBindViewHolder(holder: BaseViewHolder, position: Int) {
-        holder.initData(position)
+//        holder.initData(position)
+    }
+
+    override fun onBindViewHolder(holder: BaseViewHolder, position: Int, payloads: MutableList<Any>) {
+        holder.initData(position, payloads)
     }
 }

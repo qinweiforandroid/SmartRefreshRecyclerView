@@ -1,6 +1,7 @@
 package com.qw.recyclerview.sample;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -31,11 +32,12 @@ import com.qw.recyclerview.swiperefresh.SwipeRefreshRecyclerView;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by qinwei on 2021/7/1 20:38
  */
-public class SwipeRefreshLayout1Activity extends AppCompatActivity   {
+public class SwipeRefreshLayout1Activity extends AppCompatActivity {
 
     private SwipeRefreshLayoutActivityBinding bind;
 
@@ -126,13 +128,15 @@ public class SwipeRefreshLayout1Activity extends AppCompatActivity   {
 
         @Override
         public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-            if(holder instanceof Holder){
-                ((Holder)holder).initData(position);
-            }
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position, @NonNull List<Object> payloads) {
+            ((Holder) holder).initData(position, payloads);
         }
     }
 
-    class Holder extends BaseViewHolder {
+    class Holder extends RecyclerView.ViewHolder {
         private final TextView label;
 
         public Holder(@NonNull View itemView) {
@@ -140,7 +144,7 @@ public class SwipeRefreshLayout1Activity extends AppCompatActivity   {
             label = (TextView) itemView;
         }
 
-        public void initData(int position) {
+        public void initData(int position, @NonNull List<Object> payloads) {
             String text = modules.get(position);
             label.setText(text);
         }
