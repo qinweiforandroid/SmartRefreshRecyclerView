@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.qw.recyclerview.core.BaseListAdapter
 import com.qw.recyclerview.core.BaseViewHolder
-import com.qw.recyclerview.core.State
+import com.qw.recyclerview.core.footer.State
 
 /**
  * Created by qinwei on 2021/6/30 12:45

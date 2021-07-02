@@ -9,7 +9,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.qw.recyclerview.core.R;
-import com.qw.recyclerview.core.State;
 
 
 /**

@@ -7,7 +7,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.qw.recyclerview.core.OnLoadMoreListener
 import com.qw.recyclerview.core.OnRefreshListener
 import com.qw.recyclerview.core.SmartRefreshable
-import com.qw.recyclerview.core.State
+import com.qw.recyclerview.core.footer.State
 import java.lang.IllegalArgumentException
 
 /**

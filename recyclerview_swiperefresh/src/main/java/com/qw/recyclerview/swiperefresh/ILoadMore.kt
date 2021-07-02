@@ -1,6 +1,6 @@
 package com.qw.recyclerview.swiperefresh
 
-import com.qw.recyclerview.core.State
+import com.qw.recyclerview.core.footer.State
 
 interface ILoadMore {
     /**

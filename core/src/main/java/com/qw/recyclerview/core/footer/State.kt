@@ -1,4 +1,4 @@
-package com.qw.recyclerview.core
+package com.qw.recyclerview.core.footer
 
 enum class State {
     IDLE, LOADING, ERROR, EMPTY
