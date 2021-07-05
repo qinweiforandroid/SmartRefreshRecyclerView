@@ -19,6 +19,12 @@ public class FooterView extends LinearLayout implements IFooter, View.OnClickLis
     private TextView mFooterLabel;
     private OnFooterViewListener listener;
 
+    public static FooterView create(Context context) {
+        FooterView footerView = new FooterView(context);
+        footerView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        return footerView;
+    }
+
 
     public interface OnFooterViewListener {
         void onFooterClick();
@@ -56,7 +62,7 @@ public class FooterView extends LinearLayout implements IFooter, View.OnClickLis
         switch (state) {
             case ERROR:
                 setOnClickListener(this);
-                mFooterLabel.setText("点击重试");
+                mFooterLabel.setText("加载失败,点击重试");
                 mProgressBar.setVisibility(View.GONE);
                 setVisibility(View.VISIBLE);
                 break;
@@ -64,7 +70,7 @@ public class FooterView extends LinearLayout implements IFooter, View.OnClickLis
                 setVisibility(View.GONE);
                 break;
             case LOADING:
-                mFooterLabel.setText("正在加载");
+                mFooterLabel.setText("正在加载...");
                 mProgressBar.setVisibility(View.VISIBLE);
                 setVisibility(View.VISIBLE);
                 break;
@@ -77,6 +83,7 @@ public class FooterView extends LinearLayout implements IFooter, View.OnClickLis
                 break;
         }
     }
+
     public void setOnFooterViewListener(OnFooterViewListener listener) {
         this.listener = listener;
     }

@@ -1,9 +1,11 @@
 package com.qw.recyclerview.core.adapter
 
 import android.util.Log
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.qw.recyclerview.core.footer.IFooter
 import com.qw.recyclerview.core.footer.State
 
 /**
@@ -90,7 +92,7 @@ abstract class BaseListAdapter : RecyclerView.Adapter<BaseViewHolder>(), ILoadMo
 
     override fun canLoadMore(): Boolean {
         return when (footerState) {
-            State.IDLE, State.ERROR ->
+            State.IDLE ->
                 true
             else -> {
                 false
@@ -153,6 +155,21 @@ abstract class BaseListAdapter : RecyclerView.Adapter<BaseViewHolder>(), ILoadMo
         val lp = holder.itemView.layoutParams
         if (lp != null && lp is StaggeredGridLayoutManager.LayoutParams) {
             lp.isFullSpan = isHeaderShow(holder.layoutPosition) || isFooterShow(holder.layoutPosition)
+        }
+    }
+
+    /**
+     * 内置FooterViewHolder
+     */
+    inner class FooterViewHolder(itemView: View) : BaseViewHolder(itemView) {
+        private var footer: IFooter = if (itemView is IFooter) {
+            itemView
+        } else {
+            throw java.lang.IllegalArgumentException("the view must impl IFooter interface")
+        }
+
+        override fun initData(position: Int) {
+            footer.onFooterChanged(footerState)
         }
     }
 }

@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
  */
 abstract class BaseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     abstract fun initData(position: Int)
-    open fun initData(position: Int, payloads: MutableList<Any>) {
+    open fun initData(position: Int, payloads: List<Any>) {
         initData(position)
     }
 }
