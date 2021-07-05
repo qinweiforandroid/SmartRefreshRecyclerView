@@ -17,13 +17,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
-import com.qw.recyclerview.core.BaseViewHolder;
+import com.qw.recyclerview.core.adapter.BaseListAdapter;
+import com.qw.recyclerview.core.adapter.BaseViewHolder;
 import com.qw.recyclerview.core.OnLoadMoreListener;
 import com.qw.recyclerview.core.OnRefreshListener;
 import com.qw.recyclerview.core.SmartRefreshHelper;
 import com.qw.recyclerview.sample.databinding.SmartRefreshLayoutActivityBinding;
-import com.qw.recyclerview.smartrefreshlayout.BaseListAdapter;
-import com.qw.recyclerview.smartrefreshlayout.SmartRefreshLayoutRecyclerView;
+import com.qw.recyclerview.smartrefreshlayout.SmartRefreshLayout1RecyclerView;
 import com.scwang.smart.refresh.footer.ClassicsFooter;
 import com.scwang.smart.refresh.header.ClassicsHeader;
 import com.scwang.smart.refresh.layout.SmartRefreshLayout;
@@ -87,7 +87,7 @@ public class SmartRefreshLayoutActivity extends AppCompatActivity {
         //3.配置SmartRefreshHelper
         smartRefreshHelper = new SmartRefreshHelper();
         //SmartRefreshLayoutRecyclerView将mRecyclerView和mSmartRefreshLayout打包后，交给SmartRefreshHelper进行管理
-        smartRefreshHelper.inject(new SmartRefreshLayoutRecyclerView(mRecyclerView, mSmartRefreshLayout));
+        smartRefreshHelper.inject(new SmartRefreshLayout1RecyclerView(mRecyclerView, mSmartRefreshLayout));
 
         //设置下拉刷新可用
         smartRefreshHelper.setRefreshEnable(true);

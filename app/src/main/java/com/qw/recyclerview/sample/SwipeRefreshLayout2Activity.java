@@ -19,14 +19,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.qw.recyclerview.core.BaseViewHolder;
+import com.qw.recyclerview.core.adapter.BaseViewHolder;
 import com.qw.recyclerview.core.OnLoadMoreListener;
 import com.qw.recyclerview.core.OnRefreshListener;
 import com.qw.recyclerview.core.SmartRefreshHelper;
 import com.qw.recyclerview.core.footer.FooterView;
 import com.qw.recyclerview.core.footer.IFooter;
 import com.qw.recyclerview.sample.databinding.SwipeRefreshLayoutActivityBinding;
-import com.qw.recyclerview.swiperefresh.BaseListAdapter;
+import com.qw.recyclerview.core.adapter.BaseListAdapter;
 import com.qw.recyclerview.swiperefresh.SwipeRefreshRecyclerView;
 import com.scwang.smart.refresh.footer.ClassicsFooter;
 import com.scwang.smart.refresh.header.ClassicsHeader;
@@ -44,7 +44,7 @@ import java.util.ArrayList;
 /**
  * Created by qinwei on 2021/7/1 20:38
  */
-public class SwipeRefreshLayoutActivity extends AppCompatActivity implements FooterView.OnFooterViewListener {
+public class SwipeRefreshLayout2Activity extends AppCompatActivity implements FooterView.OnFooterViewListener {
     static {
 //        //设置全局的Header构建器
         SmartRefreshLayout.setDefaultRefreshHeaderCreator(new DefaultRefreshHeaderCreator() {
@@ -153,13 +153,13 @@ public class SwipeRefreshLayoutActivity extends AppCompatActivity implements Foo
         @NotNull
         @Override
         protected BaseViewHolder onCreateBaseViewHolder(@NotNull ViewGroup parent, int viewType) {
-            return new Holder(LayoutInflater.from(SwipeRefreshLayoutActivity.this).inflate(android.R.layout.simple_list_item_1, parent, false));
+            return new Holder(LayoutInflater.from(SwipeRefreshLayout2Activity.this).inflate(android.R.layout.simple_list_item_1, parent, false));
         }
 
         @Override
         public BaseViewHolder onCreateFooterHolder(@NotNull ViewGroup parent) {
-            FooterView footerView = new FooterView(SwipeRefreshLayoutActivity.this);
-            footerView.setOnFooterViewListener(SwipeRefreshLayoutActivity.this);
+            FooterView footerView = new FooterView(SwipeRefreshLayout2Activity.this);
+            footerView.setOnFooterViewListener(SwipeRefreshLayout2Activity.this);
             footerView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
             return new FooterViewHolder(footerView);
         }

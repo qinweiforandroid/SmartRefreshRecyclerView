@@ -1,35 +1,23 @@
 package com.qw.recyclerview.sample;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.qw.recyclerview.core.BaseViewHolder;
 import com.qw.recyclerview.core.OnLoadMoreListener;
 import com.qw.recyclerview.core.OnRefreshListener;
 import com.qw.recyclerview.core.SmartRefreshHelper;
-import com.qw.recyclerview.core.footer.FooterView;
-import com.qw.recyclerview.core.footer.IFooter;
 import com.qw.recyclerview.sample.databinding.SwipeRefreshLayoutActivityBinding;
-import com.qw.recyclerview.swiperefresh.BaseListAdapter;
 import com.qw.recyclerview.swiperefresh.SwipeRefreshRecyclerView;
-
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +29,7 @@ public class SwipeRefreshLayout1Activity extends AppCompatActivity {
 
     private SwipeRefreshLayoutActivityBinding bind;
 
-    private SmartRefreshHelper smartRefreshHelper;
+    private SmartRefreshHelper smartRefresh;
 
     private ListAdapter adapter;
     protected ArrayList<String> modules = new ArrayList<>();
@@ -63,19 +51,19 @@ public class SwipeRefreshLayout1Activity extends AppCompatActivity {
         SwipeRefreshLayout mSwipeRefreshLayout = findViewById(R.id.mSwipeRefreshLayout);
 
         //3.配置SmartRefreshHelper
-        smartRefreshHelper = new SmartRefreshHelper();
+        smartRefresh = new SmartRefreshHelper();
         //SmartRefreshLayoutRecyclerView将mRecyclerView和mSmartRefreshLayout打包后，交给SmartRefreshHelper进行管理
-        smartRefreshHelper.inject(new SwipeRefreshRecyclerView(mRecyclerView, mSwipeRefreshLayout));
+        smartRefresh.inject(new SwipeRefreshRecyclerView(mRecyclerView, mSwipeRefreshLayout));
 
         //设置下拉刷新可用
-        smartRefreshHelper.setRefreshEnable(true);
+        smartRefresh.setRefreshEnable(true);
         //设置加载更多可用
-        smartRefreshHelper.setLoadMoreEnable(true);
+        smartRefresh.setLoadMoreEnable(true);
         //设置下拉刷新监听
-        smartRefreshHelper.setOnRefreshListener(new OnRefreshListener() {
+        smartRefresh.setOnRefreshListener(new OnRefreshListener() {
             @Override
             public void onRefresh() {
-                smartRefreshHelper.getRecyclerView().postDelayed(new Runnable() {
+                smartRefresh.getRecyclerView().postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         modules.clear();
@@ -83,16 +71,16 @@ public class SwipeRefreshLayout1Activity extends AppCompatActivity {
                             modules.add("" + i);
                         }
                         adapter.notifyDataSetChanged();
-                        smartRefreshHelper.finishRefresh(true);
+                        smartRefresh.finishRefresh(true);
                     }
                 }, 1000);
             }
         });
         //设置加载更多监听
-        smartRefreshHelper.setOnLoadMoreListener(new OnLoadMoreListener() {
+        smartRefresh.setOnLoadMoreListener(new OnLoadMoreListener() {
             @Override
             public void onLoadMore() {
-                smartRefreshHelper.getRecyclerView().postDelayed(new Runnable() {
+                smartRefresh.getRecyclerView().postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         int size = modules.size();
@@ -100,16 +88,16 @@ public class SwipeRefreshLayout1Activity extends AppCompatActivity {
                             modules.add("" + i);
                         }
                         if (modules.size() < 100) {
-                            smartRefreshHelper.setLoadMore(true, false);
+                            smartRefresh.setLoadMore(true, false);
                         } else {
-                            smartRefreshHelper.setLoadMore(true, true);
+                            smartRefresh.setLoadMore(true, true);
                         }
                         adapter.notifyDataSetChanged();
                     }
                 }, 1000);
             }
         });
-        smartRefreshHelper.autoRefresh();
+        smartRefresh.autoRefresh();
     }
 
 

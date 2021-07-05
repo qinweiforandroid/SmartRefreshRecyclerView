@@ -19,18 +19,20 @@ public class MainActivity extends AppCompatActivity {
         bind = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(bind.getRoot());
 
-        bind.mSwipeRefreshRecyclerViewSampleBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, SwipeRefreshLayoutActivity.class));
-            }
-        });
         bind.mSwipeRefreshRecyclerViewSample1Btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(MainActivity.this, SwipeRefreshLayout1Activity.class));
             }
         });
+
+        bind.mSwipeRefreshRecyclerViewSample2Btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, SwipeRefreshLayout2Activity.class));
+            }
+        });
+        
         bind.mSwipeRefreshRecyclerViewSamplePlusBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

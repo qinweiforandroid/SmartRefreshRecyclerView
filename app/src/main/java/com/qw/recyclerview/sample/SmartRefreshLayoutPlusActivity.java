@@ -6,11 +6,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
-import com.qw.recyclerview.core.BaseViewHolder;
+import com.qw.recyclerview.core.adapter.BaseViewHolder;
 import com.qw.recyclerview.sample.core.BaseSmartRefreshLayoutListActivity;
 import com.qw.recyclerview.sample.databinding.SmartRefreshLayoutActivityBinding;
 import com.scwang.smart.refresh.footer.ClassicsFooter;

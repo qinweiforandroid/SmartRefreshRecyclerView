@@ -1,4 +1,4 @@
-package com.qw.recyclerview.swiperefresh
+package com.qw.recyclerview.core.adapter
 
 import com.qw.recyclerview.core.footer.State
 

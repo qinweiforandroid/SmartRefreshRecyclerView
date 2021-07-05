@@ -1,7 +1,9 @@
 package com.qw.recyclerview.sample.core;
 
 import android.os.Bundle;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -9,13 +11,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.qw.recyclerview.core.BaseViewHolder;
+import com.qw.recyclerview.core.SmartRefreshable;
+import com.qw.recyclerview.core.adapter.BaseListAdapter;
+import com.qw.recyclerview.core.adapter.BaseViewHolder;
 import com.qw.recyclerview.core.OnLoadMoreListener;
 import com.qw.recyclerview.core.OnRefreshListener;
 import com.qw.recyclerview.core.SmartRefreshHelper;
 import com.qw.recyclerview.core.footer.FooterView;
+import com.qw.recyclerview.core.footer.IFooter;
 import com.qw.recyclerview.sample.R;
-import com.qw.recyclerview.smartrefreshlayout.BaseListAdapter;
 import com.qw.recyclerview.smartrefreshlayout.SmartRefreshLayoutRecyclerView;
 import com.scwang.smart.refresh.layout.SmartRefreshLayout;
 
@@ -46,7 +50,7 @@ public abstract class BaseSmartRefreshLayoutListActivity<T> extends AppCompatAct
         mRecyclerView.setOverScrollMode(RecyclerView.OVER_SCROLL_NEVER);
         SmartRefreshLayout mSmartRefreshLayout = findViewById(R.id.mSmartRefreshLayout);
         smartRefreshHelper = new SmartRefreshHelper();
-        smartRefreshHelper.inject(new SmartRefreshLayoutRecyclerView(mRecyclerView, mSmartRefreshLayout));
+        smartRefreshHelper.inject(getSmartRefreshable(mRecyclerView, mSmartRefreshLayout));
         smartRefreshHelper.setLayoutManager(new LinearLayoutManager(this));
         smartRefreshHelper.setRefreshEnable(true);
         smartRefreshHelper.setLoadMoreEnable(true);
@@ -56,6 +60,9 @@ public abstract class BaseSmartRefreshLayoutListActivity<T> extends AppCompatAct
 
     protected abstract void initData(Bundle savedInstanceState);
 
+    protected SmartRefreshable getSmartRefreshable(RecyclerView recyclerView, SmartRefreshLayout smartRefreshLayout) {
+        return new SmartRefreshLayoutRecyclerView(recyclerView, smartRefreshLayout);
+    }
 
     @Override
     public void onRefresh() {
@@ -90,10 +97,36 @@ public abstract class BaseSmartRefreshLayoutListActivity<T> extends AppCompatAct
             return BaseSmartRefreshLayoutListActivity.this.onCreateBaseViewHolder(parent, viewType);
         }
 
+
         @NonNull
         @Override
         public BaseViewHolder onCreateFooterHolder(@NotNull ViewGroup parent) {
-            return BaseSmartRefreshLayoutListActivity.this.onCreateFooterHolder(parent);
+            BaseViewHolder baseViewHolder = BaseSmartRefreshLayoutListActivity.this.onCreateFooterHolder(parent);
+            if (baseViewHolder == null) {
+                FooterView footerView = new FooterView(BaseSmartRefreshLayoutListActivity.this);
+                footerView.setOnFooterViewListener(BaseSmartRefreshLayoutListActivity.this);
+                footerView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                return new ListAdapter.FooterViewHolder(footerView);
+            }
+            return baseViewHolder;
+        }
+
+        public class FooterViewHolder extends BaseViewHolder {
+            private IFooter footer;
+
+            public FooterViewHolder(View itemView) {
+                super(itemView);
+                if (itemView instanceof IFooter) {
+                    footer = (IFooter) itemView;
+                } else {
+                    throw new IllegalArgumentException("the view must impl IFooter interface");
+                }
+            }
+
+            @Override
+            public void initData(int position) {
+                footer.onFooterChanged(adapter.getFooterState());
+            }
         }
 
         @NonNull

@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
-import com.qw.recyclerview.core.BaseViewHolder;
+import com.qw.recyclerview.core.adapter.BaseViewHolder;
 import com.qw.recyclerview.core.footer.State;
 import com.qw.recyclerview.sample.core.BaseSwipeRefreshLayoutListActivity;
 import com.qw.recyclerview.sample.databinding.SwipeRefreshLayoutActivityBinding;

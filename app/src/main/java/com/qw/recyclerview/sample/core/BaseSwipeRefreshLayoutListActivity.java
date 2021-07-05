@@ -13,14 +13,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.qw.recyclerview.core.BaseViewHolder;
+import com.qw.recyclerview.core.adapter.BaseViewHolder;
 import com.qw.recyclerview.core.OnLoadMoreListener;
 import com.qw.recyclerview.core.OnRefreshListener;
 import com.qw.recyclerview.core.SmartRefreshHelper;
 import com.qw.recyclerview.core.footer.FooterView;
 import com.qw.recyclerview.core.footer.IFooter;
 import com.qw.recyclerview.sample.R;
-import com.qw.recyclerview.swiperefresh.BaseListAdapter;
+import com.qw.recyclerview.core.adapter.BaseListAdapter;
 import com.qw.recyclerview.swiperefresh.SwipeRefreshRecyclerView;
 
 import org.jetbrains.annotations.NotNull;
@@ -106,12 +106,6 @@ public abstract class BaseSwipeRefreshLayoutListActivity<T> extends AppCompatAct
             return baseViewHolder;
         }
 
-        @NonNull
-        @Override
-        public BaseViewHolder onCreateHeaderHolder(@NotNull ViewGroup parent) {
-            return BaseSwipeRefreshLayoutListActivity.this.onCreateHeaderHolder(parent);
-        }
-
         public class FooterViewHolder extends BaseViewHolder {
             private IFooter footer;
 
@@ -128,6 +122,12 @@ public abstract class BaseSwipeRefreshLayoutListActivity<T> extends AppCompatAct
             public void initData(int position) {
                 footer.onFooterChanged(adapter.getFooterState());
             }
+        }
+
+        @NonNull
+        @Override
+        public BaseViewHolder onCreateHeaderHolder(@NotNull ViewGroup parent) {
+            return BaseSwipeRefreshLayoutListActivity.this.onCreateHeaderHolder(parent);
         }
     }
 

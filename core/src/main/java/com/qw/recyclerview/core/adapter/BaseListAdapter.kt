@@ -1,16 +1,15 @@
-package com.qw.recyclerview.swiperefresh
+package com.qw.recyclerview.core.adapter
 
 import android.util.Log
 import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.qw.recyclerview.core.BaseListAdapter
-import com.qw.recyclerview.core.BaseViewHolder
 import com.qw.recyclerview.core.footer.State
 
 /**
  * Created by qinwei on 2021/6/30 12:45
  */
-abstract class BaseListAdapter : BaseListAdapter() , ILoadMore{
+abstract class BaseListAdapter : RecyclerView.Adapter<BaseViewHolder>(), ILoadMore {
     companion object {
         const val TYPE_HEADER = -2
         const val TYPE_FOOTER = -1
@@ -39,13 +38,23 @@ abstract class BaseListAdapter : BaseListAdapter() , ILoadMore{
             onCreateBaseViewHolder(parent, viewType)
         }
     }
+
     override fun onBindViewHolder(holder: BaseViewHolder, position: Int) {
         //数据下标重新计算
-        var position = position
+        var p = position
         if (isHeaderShow) {
-            position--
+            p--
         }
-        super.onBindViewHolder(holder, position)
+        holder.initData(p)
+    }
+
+    override fun onBindViewHolder(holder: BaseViewHolder, position: Int, payloads: MutableList<Any>) {
+        //数据下标重新计算
+        var p = position
+        if (isHeaderShow) {
+            p--
+        }
+        holder.initData(p, payloads)
     }
 
     fun isHeaderShow(position: Int): Boolean {
@@ -90,8 +99,9 @@ abstract class BaseListAdapter : BaseListAdapter() , ILoadMore{
     }
 
     override fun setShowLoadMoreFooter(show: Boolean) {
-        isFooterShow=show
+        isFooterShow = show
     }
+
     /**
      * 获取item视图个数
      *
@@ -145,6 +155,4 @@ abstract class BaseListAdapter : BaseListAdapter() , ILoadMore{
             lp.isFullSpan = isHeaderShow(holder.layoutPosition) || isFooterShow(holder.layoutPosition)
         }
     }
-
-
 }
