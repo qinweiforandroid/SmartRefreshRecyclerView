@@ -1,31 +1,20 @@
-package com.qw.recyclerview.sample
+package com.qw.recyclerview.sample.ui
 
 import android.os.Bundle
-import android.os.Handler
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
 import com.qw.recyclerview.core.adapter.BaseViewHolder
-import com.qw.recyclerview.sample.core.BaseSwipeRefreshLayoutListActivity
-import com.qw.recyclerview.sample.loading.State
+import com.qw.recyclerview.sample.R
+import com.qw.recyclerview.sample.core.BaseSmartRefreshLayoutListActivity
 
-class SwipeRefreshLayoutPlusActivity : BaseSwipeRefreshLayoutListActivity<String>() {
+class SmartRefreshLayoutPlusActivity : BaseSmartRefreshLayoutListActivity<String?>() {
     override fun setContentView() {
-        setContentView(R.layout.swipe_refresh_layout_activity)
+        setContentView(R.layout.smart_refresh_layout_activity)
     }
 
     override fun initData(savedInstanceState: Bundle?) {
-        loading.setOnRetryListener {
-            for (i in 0..19) {
-                modules.add("" + i)
-            }
-            adapter.notifyDataSetChanged()
-            loading.notifyDataChanged(State.done)
-        }
-        loading.notifyDataChanged(State.ing)
-        Handler().postDelayed({
-            loading.notifyDataChanged(State.error)
-        }, 2000)
+        smartRefresh.autoRefresh()
     }
 
     override fun onRefresh() {
@@ -35,7 +24,7 @@ class SwipeRefreshLayoutPlusActivity : BaseSwipeRefreshLayoutListActivity<String
                 modules.add("" + i)
             }
             adapter.notifyDataSetChanged()
-            smartRefresh.finishRefresh(false)
+            smartRefresh.finishRefresh(true)
         }, 2000)
     }
 
@@ -51,11 +40,11 @@ class SwipeRefreshLayoutPlusActivity : BaseSwipeRefreshLayoutListActivity<String
                 smartRefresh.finishLoadMore(success = true, noMoreData = true)
             }
             adapter.notifyDataSetChanged()
-        }, 3000)
+        }, 2000)
     }
 
     override fun onCreateBaseViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
-        return object : BaseViewHolder(LayoutInflater.from(this@SwipeRefreshLayoutPlusActivity).inflate(android.R.layout.simple_list_item_1, parent, false)) {
+        return object : BaseViewHolder(LayoutInflater.from(this@SmartRefreshLayoutPlusActivity).inflate(android.R.layout.simple_list_item_1, parent, false)) {
             override fun initData(position: Int) {
                 val label = itemView as TextView
                 label.text = modules[position]

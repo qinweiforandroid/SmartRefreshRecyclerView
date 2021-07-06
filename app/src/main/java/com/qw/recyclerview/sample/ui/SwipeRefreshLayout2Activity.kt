@@ -1,4 +1,4 @@
-package com.qw.recyclerview.sample
+package com.qw.recyclerview.sample.ui
 
 import android.os.Bundle
 import android.view.*
@@ -9,27 +9,31 @@ import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.qw.recyclerview.core.OnLoadMoreListener
 import com.qw.recyclerview.core.OnRefreshListener
 import com.qw.recyclerview.core.SmartRefreshHelper
 import com.qw.recyclerview.core.adapter.BaseListAdapter
 import com.qw.recyclerview.core.adapter.BaseViewHolder
-import com.qw.recyclerview.sample.databinding.SmartRefreshLayoutActivityBinding
-import com.qw.recyclerview.smartrefreshlayout.SmartRefreshLayout1RecyclerView
-import com.scwang.smart.refresh.layout.SmartRefreshLayout
+import com.qw.recyclerview.core.footer.FooterView
+import com.qw.recyclerview.core.footer.FooterView.OnFooterViewListener
+import com.qw.recyclerview.core.footer.State
+import com.qw.recyclerview.sample.R
+import com.qw.recyclerview.sample.databinding.SwipeRefreshLayoutActivityBinding
+import com.qw.recyclerview.swiperefresh.SwipeRefreshRecyclerView
 import java.util.*
 
 /**
  * Created by qinwei on 2021/7/1 20:38
  */
-class SmartRefreshLayoutActivity : AppCompatActivity() {
-    private lateinit var bind: SmartRefreshLayoutActivityBinding
+class SwipeRefreshLayout2Activity : AppCompatActivity(), OnFooterViewListener {
+    private lateinit var bind: SwipeRefreshLayoutActivityBinding
     private lateinit var smartRefresh: SmartRefreshHelper
     private lateinit var adapter: ListAdapter
     private var modules = ArrayList<String>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        bind = SmartRefreshLayoutActivityBinding.inflate(layoutInflater)
+        bind = SwipeRefreshLayoutActivityBinding.inflate(layoutInflater)
         setContentView(bind.root)
 
         //1.配置RecyclerView
@@ -39,14 +43,14 @@ class SmartRefreshLayoutActivity : AppCompatActivity() {
         adapter = ListAdapter()
         mRecyclerView.adapter = adapter
 
-        //2.配置SmartRefreshLayout
-        val mSmartRefreshLayout = findViewById<SmartRefreshLayout>(R.id.mSmartRefreshLayout)
-
+        //2.配置SwipeRefreshLayout
+        val mSwipeRefreshLayout = findViewById<SwipeRefreshLayout>(R.id.mSwipeRefreshLayout)
+        //mSwipeRefreshLayout.setColorSchemeColors();
 
         //3.配置SmartRefreshHelper
         smartRefresh = SmartRefreshHelper()
         //SmartRefreshLayoutRecyclerView将mRecyclerView和mSmartRefreshLayout打包后，交给SmartRefreshHelper进行管理
-        smartRefresh.inject(SmartRefreshLayout1RecyclerView(mRecyclerView, mSmartRefreshLayout))
+        smartRefresh.inject(SwipeRefreshRecyclerView(mRecyclerView, mSwipeRefreshLayout))
 
         //设置下拉刷新可用
         smartRefresh.setRefreshEnable(true)
@@ -64,22 +68,8 @@ class SmartRefreshLayoutActivity : AppCompatActivity() {
                 loadMore()
             }
         })
+        //自动刷新
         smartRefresh.autoRefresh()
-    }
-
-    private fun loadMore() {
-        smartRefresh.getRecyclerView().postDelayed({
-            val size = modules.size
-            for (i in size until size + 20) {
-                modules.add("" + i)
-            }
-            if (modules.size < 100) {
-                smartRefresh.finishLoadMore(true, false)
-            } else {
-                smartRefresh.finishLoadMore(true, true)
-            }
-            adapter.notifyDataSetChanged()
-        }, 1000)
     }
 
     private fun refresh() {
@@ -93,13 +83,39 @@ class SmartRefreshLayoutActivity : AppCompatActivity() {
         }, 1000)
     }
 
+    private fun loadMore() {
+        smartRefresh.getRecyclerView().postDelayed({
+            val size = modules.size
+            for (i in size until size + 20) {
+                modules.add("" + i)
+            }
+            if (modules.size < 100) {
+                smartRefresh.finishLoadMore(success = true, noMoreData = false)
+            } else {
+                smartRefresh.finishLoadMore(success = false, noMoreData = true)
+            }
+            adapter.notifyDataSetChanged()
+        }, 1000)
+    }
+
+    override fun onFooterClick() {
+        adapter.notifyFooterDataSetChanged(State.LOADING)
+        loadMore()
+    }
+
     internal inner class ListAdapter : BaseListAdapter() {
         override fun getItemViewCount(): Int {
             return modules.size
         }
 
+        override fun onCreateFooterHolder(parent: ViewGroup): BaseViewHolder? {
+            val footerView = FooterView.create(this@SwipeRefreshLayout2Activity)
+            footerView.setOnFooterViewListener(this@SwipeRefreshLayout2Activity)
+            return FooterViewHolder(footerView)
+        }
+
         override fun onCreateBaseViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
-            return object : BaseViewHolder(LayoutInflater.from(this@SmartRefreshLayoutActivity).inflate(android.R.layout.simple_list_item_1, parent, false)) {
+            return object : BaseViewHolder(LayoutInflater.from(this@SwipeRefreshLayout2Activity).inflate(android.R.layout.simple_list_item_1, parent, false)) {
                 private val label: TextView = itemView as TextView
                 override fun initData(position: Int) {
                     val text = modules[position]
@@ -129,6 +145,12 @@ class SmartRefreshLayoutActivity : AppCompatActivity() {
     private val linearLayoutManager: RecyclerView.LayoutManager
         get() = LinearLayoutManager(this)
 
+    /**
+     * 得到GridLayoutManager
+     *
+     * @param spanCount 列数
+     * @return
+     */
     private fun getGridLayoutManager(spanCount: Int): GridLayoutManager {
         val manager = GridLayoutManager(this, spanCount)
         manager.spanSizeLookup = object : SpanSizeLookup() {
@@ -141,6 +163,12 @@ class SmartRefreshLayoutActivity : AppCompatActivity() {
         return manager
     }
 
+    /**
+     * 得到StaggeredGridLayoutManager
+     *
+     * @param spanCount 列数
+     * @return
+     */
     private fun getStaggeredGridLayoutManager(spanCount: Int): StaggeredGridLayoutManager {
         return StaggeredGridLayoutManager(spanCount, StaggeredGridLayoutManager.VERTICAL)
     }

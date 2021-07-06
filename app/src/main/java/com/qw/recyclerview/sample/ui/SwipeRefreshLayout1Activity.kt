@@ -1,4 +1,4 @@
-package com.qw.recyclerview.sample
+package com.qw.recyclerview.sample.ui
 
 import android.os.Bundle
 import android.os.Handler
@@ -14,6 +14,7 @@ import com.qw.recyclerview.core.OnLoadMoreListener
 import com.qw.recyclerview.core.OnRefreshListener
 import com.qw.recyclerview.core.SmartRefreshHelper
 import com.qw.recyclerview.core.adapter.BaseViewHolder
+import com.qw.recyclerview.sample.R
 import com.qw.recyclerview.sample.databinding.SwipeRefreshLayoutActivityBinding
 import com.qw.recyclerview.sample.loading.LoadingHelper
 import com.qw.recyclerview.sample.loading.State

@@ -1,4 +1,4 @@
-package com.qw.recyclerview.sample;
+package com.qw.recyclerview.sample.ui;
 
 import android.content.Intent;
 import android.os.Bundle;

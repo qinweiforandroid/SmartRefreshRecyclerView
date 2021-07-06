@@ -7,8 +7,11 @@ import android.util.Log
  */
 class SRLog {
     companion object {
+        var debug = false
         fun d(msg: String) {
-            Log.d("SmartRefresh", msg)
+            if (debug) {
+                Log.d("SmartRefresh", msg)
+            }
         }
     }
 }

@@ -3,6 +3,7 @@ package com.qw.recyclerview.sample;
 import android.app.Application;
 import android.content.Context;
 
+import com.qw.recyclerview.core.SRLog;
 import com.scwang.smart.refresh.footer.ClassicsFooter;
 import com.scwang.smart.refresh.header.ClassicsHeader;
 import com.scwang.smart.refresh.layout.SmartRefreshLayout;
@@ -33,5 +34,11 @@ public class MyApplication extends Application {
                 return new ClassicsFooter(context).setDrawableSize(20);
             }
         });
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        SRLog.Companion.setDebug(true);
     }
 }

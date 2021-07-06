@@ -10,7 +10,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.QRecyclerView">
-        <activity android:name=".MainActivity">
+        <activity android:name=".ui.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -18,11 +18,11 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".SmartRefreshLayoutActivity"/>
-        <activity android:name=".SwipeRefreshLayout2Activity"/>
-        <activity android:name=".SwipeRefreshLayout1Activity"/>
-        <activity android:name=".SmartRefreshLayoutPlusActivity"/>
-        <activity android:name=".SwipeRefreshLayoutPlusActivity"/>
+        <activity android:name=".ui.SmartRefreshLayoutActivity"/>
+        <activity android:name=".ui.SwipeRefreshLayout2Activity"/>
+        <activity android:name=".ui.SwipeRefreshLayout1Activity"/>
+        <activity android:name=".ui.SmartRefreshLayoutPlusActivity"/>
+        <activity android:name=".ui.SwipeRefreshLayoutPlusActivity"/>
 
     </application>
 
