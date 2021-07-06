@@ -34,9 +34,9 @@ class SmartRefreshLayoutPlusActivity : BaseSmartRefreshLayoutListActivity<String
                 modules.add("" + i)
             }
             if (modules.size < 50) {
-                smartRefresh.setLoadMore(success = true, noMoreData = false)
+                smartRefresh.finishLoadMore(success = true, noMoreData = false)
             } else {
-                smartRefresh.setLoadMore(success = true, noMoreData = true)
+                smartRefresh.finishLoadMore(success = true, noMoreData = true)
             }
             adapter.notifyDataSetChanged()
         }, 2000)

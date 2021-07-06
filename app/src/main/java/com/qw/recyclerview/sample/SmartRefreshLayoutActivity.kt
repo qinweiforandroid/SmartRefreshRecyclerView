@@ -74,9 +74,9 @@ class SmartRefreshLayoutActivity : AppCompatActivity() {
                 modules.add("" + i)
             }
             if (modules.size < 100) {
-                smartRefresh.setLoadMore(true, false)
+                smartRefresh.finishLoadMore(true, false)
             } else {
-                smartRefresh.setLoadMore(true, true)
+                smartRefresh.finishLoadMore(true, true)
             }
             adapter.notifyDataSetChanged()
         }, 1000)

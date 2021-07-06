@@ -78,7 +78,7 @@ class SmartRefreshLayout1RecyclerView(private val mRecyclerView: RecyclerView, p
         markIdle()
     }
 
-    override fun setLoadMore(success: Boolean, noMoreData: Boolean) {
+    override fun finishLoadMore(success: Boolean, noMoreData: Boolean) {
         if (!mLoadMoreEnable) {
             return
         }

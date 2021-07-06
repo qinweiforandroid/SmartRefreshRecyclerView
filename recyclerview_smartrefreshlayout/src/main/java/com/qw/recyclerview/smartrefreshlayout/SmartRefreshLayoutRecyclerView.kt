@@ -121,11 +121,13 @@ class SmartRefreshLayoutRecyclerView(private val mRecyclerView: RecyclerView, pr
 
     override fun finishRefresh(success: Boolean) {
         mSmartRefreshLayout.finishRefresh()
-        loadMore?.notifyFooterDataSetChanged(State.IDLE)
+        if (success) {
+            loadMore?.notifyFooterDataSetChanged(State.IDLE)
+        }
         markIdle()
     }
 
-    override fun setLoadMore(success: Boolean, noMoreData: Boolean) {
+    override fun finishLoadMore(success: Boolean, noMoreData: Boolean) {
         if (!mLoadMoreEnable) {
             return
         }

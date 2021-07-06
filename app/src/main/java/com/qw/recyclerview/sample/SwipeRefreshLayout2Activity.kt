@@ -89,9 +89,9 @@ class SwipeRefreshLayout2Activity : AppCompatActivity(), OnFooterViewListener {
                 modules.add("" + i)
             }
             if (modules.size < 100) {
-                smartRefresh.setLoadMore(success = true, noMoreData = false)
+                smartRefresh.finishLoadMore(success = true, noMoreData = false)
             } else {
-                smartRefresh.setLoadMore(success = false, noMoreData = true)
+                smartRefresh.finishLoadMore(success = false, noMoreData = true)
             }
             adapter.notifyDataSetChanged()
         }, 1000)

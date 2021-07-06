@@ -52,5 +52,5 @@ interface SmartRefreshable {
      */
     fun finishRefresh(success: Boolean)
 
-    fun setLoadMore(success: Boolean, noMoreData: Boolean)
+    fun finishLoadMore(success: Boolean, noMoreData: Boolean)
 }
