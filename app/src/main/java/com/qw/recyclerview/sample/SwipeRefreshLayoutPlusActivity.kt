@@ -1,12 +1,13 @@
 package com.qw.recyclerview.sample
 
 import android.os.Bundle
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
 import com.qw.recyclerview.core.adapter.BaseViewHolder
-import com.qw.recyclerview.core.footer.State
 import com.qw.recyclerview.sample.core.BaseSwipeRefreshLayoutListActivity
+import com.qw.recyclerview.sample.loading.State
 
 class SwipeRefreshLayoutPlusActivity : BaseSwipeRefreshLayoutListActivity<String>() {
     override fun setContentView() {
@@ -14,7 +15,17 @@ class SwipeRefreshLayoutPlusActivity : BaseSwipeRefreshLayoutListActivity<String
     }
 
     override fun initData(savedInstanceState: Bundle?) {
-        smartRefresh.autoRefresh()
+        loading.setOnRetryListener {
+            for (i in 0..19) {
+                modules.add("" + i)
+            }
+            adapter.notifyDataSetChanged()
+            loading.notifyDataChanged(State.done)
+        }
+        loading.notifyDataChanged(State.ing)
+        Handler().postDelayed({
+            loading.notifyDataChanged(State.error)
+        }, 2000)
     }
 
     override fun onRefresh() {
@@ -24,8 +35,7 @@ class SwipeRefreshLayoutPlusActivity : BaseSwipeRefreshLayoutListActivity<String
                 modules.add("" + i)
             }
             adapter.notifyDataSetChanged()
-            adapter.notifyFooterDataSetChanged(State.IDLE)
-            smartRefresh.finishRefresh(true)
+            smartRefresh.finishRefresh(false)
         }, 2000)
     }
 

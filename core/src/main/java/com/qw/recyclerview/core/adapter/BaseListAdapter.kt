@@ -1,10 +1,10 @@
 package com.qw.recyclerview.core.adapter
 
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.qw.recyclerview.core.SRLog
 import com.qw.recyclerview.core.footer.IFooter
 import com.qw.recyclerview.core.footer.State
 
@@ -86,7 +86,7 @@ abstract class BaseListAdapter : RecyclerView.Adapter<BaseViewHolder>(), ILoadMo
 
     override fun notifyFooterDataSetChanged(state: State) {
         this.footerState = state
-        Log.d("adapter", state.name + " count:$itemCount")
+        SRLog.d("adapter ${state.name} count:$itemCount")
         notifyItemChanged(itemCount - 1)
     }
 

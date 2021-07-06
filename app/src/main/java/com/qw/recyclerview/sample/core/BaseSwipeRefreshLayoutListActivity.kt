@@ -20,11 +20,14 @@ import com.qw.recyclerview.core.footer.FooterView
 import com.qw.recyclerview.core.footer.FooterView.OnFooterViewListener
 import com.qw.recyclerview.core.footer.IFooter
 import com.qw.recyclerview.sample.R
+import com.qw.recyclerview.sample.loading.ILoading
+import com.qw.recyclerview.sample.loading.LoadingHelper
 import com.qw.recyclerview.swiperefresh.SwipeRefreshRecyclerView
 import java.util.*
 
 abstract class BaseSwipeRefreshLayoutListActivity<T> : AppCompatActivity(), OnFooterViewListener, OnRefreshListener, OnLoadMoreListener {
     protected lateinit var smartRefresh: SmartRefreshHelper
+    protected lateinit var loading: LoadingHelper
     protected lateinit var adapter: ListAdapter
     protected var modules = ArrayList<T>()
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,6 +43,14 @@ abstract class BaseSwipeRefreshLayoutListActivity<T> : AppCompatActivity(), OnFo
         adapter = ListAdapter()
         mRecyclerView.adapter = adapter
         val mSwipeRefreshLayout = findViewById<SwipeRefreshLayout>(R.id.mSwipeRefreshLayout)
+
+        val mLoading = findViewById<View>(R.id.mLoading)
+        if (mLoading != null && mLoading is ILoading) {
+            loading = LoadingHelper()
+            loading.inject(mLoading)
+            loading.setContentView(mSwipeRefreshLayout)
+        }
+
         smartRefresh = SmartRefreshHelper()
         smartRefresh.inject(SwipeRefreshRecyclerView(mRecyclerView, mSwipeRefreshLayout))
         smartRefresh.setLayoutManager(LinearLayoutManager(this))

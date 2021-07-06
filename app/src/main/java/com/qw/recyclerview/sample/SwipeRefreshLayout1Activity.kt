@@ -1,6 +1,8 @@
 package com.qw.recyclerview.sample
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
@@ -13,6 +15,8 @@ import com.qw.recyclerview.core.OnRefreshListener
 import com.qw.recyclerview.core.SmartRefreshHelper
 import com.qw.recyclerview.core.adapter.BaseViewHolder
 import com.qw.recyclerview.sample.databinding.SwipeRefreshLayoutActivityBinding
+import com.qw.recyclerview.sample.loading.LoadingHelper
+import com.qw.recyclerview.sample.loading.State
 import com.qw.recyclerview.swiperefresh.SwipeRefreshRecyclerView
 import java.util.*
 
@@ -20,6 +24,7 @@ import java.util.*
  * Created by qinwei on 2021/7/1 20:38
  */
 class SwipeRefreshLayout1Activity : AppCompatActivity() {
+    private lateinit var mLoading: LoadingHelper
     private lateinit var bind: SwipeRefreshLayoutActivityBinding
     private lateinit var smartRefresh: SmartRefreshHelper
     private lateinit var adapter: ListAdapter
@@ -28,6 +33,8 @@ class SwipeRefreshLayout1Activity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         bind = SwipeRefreshLayoutActivityBinding.inflate(layoutInflater)
         setContentView(bind.root)
+        mLoading = LoadingHelper()
+        mLoading.inject(bind.mLoading)
 
         //1.配置RecyclerView
         val mRecyclerView = findViewById<RecyclerView>(R.id.mRecyclerView)
@@ -60,7 +67,19 @@ class SwipeRefreshLayout1Activity : AppCompatActivity() {
                 loadMore()
             }
         })
-        smartRefresh.autoRefresh()
+//        smartRefresh.autoRefresh()
+        mLoading.setOnRetryListener {
+            //重试回调
+        }
+        mLoading.notifyDataChanged(State.ing)
+        Handler(Looper.myLooper()!!).postDelayed({
+            modules.clear()
+            for (i in 0..19) {
+                modules.add("" + i)
+            }
+            adapter.notifyDataSetChanged()
+            mLoading.notifyDataChanged(State.done)
+        }, 1500)
     }
 
     private fun loadMore() {

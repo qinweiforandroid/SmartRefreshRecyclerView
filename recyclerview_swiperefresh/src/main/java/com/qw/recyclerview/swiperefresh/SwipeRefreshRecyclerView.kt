@@ -7,6 +7,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.qw.recyclerview.core.adapter.ILoadMore
 import com.qw.recyclerview.core.OnLoadMoreListener
 import com.qw.recyclerview.core.OnRefreshListener
+import com.qw.recyclerview.core.SRLog
 import com.qw.recyclerview.core.SmartRefreshable
 import com.qw.recyclerview.core.footer.State
 import java.lang.IllegalArgumentException
@@ -26,10 +27,11 @@ class SwipeRefreshRecyclerView(private val mRecyclerView: RecyclerView, private 
         mRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
+                SRLog.d("onScrollStateChanged newState:$newState")
                 if (!mLoadMoreEnable) {
                     return
                 }
-                if(loadMore==null){
+                if (loadMore == null) {
                     return
                 }
                 if (state != SmartRefreshable.REFRESH_IDLE) {
@@ -41,12 +43,14 @@ class SwipeRefreshRecyclerView(private val mRecyclerView: RecyclerView, private 
                 if (newState == RecyclerView.SCROLL_STATE_IDLE && checkedIsNeedLoadMore()) {
                     state = SmartRefreshable.REFRESH_UP
                     loadMore?.notifyFooterDataSetChanged(State.LOADING)
+                    SRLog.d("onScrollStateChanged onLoadMore")
                     onLoadMoreListener?.onLoadMore()
                 }
             }
         })
         mSwipeRefreshLayout.setOnRefreshListener {
             state = SmartRefreshable.REFRESH_PULL
+            SRLog.d("onRefresh")
             onRefreshListener?.onRefresh()
         }
         mSwipeRefreshLayout.isEnabled = mRefreshEnable
@@ -118,8 +122,11 @@ class SwipeRefreshRecyclerView(private val mRecyclerView: RecyclerView, private 
     }
 
     override fun finishRefresh(success: Boolean) {
+        SRLog.d("success:$success")
         mSwipeRefreshLayout.isRefreshing = false
-        loadMore?.notifyFooterDataSetChanged(State.IDLE)
+        if (success) {
+            loadMore?.notifyFooterDataSetChanged(State.IDLE)
+        }
         markIdle()
     }
 
