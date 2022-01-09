@@ -15,8 +15,7 @@ import com.qw.recyclerview.core.SmartRefreshHelper
 import com.qw.recyclerview.core.State
 import com.qw.recyclerview.core.adapter.BaseListAdapter
 import com.qw.recyclerview.core.adapter.BaseViewHolder
-import com.qw.recyclerview.sample.FooterView
-import com.qw.recyclerview.sample.FooterView.OnFooterViewListener
+import com.qw.recyclerview.sample.DefaultLoadMore
 import com.qw.recyclerview.sample.R
 import com.qw.recyclerview.sample.databinding.SwipeRefreshLayoutActivityBinding
 import com.qw.recyclerview.swiperefresh.SwipeRefreshRecyclerView
@@ -25,7 +24,7 @@ import java.util.*
 /**
  * Created by qinwei on 2021/7/1 20:38
  */
-class SwipeRefreshLayout2Activity : AppCompatActivity(), OnFooterViewListener {
+class SwipeRefreshLayout2Activity : AppCompatActivity() {
     private lateinit var bind: SwipeRefreshLayoutActivityBinding
     private lateinit var smartRefresh: SmartRefreshHelper
     private lateinit var adapter: ListAdapter
@@ -110,20 +109,18 @@ class SwipeRefreshLayout2Activity : AppCompatActivity(), OnFooterViewListener {
         }, 1000)
     }
 
-    override fun onFooterClick() {
-        loadMore()
-    }
+    private val loadMore = DefaultLoadMore()
 
     inner class ListAdapter : BaseListAdapter() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
             if (viewType == TYPE_LOAD_MORE) {
-                return object : BaseViewHolder(FooterView.create(parent.context)) {
+                return object : BaseViewHolder(loadMore.getView(parent.context)) {
                     override fun initData(position: Int) {
-                        (itemView as FooterView).onStateChanged(loadMoreState)
-                        itemView.setOnFooterViewListener {
+                        loadMore.onStateChanged(loadMoreState)
+                        loadMore.setOnRetryListener {
                             loadMoreState = State.LOADING
-                            itemView.onStateChanged(loadMoreState)
+                            loadMore.onStateChanged(loadMoreState)
                             loadMore()
                         }
                     }

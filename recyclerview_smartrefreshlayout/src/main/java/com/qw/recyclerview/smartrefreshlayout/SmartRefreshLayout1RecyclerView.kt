@@ -10,7 +10,10 @@ import java.lang.IllegalArgumentException
 /**
  * Created by qinwei on 2021/6/30 17:47
  */
-class SmartRefreshLayout1RecyclerView(private val mRecyclerView: RecyclerView, private val mSmartRefreshLayout: SmartRefreshLayout) : SmartRefreshable {
+class SmartRefreshLayout1RecyclerView(
+    private val mRecyclerView: RecyclerView,
+    private val mSmartRefreshLayout: SmartRefreshLayout
+) : SmartRefreshable {
     private var mRefreshEnable: Boolean = false
     private var mLoadMoreEnable: Boolean = false
     private var onRefreshListener: OnRefreshListener? = null
@@ -62,9 +65,17 @@ class SmartRefreshLayout1RecyclerView(private val mRecyclerView: RecyclerView, p
         mSmartRefreshLayout.setEnableRefresh(isEnabled)
     }
 
+    override fun isRefreshEnable(): Boolean {
+        return mRefreshEnable
+    }
+
     override fun setLoadMoreEnable(isEnabled: Boolean) {
         mLoadMoreEnable = isEnabled
         mSmartRefreshLayout.setEnableLoadMore(isEnabled)
+    }
+
+    override fun isLoadMoreEnable(): Boolean {
+        return mLoadMoreEnable
     }
 
     override fun autoRefresh() {

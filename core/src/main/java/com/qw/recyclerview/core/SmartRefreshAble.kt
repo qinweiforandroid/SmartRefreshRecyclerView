@@ -38,9 +38,19 @@ interface SmartRefreshable {
     fun setRefreshEnable(isEnabled: Boolean)
 
     /**
+     * 是否支持下拉刷新
+     */
+    fun isRefreshEnable(): Boolean
+
+    /**
      * 启用加载更多
      */
     fun setLoadMoreEnable(isEnabled: Boolean)
+
+    /**
+     * 是否支持加载更多
+     */
+    fun isLoadMoreEnable(): Boolean
 
     /**
      * 自动刷新

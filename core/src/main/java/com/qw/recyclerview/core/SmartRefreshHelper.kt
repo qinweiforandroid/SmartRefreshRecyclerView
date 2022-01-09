@@ -35,8 +35,16 @@ class SmartRefreshHelper : SmartRefreshable {
         mSmartRefreshable.setRefreshEnable(isEnabled)
     }
 
+    override fun isRefreshEnable(): Boolean {
+        return mSmartRefreshable.isRefreshEnable()
+    }
+
     override fun setLoadMoreEnable(isEnabled: Boolean) {
         mSmartRefreshable.setLoadMoreEnable(isEnabled)
+    }
+
+    override fun isLoadMoreEnable(): Boolean {
+        return mSmartRefreshable.isLoadMoreEnable()
     }
 
     override fun autoRefresh() {

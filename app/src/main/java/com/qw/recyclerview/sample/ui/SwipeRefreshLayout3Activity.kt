@@ -12,8 +12,9 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.qw.recyclerview.core.OnLoadMoreListener
 import com.qw.recyclerview.core.OnRefreshListener
+import com.qw.recyclerview.core.adapter.BaseListAdapter
 import com.qw.recyclerview.core.adapter.BaseViewHolder
-import com.qw.recyclerview.sample.FooterView.OnFooterViewListener
+import com.qw.recyclerview.sample.DefaultLoadMore
 import com.qw.recyclerview.sample.R
 import com.qw.recyclerview.sample.SwipeRefreshRecyclerViewComponent
 import com.qw.recyclerview.sample.databinding.SwipeRefreshLayoutActivityBinding
@@ -22,7 +23,7 @@ import java.util.*
 /**
  * Created by qinwei on 2021/7/1 20:38
  */
-class SwipeRefreshLayout3Activity : AppCompatActivity(), OnFooterViewListener {
+class SwipeRefreshLayout3Activity : AppCompatActivity() {
     private lateinit var mListComponent: SwipeRefreshRecyclerViewComponent<String>
     private lateinit var bind: SwipeRefreshLayoutActivityBinding
 
@@ -30,26 +31,32 @@ class SwipeRefreshLayout3Activity : AppCompatActivity(), OnFooterViewListener {
         super.onCreate(savedInstanceState)
         bind = SwipeRefreshLayoutActivityBinding.inflate(layoutInflater)
         setContentView(bind.root)
-        mListComponent = object : SwipeRefreshRecyclerViewComponent<String>(this) {
+        mListComponent = SwipeRefreshRecyclerViewComponent(this)
+        mListComponent.setLayoutManager(linearLayoutManager)
+        mListComponent.setAdapter(object : BaseListAdapter() {
             override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
-                return object : BaseViewHolder(
+                return Holder(
                     LayoutInflater.from(this@SwipeRefreshLayout3Activity)
                         .inflate(android.R.layout.simple_list_item_1, parent, false)
-                ) {
-                    override fun initData(position: Int) {
-                        val label: TextView = itemView as TextView
-                        val text = modules[position]
-                        label.text = text
-                    }
+                )
+            }
+
+            inner class Holder(itemView: View) : BaseViewHolder(itemView) {
+                override fun initData(position: Int) {
+                    val label: TextView = itemView as TextView
+                    val text = mListComponent.getItem(position)
+                    label.text = text
                 }
             }
-        }
-        mListComponent.setLayoutManager(linearLayoutManager)
+        })
+        mListComponent.setLoadMoreEnable(true)
+        mListComponent.setRefreshEnable(true)
         mListComponent.setOnLoadMoreListener(object : OnLoadMoreListener {
             override fun onLoadMore() {
                 loadMore()
             }
         })
+        mListComponent.injectLoadMore(DefaultLoadMore())
         mListComponent.setOnRefreshListener(object : OnRefreshListener {
             override fun onRefresh() {
                 refresh()
@@ -86,12 +93,8 @@ class SwipeRefreshLayout3Activity : AppCompatActivity(), OnFooterViewListener {
                     noMoreData = true
                 )
             }
-            mListComponent.notifyDataSetChanged()
+            mListComponent.notifyItemRangeInserted(size, 20)
         }, 1000)
-    }
-
-    override fun onFooterClick() {
-        loadMore()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

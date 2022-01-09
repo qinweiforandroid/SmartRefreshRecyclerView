@@ -8,18 +8,8 @@
     android:focusableInTouchMode="true"
     tools:context=".ui.MainActivity">
 
-    <include
-        android:id="@+id/mSwipeRefreshLayout"
-        layout="@layout/recyclerview_swiperefresh_layout"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/mFooterView" />
+    <include layout="@layout/recyclerview_swiperefresh_layout" />
 
-    <com.qw.recyclerview.sample.FooterView
-        android:id="@+id/mFooterView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent" />
 
     <com.qw.recyclerview.sample.loading.LoadingView
         android:id="@+id/mLoading"

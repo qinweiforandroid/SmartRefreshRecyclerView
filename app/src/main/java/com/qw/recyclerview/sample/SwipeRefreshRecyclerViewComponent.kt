@@ -1,14 +1,14 @@
 package com.qw.recyclerview.sample
 
 import android.app.Activity
+import android.content.Context
+import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.qw.recyclerview.core.OnLoadMoreListener
-import com.qw.recyclerview.core.OnRefreshListener
-import com.qw.recyclerview.core.SmartRefreshHelper
-import com.qw.recyclerview.core.State
+import com.qw.recyclerview.core.*
+import com.qw.recyclerview.core.ILoadMore
 import com.qw.recyclerview.core.adapter.BaseListAdapter
 import com.qw.recyclerview.core.adapter.BaseViewHolder
 import com.qw.recyclerview.swiperefresh.SwipeRefreshRecyclerView
@@ -18,34 +18,48 @@ import com.qw.recyclerview.swiperefresh.SwipeRefreshRecyclerView
  * Created by qinwei on 2022/1/9 2:46 下午
  * email: qinwei_it@163.com
  */
-abstract class SwipeRefreshRecyclerViewComponent<T> {
+class SwipeRefreshRecyclerViewComponent<T> {
+    private lateinit var mLoadMoreView: ILoadMore
     private val mRecyclerView: RecyclerView
     private val mSwipeRefreshLayout: SwipeRefreshLayout
     private val smartRefresh: SmartRefreshHelper = SmartRefreshHelper()
-    protected val modules = ArrayList<T>()
-    private val adapter: ListAdapter = ListAdapter()
-    private var loadMoreState = State.IDLE
+    private val modules = ArrayList<T>()
+    private var mInnerAdapter: BaseListAdapter = ListAdapter()
+    private var mLoadMoreState = State.IDLE
     private var onLoadMoreListener: OnLoadMoreListener? = null
+    private val typeLoadMore = -1
 
-    private val TYPE_LOAD_MORE = -1
+    private lateinit var mAdapter: BaseListAdapter
 
     constructor(activity: Activity) {
         mRecyclerView = activity.findViewById(R.id.mRecyclerView)
         mSwipeRefreshLayout = activity.findViewById(R.id.mSwipeRefreshLayout)
-        init()
+        init(activity)
     }
 
     constructor(fragment: Fragment) {
         mRecyclerView = fragment.requireView().findViewById(R.id.mRecyclerView)
         mSwipeRefreshLayout = fragment.requireView().findViewById(R.id.mSwipeRefreshLayout)
-        init()
+        init(fragment.requireContext())
     }
 
-    private fun init() {
-        mRecyclerView.adapter = adapter
+    private fun init(context: Context) {
+        mRecyclerView.adapter = mInnerAdapter
         smartRefresh.inject(SwipeRefreshRecyclerView(mRecyclerView, mSwipeRefreshLayout))
-        smartRefresh.setRefreshEnable(true)
-        smartRefresh.setLoadMoreEnable(true)
+        smartRefresh.setRefreshEnable(false)
+        smartRefresh.setLoadMoreEnable(false)
+    }
+
+    fun setRefreshEnable(isEnabled: Boolean) {
+        smartRefresh.setRefreshEnable(isEnabled)
+    }
+
+    fun setLoadMoreEnable(isEnabled: Boolean) {
+        smartRefresh.setLoadMoreEnable(isEnabled)
+    }
+
+    fun injectLoadMore(loadMore: ILoadMore) {
+        this.mLoadMoreView = loadMore
     }
 
     fun setOnRefreshListener(onRefreshListener: OnRefreshListener) {
@@ -60,61 +74,59 @@ abstract class SwipeRefreshRecyclerViewComponent<T> {
             }
 
             override fun onStateChanged(state: State) {
-                loadMoreState = state
-                adapter.notifyDataSetChanged()
+                mLoadMoreState = state
+//                mInnerAdapter.notifyItemChanged(mInnerAdapter.itemCount - 1)
+                mInnerAdapter.notifyDataSetChanged()
             }
 
             override fun getState(): State {
-                return loadMoreState
+                return mLoadMoreState
             }
         })
     }
 
     inner class ListAdapter : BaseListAdapter() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
-            if (viewType == TYPE_LOAD_MORE) {
-                return object : BaseViewHolder(FooterView.create(parent.context)) {
-                    override fun initData(position: Int) {
-                        (itemView as FooterView).onStateChanged(loadMoreState)
-                        itemView.setOnFooterViewListener {
-                            loadMoreState = State.LOADING
-                            itemView.onStateChanged(loadMoreState)
+            if (viewType == typeLoadMore) {
+                return object : BaseViewHolder(mLoadMoreView.getView(parent.context)) {
+                    init {
+                        mLoadMoreView.setOnRetryListener {
+                            mLoadMoreState = State.LOADING
+                            mLoadMoreView.onStateChanged(mLoadMoreState)
                             onLoadMoreListener?.onLoadMore()
                         }
                     }
+
+                    override fun initData(position: Int) {
+                        mLoadMoreView.onStateChanged(mLoadMoreState)
+                    }
                 }
             }
-            return this@SwipeRefreshRecyclerViewComponent.onCreateViewHolder(parent, viewType)
+            return mAdapter.onCreateViewHolder(parent, viewType)
         }
 
         override fun getItemViewType(position: Int): Int {
-            if (position == itemCount - 1 && isLoadMoreViewShow()) {
-                return TYPE_LOAD_MORE
+            if (isLoadMoreViewShow(position)) {
+                return typeLoadMore
             }
-            return this@SwipeRefreshRecyclerViewComponent.getItemViewType(position)
+            return mAdapter.getItemViewType(position)
         }
 
         override fun getItemCount(): Int {
             var count = modules.size
-            if (isLoadMoreViewShow()) {
+            if (smartRefresh.isLoadMoreEnable()) {
                 count++
             }
             return count
         }
-
-        override fun onViewAttachedToWindow(holder: BaseViewHolder) {
-            super.onViewAttachedToWindow(holder)
-        }
     }
 
-    open fun getItemViewType(position: Int): Int {
-        return 0
+    private fun isLoadMoreViewShow(position: Int): Boolean {
+        return mInnerAdapter.itemCount - 1 == position
     }
 
-    abstract fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder
-
-    private fun isLoadMoreViewShow(): Boolean {
-        return true
+    fun setAdapter(adapter: BaseListAdapter) {
+        this.mAdapter = adapter
     }
 
     fun autoRefresh() {
@@ -146,7 +158,11 @@ abstract class SwipeRefreshRecyclerViewComponent<T> {
     }
 
     fun notifyDataSetChanged() {
-        adapter.notifyDataSetChanged()
+        mInnerAdapter.notifyDataSetChanged()
+    }
+
+    fun notifyItemRangeInserted(positionStart: Int, itemCount: Int) {
+        mInnerAdapter.notifyItemRangeInserted(positionStart, itemCount)
     }
 
     fun setLayoutManager(layoutManager: RecyclerView.LayoutManager) {
@@ -155,5 +171,9 @@ abstract class SwipeRefreshRecyclerViewComponent<T> {
 
     fun finishLoadMore(success: Boolean, noMoreData: Boolean) {
         smartRefresh.finishLoadMore(success, noMoreData)
+    }
+
+    fun getItem(position: Int): T {
+        return modules[position]
     }
 }

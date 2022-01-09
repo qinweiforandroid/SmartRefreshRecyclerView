@@ -67,19 +67,7 @@ class SwipeRefreshLayout1Activity : AppCompatActivity() {
             override fun onLoadMore() {
                 loadMore()
             }
-
-            override fun getState(): com.qw.recyclerview.core.State {
-                return bind.mFooterView.state
-            }
-
-            override fun onStateChanged(state: com.qw.recyclerview.core.State) {
-                bind.mFooterView.onStateChanged(state)
-            }
         })
-        bind.mFooterView.setOnFooterViewListener {
-            bind.mFooterView.onStateChanged(com.qw.recyclerview.core.State.LOADING)
-            loadMore()
-        }
 //        smartRefresh.autoRefresh()
         mLoading.setOnRetryListener {
             //重试回调

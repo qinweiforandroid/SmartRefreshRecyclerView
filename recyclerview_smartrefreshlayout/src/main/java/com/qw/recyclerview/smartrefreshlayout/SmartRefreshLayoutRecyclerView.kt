@@ -103,8 +103,16 @@ class SmartRefreshLayoutRecyclerView(
         mSmartRefreshLayout.setEnableRefresh(isEnabled)
     }
 
+    override fun isRefreshEnable(): Boolean {
+        return mRefreshEnable
+    }
+
     override fun setLoadMoreEnable(isEnabled: Boolean) {
         mLoadMoreEnable = isEnabled
+    }
+
+    override fun isLoadMoreEnable(): Boolean {
+        return mLoadMoreEnable
     }
 
     override fun autoRefresh() {

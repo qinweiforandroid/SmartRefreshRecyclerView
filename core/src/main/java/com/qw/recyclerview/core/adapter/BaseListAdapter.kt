@@ -12,6 +12,9 @@ abstract class BaseListAdapter : RecyclerView.Adapter<BaseViewHolder>() {
         holder.initData(position)
     }
 
+    override fun getItemCount(): Int {
+        return 0
+    }
 
     override fun onBindViewHolder(
         holder: BaseViewHolder,
