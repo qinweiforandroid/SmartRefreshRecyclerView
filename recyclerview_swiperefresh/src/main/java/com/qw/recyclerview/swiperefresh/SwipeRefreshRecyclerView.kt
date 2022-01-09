@@ -28,23 +28,29 @@ class SwipeRefreshRecyclerView(
         mRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
-                SRLog.d("onScrollStateChanged newState:$newState")
+                SRLog.d("SwipeRefreshRecyclerView onScrollStateChanged newState:$newState")
                 if (!mLoadMoreEnable) return
                 if (onLoadMoreListener == null) return
-                if (onLoadMoreListener?.getState() != State.IDLE) return
+                when (onLoadMoreListener?.getState()) {
+                    State.NO_MORE,
+                    State.EMPTY -> {
+                        return
+                    }
+                    else -> {}
+                }
                 if (state != SmartRefreshable.REFRESH_IDLE) return
 
                 if (newState == RecyclerView.SCROLL_STATE_IDLE && checkedIsNeedLoadMore()) {
                     state = SmartRefreshable.REFRESH_UP
                     onLoadMoreListener?.onStateChanged(State.LOADING)
-                    SRLog.d("onScrollStateChanged onLoadMore")
+                    SRLog.d("SwipeRefreshRecyclerView onScrollStateChanged onLoadMore")
                     onLoadMoreListener?.onLoadMore()
                 }
             }
         })
         mSwipeRefreshLayout.setOnRefreshListener {
             state = SmartRefreshable.REFRESH_PULL
-            SRLog.d("onRefresh")
+            SRLog.d("SwipeRefreshRecyclerView onRefresh")
             onRefreshListener?.onRefresh()
         }
         mSwipeRefreshLayout.isEnabled = mRefreshEnable
@@ -119,7 +125,7 @@ class SwipeRefreshRecyclerView(
     }
 
     override fun finishRefresh(success: Boolean) {
-        SRLog.d("success:$success")
+        SRLog.d("SwipeRefreshRecyclerView finishRefresh success:$success")
         mSwipeRefreshLayout.isRefreshing = false
         if (success) {
             onLoadMoreListener?.onStateChanged(State.IDLE)
@@ -128,21 +134,20 @@ class SwipeRefreshRecyclerView(
     }
 
     override fun finishLoadMore(success: Boolean, noMoreData: Boolean) {
+        SRLog.d("SwipeRefreshRecyclerView finishLoadMore success:$success ,noMoreData:$noMoreData")
         if (!mLoadMoreEnable) {
             return
         }
-        getRecyclerView().postDelayed({
-            val state: State = if (success) {
-                if (noMoreData) {
-                    State.EMPTY
-                } else {
-                    State.IDLE
-                }
+        val state: State = if (success) {
+            if (noMoreData) {
+                State.NO_MORE
             } else {
-                State.ERROR
+                State.IDLE
             }
-            onLoadMoreListener?.onStateChanged(state)
-            markIdle()
-        }, 200)
+        } else {
+            State.ERROR
+        }
+        onLoadMoreListener?.onStateChanged(state)
+        markIdle()
     }
 }

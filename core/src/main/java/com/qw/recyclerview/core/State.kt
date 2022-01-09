@@ -1,5 +1,5 @@
 package com.qw.recyclerview.core
 
 enum class State {
-    IDLE, LOADING, ERROR, EMPTY
+    IDLE, LOADING, ERROR, EMPTY, NO_MORE
 }

@@ -5,6 +5,7 @@ import android.content.Context
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.qw.recyclerview.core.*
@@ -44,6 +45,7 @@ class SwipeRefreshRecyclerViewComponent<T> {
     }
 
     private fun init(context: Context) {
+        (mRecyclerView.itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
         mRecyclerView.adapter = mInnerAdapter
         smartRefresh.inject(SwipeRefreshRecyclerView(mRecyclerView, mSwipeRefreshLayout))
         smartRefresh.setRefreshEnable(false)
@@ -75,8 +77,15 @@ class SwipeRefreshRecyclerViewComponent<T> {
 
             override fun onStateChanged(state: State) {
                 mLoadMoreState = state
-//                mInnerAdapter.notifyItemChanged(mInnerAdapter.itemCount - 1)
-                mInnerAdapter.notifyDataSetChanged()
+                SRLog.d("SwipeRefreshRecyclerViewComponent onStateChanged:${mLoadMoreState.name} ")
+                //解决第一次加载无数据情况
+                if (state == State.NO_MORE || state == State.IDLE) {
+                    if (modules.size == 0) {
+                        mLoadMoreState = State.EMPTY
+                    }
+                }
+                mInnerAdapter.notifyItemChanged(mInnerAdapter.itemCount - 1)
+//                mInnerAdapter.notifyDataSetChanged()
             }
 
             override fun getState(): State {
@@ -88,6 +97,7 @@ class SwipeRefreshRecyclerViewComponent<T> {
     inner class ListAdapter : BaseListAdapter() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
             if (viewType == typeLoadMore) {
+                SRLog.d("SwipeRefreshRecyclerViewComponent typeLoadMore getView")
                 return object : BaseViewHolder(mLoadMoreView.getView(parent.context)) {
                     init {
                         mLoadMoreView.setOnRetryListener {
@@ -98,6 +108,7 @@ class SwipeRefreshRecyclerViewComponent<T> {
                     }
 
                     override fun initData(position: Int) {
+                        SRLog.d("SwipeRefreshRecyclerViewComponent initData:${mLoadMoreState.name}")
                         mLoadMoreView.onStateChanged(mLoadMoreState)
                     }
                 }

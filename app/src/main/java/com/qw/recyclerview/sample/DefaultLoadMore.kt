@@ -8,7 +8,6 @@ import android.widget.TextView
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ProgressBar
-import com.qw.recyclerview.core.R
 import com.qw.recyclerview.core.State
 
 /**
@@ -22,8 +21,7 @@ class DefaultLoadMore : ILoadMore {
     inner class FooterView : LinearLayout, View.OnClickListener {
         private var mProgressBar: ProgressBar? = null
         private var mFooterLabel: TextView? = null
-        var state = State.IDLE
-            private set
+        private var state = State.IDLE
 
         constructor(context: Context, attrs: AttributeSet?, defStyle: Int) : super(
             context,
@@ -60,20 +58,26 @@ class DefaultLoadMore : ILoadMore {
                     setOnClickListener(this)
                     mFooterLabel!!.text = "加载失败,点击重试"
                     mProgressBar!!.visibility = GONE
-                    visibility = VISIBLE
+                    this.visibility = VISIBLE
                 }
-                State.IDLE -> visibility = GONE
+                State.EMPTY,
+                State.IDLE -> {
+                    this.visibility = INVISIBLE
+                }
                 State.LOADING -> {
                     mFooterLabel!!.text = "正在加载..."
                     mProgressBar!!.visibility = VISIBLE
-                    visibility = VISIBLE
+                    this.visibility = VISIBLE
                 }
-                State.EMPTY -> {
+                State.NO_MORE -> {
                     mProgressBar!!.visibility = GONE
                     mFooterLabel!!.text = "--没有更多数据了--"
-                    visibility = VISIBLE
+                    this.visibility = VISIBLE
                 }
-                else -> {}
+
+                else -> {
+
+                }
             }
         }
     }
