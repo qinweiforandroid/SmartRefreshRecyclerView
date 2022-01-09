@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.qw.recyclerview.core.*
 import com.qw.recyclerview.core.ILoadMore
@@ -130,9 +131,17 @@ class SwipeRefreshRecyclerViewComponent<T> {
             }
             return count
         }
+
+        override fun onViewAttachedToWindow(holder: BaseViewHolder) {
+            super.onViewAttachedToWindow(holder)
+            val lp = holder.itemView.layoutParams
+            if (lp != null && lp is StaggeredGridLayoutManager.LayoutParams) {
+                lp.isFullSpan = isLoadMoreViewShow(holder.layoutPosition)
+            }
+        }
     }
 
-    private fun isLoadMoreViewShow(position: Int): Boolean {
+    fun isLoadMoreViewShow(position: Int): Boolean {
         return mInnerAdapter.itemCount - 1 == position
     }
 

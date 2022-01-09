@@ -124,7 +124,18 @@ class SwipeRefreshLayout3Activity : AppCompatActivity() {
      * @return
      */
     private fun getGridLayoutManager(spanCount: Int): GridLayoutManager {
-        return GridLayoutManager(this, spanCount)
+        return GridLayoutManager(this, spanCount).apply {
+            spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+                override fun getSpanSize(position: Int): Int {
+                    return if (mListComponent.isLoadMoreViewShow(position)) {
+                        spanCount
+                    } else {
+                        1
+                    }
+                }
+
+            }
+        }
     }
 
     /**
