@@ -1,4 +1,6 @@
-package com.qw.recyclerview.core.footer;
+package com.qw.recyclerview.sample;
+
+import com.qw.recyclerview.core.State;
 
 /**
  * 底部状态切换接口  你的自定义状态view需要impl此接口 框架会帮你call onFooterChanged 改变底部加载更多的ui
@@ -13,5 +15,5 @@ public interface IFooter {
      *
      * @param state view状态
      */
-    void onFooterChanged(State state);
+    void onStateChanged(State state);
 }

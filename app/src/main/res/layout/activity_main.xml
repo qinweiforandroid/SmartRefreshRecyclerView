@@ -33,11 +33,11 @@
             android:text="impl2" />
 
         <Button
-            android:id="@+id/mSwipeRefreshRecyclerViewSamplePlusBtn"
+            android:id="@+id/mSwipeRefreshRecyclerViewSample3Btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
-            android:text="impl_plus" />
+            android:text="impl3" />
     </LinearLayout>
 
     <TextView

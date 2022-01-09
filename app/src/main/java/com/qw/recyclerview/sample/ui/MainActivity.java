@@ -32,11 +32,11 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(MainActivity.this, SwipeRefreshLayout2Activity.class));
             }
         });
-        
-        bind.mSwipeRefreshRecyclerViewSamplePlusBtn.setOnClickListener(new View.OnClickListener() {
+
+        bind.mSwipeRefreshRecyclerViewSample3Btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, SwipeRefreshLayoutPlusActivity.class));
+                startActivity(new Intent(MainActivity.this, SwipeRefreshLayout3Activity.class));
             }
         });
         bind.mSmartRefreshLayoutRecyclerViewSampleBtn.setOnClickListener(new View.OnClickListener() {
@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
         bind.mSmartRefreshLayoutRecyclerViewSamplePlusBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, SmartRefreshLayoutPlusActivity.class));
+//                startActivity(new Intent(MainActivity.this, SmartRefreshLayoutPlusActivity.class));
             }
         });
     }

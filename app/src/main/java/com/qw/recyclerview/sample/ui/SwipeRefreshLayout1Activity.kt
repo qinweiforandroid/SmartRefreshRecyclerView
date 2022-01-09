@@ -67,7 +67,19 @@ class SwipeRefreshLayout1Activity : AppCompatActivity() {
             override fun onLoadMore() {
                 loadMore()
             }
+
+            override fun getState(): com.qw.recyclerview.core.State {
+                return bind.mFooterView.state
+            }
+
+            override fun onStateChanged(state: com.qw.recyclerview.core.State) {
+                bind.mFooterView.onStateChanged(state)
+            }
         })
+        bind.mFooterView.setOnFooterViewListener {
+            bind.mFooterView.onStateChanged(com.qw.recyclerview.core.State.LOADING)
+            loadMore()
+        }
 //        smartRefresh.autoRefresh()
         mLoading.setOnRetryListener {
             //重试回调
@@ -115,7 +127,10 @@ class SwipeRefreshLayout1Activity : AppCompatActivity() {
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-            return object : BaseViewHolder(LayoutInflater.from(this@SwipeRefreshLayout1Activity).inflate(android.R.layout.simple_list_item_1, parent, false)) {
+            return object : BaseViewHolder(
+                LayoutInflater.from(this@SwipeRefreshLayout1Activity)
+                    .inflate(android.R.layout.simple_list_item_1, parent, false)
+            ) {
                 private val label: TextView = itemView as TextView
                 override fun initData(position: Int) {
                     val text = modules[position]
@@ -125,7 +140,11 @@ class SwipeRefreshLayout1Activity : AppCompatActivity() {
         }
 
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {}
-        override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int, payloads: List<Any>) {
+        override fun onBindViewHolder(
+            holder: RecyclerView.ViewHolder,
+            position: Int,
+            payloads: List<Any>
+        ) {
             (holder as BaseViewHolder).initData(position, payloads)
         }
     }

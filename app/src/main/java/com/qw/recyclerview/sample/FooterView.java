@@ -1,4 +1,4 @@
-package com.qw.recyclerview.core.footer;
+package com.qw.recyclerview.sample;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -9,6 +9,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.qw.recyclerview.core.R;
+import com.qw.recyclerview.core.State;
 
 
 /**
@@ -18,6 +19,8 @@ public class FooterView extends LinearLayout implements IFooter, View.OnClickLis
     private ProgressBar mProgressBar;
     private TextView mFooterLabel;
     private OnFooterViewListener listener;
+
+    private State state = State.IDLE;
 
     public static FooterView create(Context context) {
         FooterView footerView = new FooterView(context);
@@ -49,6 +52,7 @@ public class FooterView extends LinearLayout implements IFooter, View.OnClickLis
         LayoutInflater.from(context).inflate(R.layout.sr_widget_pulltorefresh_footer, this);
         mProgressBar = (ProgressBar) findViewById(R.id.mProgressBar);
         mFooterLabel = (TextView) findViewById(R.id.mFooterLabel);
+        onStateChanged(State.IDLE);
     }
 
     @Override
@@ -57,7 +61,8 @@ public class FooterView extends LinearLayout implements IFooter, View.OnClickLis
     }
 
     @Override
-    public void onFooterChanged(State state) {
+    public void onStateChanged(State state) {
+        this.state = state;
         setOnClickListener(null);
         switch (state) {
             case ERROR:
@@ -82,6 +87,10 @@ public class FooterView extends LinearLayout implements IFooter, View.OnClickLis
             default:
                 break;
         }
+    }
+
+    public State getState() {
+        return state;
     }
 
     public void setOnFooterViewListener(OnFooterViewListener listener) {

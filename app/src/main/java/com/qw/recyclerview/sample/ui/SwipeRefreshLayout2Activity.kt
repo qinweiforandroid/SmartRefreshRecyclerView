@@ -5,7 +5,6 @@ import android.view.*
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -13,11 +12,11 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.qw.recyclerview.core.OnLoadMoreListener
 import com.qw.recyclerview.core.OnRefreshListener
 import com.qw.recyclerview.core.SmartRefreshHelper
+import com.qw.recyclerview.core.State
 import com.qw.recyclerview.core.adapter.BaseListAdapter
 import com.qw.recyclerview.core.adapter.BaseViewHolder
-import com.qw.recyclerview.core.footer.FooterView
-import com.qw.recyclerview.core.footer.FooterView.OnFooterViewListener
-import com.qw.recyclerview.core.footer.State
+import com.qw.recyclerview.sample.FooterView
+import com.qw.recyclerview.sample.FooterView.OnFooterViewListener
 import com.qw.recyclerview.sample.R
 import com.qw.recyclerview.sample.databinding.SwipeRefreshLayoutActivityBinding
 import com.qw.recyclerview.swiperefresh.SwipeRefreshRecyclerView
@@ -30,7 +29,11 @@ class SwipeRefreshLayout2Activity : AppCompatActivity(), OnFooterViewListener {
     private lateinit var bind: SwipeRefreshLayoutActivityBinding
     private lateinit var smartRefresh: SmartRefreshHelper
     private lateinit var adapter: ListAdapter
-    private var modules = ArrayList<String>()
+    private var modules = ArrayList<Any>()
+    private var loadMoreState = State.IDLE
+    private val TYPE_LOAD_MORE = -1
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         bind = SwipeRefreshLayoutActivityBinding.inflate(layoutInflater)
@@ -67,6 +70,15 @@ class SwipeRefreshLayout2Activity : AppCompatActivity(), OnFooterViewListener {
             override fun onLoadMore() {
                 loadMore()
             }
+
+            override fun onStateChanged(state: State) {
+                loadMoreState = state
+                adapter.notifyDataSetChanged()
+            }
+
+            override fun getState(): State {
+                return loadMoreState
+            }
         })
         //自动刷新
         smartRefresh.autoRefresh()
@@ -78,8 +90,8 @@ class SwipeRefreshLayout2Activity : AppCompatActivity(), OnFooterViewListener {
             for (i in 0..19) {
                 modules.add("" + i)
             }
-            adapter.notifyDataSetChanged()
             smartRefresh.finishRefresh(true)
+            adapter.notifyDataSetChanged()
         }, 1000)
     }
 
@@ -99,30 +111,60 @@ class SwipeRefreshLayout2Activity : AppCompatActivity(), OnFooterViewListener {
     }
 
     override fun onFooterClick() {
-        adapter.notifyFooterDataSetChanged(State.LOADING)
         loadMore()
     }
 
-    internal inner class ListAdapter : BaseListAdapter() {
-        override fun getItemViewCount(): Int {
-            return modules.size
-        }
+    inner class ListAdapter : BaseListAdapter() {
 
-        override fun onCreateFooterHolder(parent: ViewGroup): BaseViewHolder? {
-            val footerView = FooterView.create(this@SwipeRefreshLayout2Activity)
-            footerView.setOnFooterViewListener(this@SwipeRefreshLayout2Activity)
-            return FooterViewHolder(footerView)
-        }
-
-        override fun onCreateBaseViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
-            return object : BaseViewHolder(LayoutInflater.from(this@SwipeRefreshLayout2Activity).inflate(android.R.layout.simple_list_item_1, parent, false)) {
-                private val label: TextView = itemView as TextView
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
+            if (viewType == TYPE_LOAD_MORE) {
+                return object : BaseViewHolder(FooterView.create(parent.context)) {
+                    override fun initData(position: Int) {
+                        (itemView as FooterView).onStateChanged(loadMoreState)
+                        itemView.setOnFooterViewListener {
+                            loadMoreState = State.LOADING
+                            itemView.onStateChanged(loadMoreState)
+                            loadMore()
+                        }
+                    }
+                }
+            }
+            return object : BaseViewHolder(
+                LayoutInflater.from(this@SwipeRefreshLayout2Activity)
+                    .inflate(android.R.layout.simple_list_item_1, parent, false)
+            ) {
                 override fun initData(position: Int) {
+                    val label: TextView = itemView as TextView
                     val text = modules[position]
-                    label.text = text
+                    label.text = text.toString()
                 }
             }
         }
+
+        override fun getItemViewType(position: Int): Int {
+            if (position == itemCount - 1 && isLoadMoreViewShow()) {
+                return TYPE_LOAD_MORE
+            }
+            return super.getItemViewType(position)
+        }
+
+        override fun getItemCount(): Int {
+            var count = modules.size
+            if (isLoadMoreViewShow()) {
+                count++
+            }
+            return count
+        }
+
+        override fun onViewAttachedToWindow(holder: BaseViewHolder) {
+            super.onViewAttachedToWindow(holder)
+
+        }
+    }
+
+    private fun isLoadMoreViewShow(): Boolean {
+        return true
+//        return loadMoreState != State.IDLE
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -153,9 +195,9 @@ class SwipeRefreshLayout2Activity : AppCompatActivity(), OnFooterViewListener {
      */
     private fun getGridLayoutManager(spanCount: Int): GridLayoutManager {
         val manager = GridLayoutManager(this, spanCount)
-        manager.spanSizeLookup = object : SpanSizeLookup() {
+        manager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
             override fun getSpanSize(position: Int): Int {
-                return if (adapter.isHeaderShow(position) || adapter.isFooterShow(position)) {
+                return if (adapter.itemCount - 1 == position && isLoadMoreViewShow()) {
                     manager.spanCount
                 } else 1
             }

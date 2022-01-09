@@ -4,45 +4,39 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.qw.recyclerview.core.adapter.ILoadMore
 import com.qw.recyclerview.core.OnLoadMoreListener
 import com.qw.recyclerview.core.OnRefreshListener
 import com.qw.recyclerview.core.SRLog
 import com.qw.recyclerview.core.SmartRefreshable
-import com.qw.recyclerview.core.footer.State
+import com.qw.recyclerview.core.State
 import java.lang.IllegalArgumentException
 
 /**
  * Created by qinwei on 2021/6/29 21:44
  */
-class SwipeRefreshRecyclerView(private val mRecyclerView: RecyclerView, private val mSwipeRefreshLayout: SwipeRefreshLayout) : SmartRefreshable {
+class SwipeRefreshRecyclerView(
+    private val mRecyclerView: RecyclerView,
+    private val mSwipeRefreshLayout: SwipeRefreshLayout
+) : SmartRefreshable {
     private var mRefreshEnable: Boolean = false
     private var mLoadMoreEnable: Boolean = false
     private var onRefreshListener: OnRefreshListener? = null
     private var onLoadMoreListener: OnLoadMoreListener? = null
     private var state = SmartRefreshable.REFRESH_IDLE
-    private var loadMore: ILoadMore? = null
 
     init {
         mRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
                 SRLog.d("onScrollStateChanged newState:$newState")
-                if (!mLoadMoreEnable) {
-                    return
-                }
-                if (loadMore == null) {
-                    return
-                }
-                if (state != SmartRefreshable.REFRESH_IDLE) {
-                    return
-                }
-                if (!loadMore!!.canLoadMore()) {
-                    return
-                }
+                if (!mLoadMoreEnable) return
+                if (onLoadMoreListener == null) return
+                if (onLoadMoreListener?.getState() != State.IDLE) return
+                if (state != SmartRefreshable.REFRESH_IDLE) return
+
                 if (newState == RecyclerView.SCROLL_STATE_IDLE && checkedIsNeedLoadMore()) {
                     state = SmartRefreshable.REFRESH_UP
-                    loadMore?.notifyFooterDataSetChanged(State.LOADING)
+                    onLoadMoreListener?.onStateChanged(State.LOADING)
                     SRLog.d("onScrollStateChanged onLoadMore")
                     onLoadMoreListener?.onLoadMore()
                 }
@@ -58,13 +52,6 @@ class SwipeRefreshRecyclerView(private val mRecyclerView: RecyclerView, private 
         if (mRecyclerView.adapter == null) {
             throw IllegalArgumentException("RecyclerView must be setAdapter")
         }
-
-        if (mRecyclerView.adapter is ILoadMore) {
-            loadMore = mRecyclerView.adapter as ILoadMore
-        } else {
-            //没有实现ILoadMore接口的adapter不具备加载更多功能
-            setLoadMoreEnable(false)
-        }
     }
 
     private fun markIdle() {
@@ -78,7 +65,10 @@ class SwipeRefreshRecyclerView(private val mRecyclerView: RecyclerView, private 
             lastVisiblePosition = layoutManager.findLastVisibleItemPosition()
         } else if (layoutManager is StaggeredGridLayoutManager) {
             val sdlm = layoutManager
-            lastVisiblePosition = sdlm.findLastCompletelyVisibleItemPositions(null)[sdlm.findLastCompletelyVisibleItemPositions(null).size - 1]
+            lastVisiblePosition =
+                sdlm.findLastCompletelyVisibleItemPositions(null)[sdlm.findLastCompletelyVisibleItemPositions(
+                    null
+                ).size - 1]
         }
         return mRecyclerView.adapter!!.itemCount - lastVisiblePosition <= 5
     }
@@ -110,14 +100,13 @@ class SwipeRefreshRecyclerView(private val mRecyclerView: RecyclerView, private 
 
     override fun setLoadMoreEnable(isEnabled: Boolean) {
         mLoadMoreEnable = isEnabled
-        loadMore?.setShowLoadMoreFooter(mLoadMoreEnable)
     }
 
     override fun autoRefresh() {
         if (mRefreshEnable) {
             state = SmartRefreshable.REFRESH_PULL
             mSwipeRefreshLayout.isRefreshing = true
-            this.onRefreshListener?.onRefresh()
+            onRefreshListener?.onRefresh()
         }
     }
 
@@ -125,7 +114,7 @@ class SwipeRefreshRecyclerView(private val mRecyclerView: RecyclerView, private 
         SRLog.d("success:$success")
         mSwipeRefreshLayout.isRefreshing = false
         if (success) {
-            loadMore?.notifyFooterDataSetChanged(State.IDLE)
+            onLoadMoreListener?.onStateChanged(State.IDLE)
         }
         markIdle()
     }
@@ -144,7 +133,7 @@ class SwipeRefreshRecyclerView(private val mRecyclerView: RecyclerView, private 
             } else {
                 State.ERROR
             }
-            loadMore?.notifyFooterDataSetChanged(state)
+            onLoadMoreListener?.onStateChanged(state)
             markIdle()
         }, 200)
     }

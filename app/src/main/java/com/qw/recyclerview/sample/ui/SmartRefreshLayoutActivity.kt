@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.qw.recyclerview.core.OnLoadMoreListener
 import com.qw.recyclerview.core.OnRefreshListener
 import com.qw.recyclerview.core.SmartRefreshHelper
+import com.qw.recyclerview.core.State
 import com.qw.recyclerview.core.adapter.BaseListAdapter
 import com.qw.recyclerview.core.adapter.BaseViewHolder
 import com.qw.recyclerview.sample.R
@@ -95,18 +96,23 @@ class SmartRefreshLayoutActivity : AppCompatActivity() {
     }
 
     internal inner class ListAdapter : BaseListAdapter() {
-        override fun getItemViewCount(): Int {
-            return modules.size
-        }
 
-        override fun onCreateBaseViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
-            return object : BaseViewHolder(LayoutInflater.from(this@SmartRefreshLayoutActivity).inflate(android.R.layout.simple_list_item_1, parent, false)) {
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
+            return object : BaseViewHolder(
+                LayoutInflater.from(this@SmartRefreshLayoutActivity)
+                    .inflate(android.R.layout.simple_list_item_1, parent, false)
+            ) {
                 private val label: TextView = itemView as TextView
                 override fun initData(position: Int) {
                     val text = modules[position]
                     label.text = text
                 }
             }
+        }
+
+        override fun getItemCount(): Int {
+            return modules.size
         }
     }
 
@@ -132,13 +138,13 @@ class SmartRefreshLayoutActivity : AppCompatActivity() {
 
     private fun getGridLayoutManager(spanCount: Int): GridLayoutManager {
         val manager = GridLayoutManager(this, spanCount)
-        manager.spanSizeLookup = object : SpanSizeLookup() {
-            override fun getSpanSize(position: Int): Int {
-                return if (adapter.isHeaderShow(position) || adapter.isFooterShow(position)) {
-                    manager.spanCount
-                } else 1
-            }
-        }
+//        manager.spanSizeLookup = object : SpanSizeLookup() {
+//            override fun getSpanSize(position: Int): Int {
+//                return if (adapter.isHeaderShow(position) || adapter.isFooterShow(position)) {
+//                    manager.spanCount
+//                } else 1
+//            }
+//        }
         return manager
     }
 
