@@ -80,7 +80,7 @@ class SwipeRefreshRecyclerViewComponent<T> {
                 mLoadMoreState = state
                 SRLog.d("SwipeRefreshRecyclerViewComponent onStateChanged:${mLoadMoreState.name} ")
                 //解决第一次加载无数据情况
-                if (state == State.NO_MORE || state == State.IDLE) {
+                if (state == State.NO_MORE || state == State.IDLE || state == State.ERROR) {
                     if (modules.size == 0) {
                         mLoadMoreState = State.EMPTY
                     }
@@ -142,7 +142,7 @@ class SwipeRefreshRecyclerViewComponent<T> {
     }
 
     fun isLoadMoreViewShow(position: Int): Boolean {
-        return mInnerAdapter.itemCount - 1 == position
+        return smartRefresh.isLoadMoreEnable() && mInnerAdapter.itemCount - 1 == position
     }
 
     fun setAdapter(adapter: BaseListAdapter) {

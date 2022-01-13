@@ -33,10 +33,12 @@ class SwipeRefreshRecyclerView(
                 if (onLoadMoreListener == null) return
                 when (onLoadMoreListener?.getState()) {
                     State.NO_MORE,
+                    State.ERROR,
                     State.EMPTY -> {
                         return
                     }
-                    else -> {}
+                    else -> {
+                    }
                 }
                 if (state != SmartRefreshable.REFRESH_IDLE) return
 
@@ -127,8 +129,12 @@ class SwipeRefreshRecyclerView(
     override fun finishRefresh(success: Boolean) {
         SRLog.d("SwipeRefreshRecyclerView finishRefresh success:$success")
         mSwipeRefreshLayout.isRefreshing = false
-        if (success) {
-            onLoadMoreListener?.onStateChanged(State.IDLE)
+        if (mLoadMoreEnable) {
+            if (success) {
+                onLoadMoreListener?.onStateChanged(State.IDLE)
+            } else {
+                onLoadMoreListener?.onStateChanged(State.ERROR)
+            }
         }
         markIdle()
     }
