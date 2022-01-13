@@ -1,4 +1,4 @@
-apply plugin: 'maven'
+apply plugin: "maven-publish"
 
 def getRepositoryUrl() {
     def repo = NEXUS_RELEASES
@@ -8,7 +8,6 @@ def getRepositoryUrl() {
     } else if (LIB_IS_RELEASE != null && !LIB_IS_RELEASE.toBoolean()) {
         repo = NEXUS_SNAPSHOTS
     }
-
     return repo
 }
 
@@ -30,61 +29,96 @@ static def getMavenHome() {
     return 'file://' + new File(System.getProperty('user.home'), '.m2/repository').absolutePath
 }
 
-task sourcesJar(type: Jar) {
-    classifier = 'sources'
-    from android.sourceSets.main.java.sourceFiles
+// 1. 增加上传源码的task
+task sourceJar(type: Jar) {
+    from android.sourceSets.main.java.getSrcDirs() // 源码路径
+    archiveClassifier = "sources"
 }
-
-task javadoc(type: Javadoc) {
-    source = android.sourceSets.main.java.sourceFiles
-    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-    classpath += configurations.compile
-    options {
-        failOnError false
-        encoding "UTF-8"
-        charSet "UTF-8"
-        author true
-        version true
-        links "http://docs.oracle.com/javase/7/docs/api"
+task androidJavadocs(type: Javadoc) {
+    doLast {
+        source = project.android.sourceSets.main.java.srcDirs
+        // 需要生成 doc 的 代码路径
+        classpath += project.files(project.android.getBootClasspath().join(File.pathSeparator))
+        failOnError = false // javadoc 解析错误时task 不会异常停止
     }
 }
 
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = "javadoc"
-    from javadoc.destinationDir
+// 解决 JavaDoc 中文注释生成失败的问题
+tasks.withType(Javadoc) {
+    options.addStringOption('Xdoclint:none', '-quiet')
+    options.addStringOption('encoding', 'UTF-8')
+    options.addStringOption('charSet', 'UTF-8')
 }
 
-artifacts {
-    archives javadocJar
-    archives sourcesJar
+task androidJavadocsJar(type: Jar, dependsOn: androidJavadocs) {
+    doLast {
+        //archiveFileName  The archive name. If the name has not been explicitly set
+        // , the pattern for the name is:
+        //[archiveBaseName]-[archiveAppendix]-[archiveVersion]-[archiveClassifier].[archiveExtension]
+        // 存档名称的分类器部分，名称后面加的类别区分的名字.e.g. xxxx-javadoc.jar。
+        archiveClassifier = 'javadoc'
+        from androidJavadocs.destinationDir
+    }
 }
 
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            def _aar_version = getVersionName()
-            def _repository_url = getRepositoryUrl()
+afterEvaluate {
+    publishing {
+        def _repository_url = getRepositoryUrl()
+        def _aar_version = getVersionName()
+        println "[" + project.getName() + "] Repository: " + _repository_url
+        println "[" + project.getName() + "] AAR: " + LIB_GROUP + ":" + LIB_ARTIFACT + ":" + _aar_version
+        // 配置maven 仓库
+        repositories { RepositoryHandler handler ->
+            handler.mavenLocal()  // 发布到默认的 本地maven 仓库 ，路径： USER_HOME/.m2/repository/
+            // 仓库用户名密码
+            handler.maven { MavenArtifactRepository mavenArtifactRepository ->
+                allowInsecureProtocol = true
+                // maven 仓库地址
+                url _repository_url
+                if (!LIB_IS_LOCAL_REPO.toBoolean()) {
+                    // 访问仓库的 账号和密码
+                    credentials {
+                        username = REPO_USERNAME
+                        password = REPO_PASSWORD
+                    }
+                }
+            }
+        }
+        // 配置发布产物
+        publications { PublicationContainer publication ->
+            // 名称可以随便定义，这里定义成 maven，是因为我的 aar 包是发布到 maven 仓库的，所以这里为了见名知义，定义成了 maven
+            // 名称：maven
+            maven(MavenPublication) {// 容器可配置的信息 MavenPublication
+                artifact sourceJar // 增加上传源码的 task
 
-            println "[" + project.getName() + "] Repository: " + _repository_url
-            println "[" + project.getName() + "] AAR: " + LIB_GROUP + ":" + LIB_ARTIFACT + ":" + _aar_version
+                // 依赖 bundleReleaseAar 任务，并上传其产出的aar
+                afterEvaluate { artifact(tasks.getByName("bundleReleaseAar")) }
+                groupId = LIB_GROUP
+                artifactId = LIB_ARTIFACT
+                version = _aar_version
 
-            Properties properties = new Properties()
-            InputStream inputStream = project.rootProject.file('local.properties').newDataInputStream();
-            properties.load(inputStream)
-            def nexus_username = properties.getProperty('NEXUS_USERNAME')
-            def nexus_password = properties.getProperty('NEXUS_PASSWORD')
-            repository(url: _repository_url) {
-                authentication(userName: nexus_username, password: nexus_password)
+                pom.withXml {
+                    def dependenciesNode = asNode().appendNode('dependencies')
+                    configurations.implementation.allDependencies.withType(ModuleDependency) { ModuleDependency dp ->
+                        if (dp.version != "unspecified") { // 过滤项目内library引用
+                            def dependencyNode = dependenciesNode.appendNode('dependency')
+                            dependencyNode.appendNode('groupId', dp.group)
+                            dependencyNode.appendNode('artifactId', dp.name)
+                            dependencyNode.appendNode('version', dp.version)
+                            // for exclusions
+                            if (dp.excludeRules.size() > 0) {
+                                def exclusions = dependencyNode.appendNode('exclusions')
+                                dp.excludeRules.each { ExcludeRule ex ->
+                                    def exclusion = exclusions.appendNode('exclusion')
+                                    exclusion.appendNode('groupId', ex.group)
+                                    exclusion.appendNode('artifactId', ex.module)
+                                }
+                            }
+                        }
+                    }
+                }
             }
 
-            pom.project {
-                name LIB_ARTIFACT
-                groupId LIB_GROUP
-                artifactId LIB_ARTIFACT
-                version _aar_version
-                packaging LIB_EXTENSION
-                description LIB_DES
-            }
         }
     }
 }
