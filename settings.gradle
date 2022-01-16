@@ -1,5 +1,5 @@
 include ':recyclerview_smartrefreshlayout'
 include ':recyclerview_swiperefresh'
-include ':core'
+include ':recyclerview_core'
 include ':app'
 rootProject.name = "SmartRefreshRecyclerView"
