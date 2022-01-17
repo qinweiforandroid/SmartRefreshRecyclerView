@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.qw.recyclerview.core.OnLoadMoreListener
 import com.qw.recyclerview.core.OnRefreshListener
 import com.qw.recyclerview.core.adapter.BaseViewHolder
-import com.qw.recyclerview.footer.DefaultLoadMore
 import com.qw.recyclerview.sample.R
 import com.qw.recyclerview.sample.databinding.SmartRefreshLayoutActivityBinding
 import com.qw.recyclerview.smartrefreshlayout.SmartRefresh1ListComponent
@@ -33,14 +32,8 @@ class SmartRefreshLayout2Activity : AppCompatActivity() {
         setContentView(bind.root)
         val mRecyclerView = findViewById<RecyclerView>(R.id.mRecyclerView)
         val mSmartRefresh = findViewById<SmartRefreshLayout>(R.id.mSmartRefreshLayout)
-        mComponent = object : SmartRefresh1ListComponent<String>(mRecyclerView, mSmartRefresh) {
-            init {
-                setLayoutManager(linearLayoutManager)
-                setLoadMoreEnable(true)
-                injectLoadMore(DefaultLoadMore())
-                setRefreshEnable(true)
-            }
 
+        mComponent = object : SmartRefresh1ListComponent<String>(mRecyclerView, mSmartRefresh) {
             override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
                 return Holder(
                     LayoutInflater.from(this@SmartRefreshLayout2Activity)
@@ -51,54 +44,57 @@ class SmartRefreshLayout2Activity : AppCompatActivity() {
             inner class Holder(itemView: View) : BaseViewHolder(itemView) {
                 override fun initData(position: Int) {
                     val label: TextView = itemView as TextView
-                    val text = mComponent.getItem(position)
+                    val text = mComponent.modules[position]
                     label.text = text
                 }
             }
         }
-        mComponent.setOnLoadMoreListener(object : OnLoadMoreListener {
+        mComponent.setLayoutManager(linearLayoutManager)
+        mComponent.smart.setRefreshEnable(true)
+        mComponent.smart.setLoadMoreEnable(true)
+        mComponent.smart.setOnLoadMoreListener(object : OnLoadMoreListener {
             override fun onLoadMore() {
                 loadMore()
             }
         })
 
-        mComponent.setOnRefreshListener(object : OnRefreshListener {
+        mComponent.smart.setOnRefreshListener(object : OnRefreshListener {
             override fun onRefresh() {
                 refresh()
             }
         })
-        mComponent.autoRefresh()
+        mComponent.smart.autoRefresh()
     }
 
     private fun refresh() {
         Handler(Looper.myLooper()!!).postDelayed({
-            mComponent.clear()
+            mComponent.modules.clear()
             for (i in 0..19) {
-                mComponent.add("" + i)
+                mComponent.modules.add("" + i)
             }
-            mComponent.finishRefresh(true)
-            mComponent.notifyDataSetChanged()
+            mComponent.smart.finishRefresh(true)
+            mComponent.adapter.notifyDataSetChanged()
         }, 1000)
     }
 
     private fun loadMore() {
         Handler(Looper.myLooper()!!).postDelayed({
-            val size = mComponent.size()
+            val size = mComponent.modules.size
             for (i in size until size + 20) {
-                mComponent.add("" + i)
+                mComponent.modules.add("" + i)
             }
-            if (mComponent.size() < 100) {
-                mComponent.finishLoadMore(
+            if (mComponent.modules.size < 100) {
+                mComponent.smart.finishLoadMore(
                     success = true,
                     noMoreData = false
                 )
             } else {
-                mComponent.finishLoadMore(
+                mComponent.smart.finishLoadMore(
                     success = false,
                     noMoreData = true
                 )
             }
-            mComponent.notifyItemRangeInserted(size, 20)
+            mComponent.adapter.notifyItemRangeInserted(size, 20)
         }, 1000)
     }
 
