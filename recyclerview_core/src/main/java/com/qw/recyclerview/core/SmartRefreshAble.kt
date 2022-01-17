@@ -30,7 +30,7 @@ interface SmartRefreshable {
     /**
      * 设置加载更多listener
      */
-    fun setOnLoadMoreListener(onRefreshListener: OnLoadMoreListener)
+    fun setOnLoadMoreListener(onLoadMoreListener: OnLoadMoreListener)
 
     /**
      * 启用下拉刷新
