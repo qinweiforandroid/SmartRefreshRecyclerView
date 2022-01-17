@@ -97,7 +97,7 @@ abstract class SmartRefreshListComponent<T> constructor(
         return count
     }
 
-    override fun getItemViewType(position: Int): Int {
+    final override fun getItemViewType(position: Int): Int {
         if (isLoadMoreShow(position)) {
             return typeLoadMore
         }
@@ -107,7 +107,7 @@ abstract class SmartRefreshListComponent<T> constructor(
 
     abstract fun onCreateBaseViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder
 
-    fun getItemViewTypeByPosition(position: Int): Int = 0
+    open fun getItemViewTypeByPosition(position: Int): Int = 0
 
     fun isLoadMoreShow(position: Int): Boolean {
         return smart.isLoadMoreEnable() && adapter.itemCount - 1 == position
