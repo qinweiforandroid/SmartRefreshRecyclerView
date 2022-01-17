@@ -26,18 +26,19 @@ class SmartRefreshLayoutRecyclerView(
         mRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
-                if (!mLoadMoreEnable) {
-                    return
+                if (!mLoadMoreEnable) return
+                if (onLoadMoreListener == null) return
+                when (onLoadMoreListener?.getState()) {
+                    State.NO_MORE,
+                    State.ERROR,
+                    State.EMPTY -> {
+                        return
+                    }
+                    else -> {
+                    }
                 }
-                if (onLoadMoreListener == null) {
-                    return
-                }
-                if (state != SmartRefreshable.REFRESH_IDLE) {
-                    return
-                }
-                if (onLoadMoreListener?.getState() != State.IDLE) {
-                    return
-                }
+                if (state != SmartRefreshable.REFRESH_IDLE) return
+
                 if (newState == RecyclerView.SCROLL_STATE_IDLE && checkedIsNeedLoadMore()) {
                     state = SmartRefreshable.REFRESH_UP
                     mSmartRefreshLayout.setEnableRefresh(false)

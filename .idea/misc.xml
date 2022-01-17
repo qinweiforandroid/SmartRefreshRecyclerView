@@ -3,6 +3,11 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/projects/SmartRefreshRecyclerView/app/src/main/res/layout/activity_main.xml" value="0.24791666666666667" />
+        <entry key="..\:/projects/SmartRefreshRecyclerView/app/src/main/res/layout/smart_refresh_layout_activity.xml" value="0.27760416666666665" />
+        <entry key="..\:/projects/SmartRefreshRecyclerView/app/src/main/res/layout/sr_widget_pulltorefresh_footer.xml" value="0.23333333333333334" />
+        <entry key="..\:/projects/SmartRefreshRecyclerView/app/src/main/res/layout/swipe_refresh_layout_activity.xml" value="0.27760416666666665" />
+        <entry key="..\:/projects/SmartRefreshRecyclerView/app/src/main/res/layout/widget_refresh_view.xml" value="0.27760416666666665" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.25" />
         <entry key="app/src/main/res/layout/smart_refresh_layout_activity.xml" value="0.18697916666666667" />
         <entry key="app/src/main/res/layout/swipe_refresh_layout_activity.xml" value="0.21240942028985507" />
@@ -11,7 +16,10 @@
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="ProjectPlainTextFileTypeManager">
+    <file url="file://$PROJECT_DIR$/recyclerview_swiperefresh/src/main/java/com/qw/recyclerview/swiperefresh/BaseListComponent.kt" />
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">

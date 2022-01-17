@@ -22,21 +22,21 @@ public class MainActivity extends AppCompatActivity {
         bind.mSwipeRefreshRecyclerViewSample1Btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, SwipeRefreshLayout1Activity.class));
+                startActivity(new Intent(MainActivity.this, SwipeRefreshLayout0Activity.class));
             }
         });
 
         bind.mSwipeRefreshRecyclerViewSample2Btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, SwipeRefreshLayout2Activity.class));
+                startActivity(new Intent(MainActivity.this, SwipeRefreshLayout1Activity.class));
             }
         });
 
         bind.mSwipeRefreshRecyclerViewSample3Btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, SwipeRefreshLayout3Activity.class));
+                startActivity(new Intent(MainActivity.this, SwipeRefreshLayout2Activity.class));
             }
         });
         bind.mSmartRefreshLayoutRecyclerViewSampleBtn.setOnClickListener(new View.OnClickListener() {
@@ -45,10 +45,16 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(MainActivity.this, SmartRefreshLayoutActivity.class));
             }
         });
-        bind.mSmartRefreshLayoutRecyclerViewSamplePlusBtn.setOnClickListener(new View.OnClickListener() {
+        bind.mSmartRefreshLayoutRecyclerView1Btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                startActivity(new Intent(MainActivity.this, SmartRefreshLayoutPlusActivity.class));
+                startActivity(new Intent(MainActivity.this, SmartRefreshLayout1Activity.class));
+            }
+        });
+        bind.mSmartRefreshLayoutRecyclerView2Btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, SmartRefreshLayout2Activity.class));
             }
         });
     }

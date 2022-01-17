@@ -1,13 +1,13 @@
-package com.qw.recyclerview.sample
+package com.qw.recyclerview.footer
 
 import android.content.Context
 import android.util.AttributeSet
-import android.widget.LinearLayout
-import com.qw.recyclerview.core.ILoadMore
-import android.widget.TextView
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.LinearLayout
 import android.widget.ProgressBar
+import android.widget.TextView
+import com.qw.recyclerview.core.ILoadMore
 import com.qw.recyclerview.core.State
 
 /**
@@ -40,7 +40,7 @@ class DefaultLoadMore : ILoadMore {
         }
 
         private fun initializeView(context: Context) {
-            LayoutInflater.from(context).inflate(R.layout.sr_widget_pulltorefresh_footer, this)
+            LayoutInflater.from(context).inflate(R.layout.sr_widget_footer, this)
             mProgressBar = findViewById<View>(R.id.mProgressBar) as ProgressBar
             mFooterLabel = findViewById<View>(R.id.mFooterLabel) as TextView
             onStateChanged(State.IDLE)

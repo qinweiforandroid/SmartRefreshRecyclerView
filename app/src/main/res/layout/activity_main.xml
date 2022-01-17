@@ -23,21 +23,21 @@
             android:id="@+id/mSwipeRefreshRecyclerViewSample1Btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="impl1" />
+            android:text="基础用法" />
 
         <Button
             android:id="@+id/mSwipeRefreshRecyclerViewSample2Btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
-            android:text="impl2" />
+            android:text="加载更多" />
 
         <Button
             android:id="@+id/mSwipeRefreshRecyclerViewSample3Btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
-            android:text="impl3" />
+            android:text="进阶用法" />
     </LinearLayout>
 
     <TextView
@@ -56,13 +56,19 @@
             android:id="@+id/mSmartRefreshLayoutRecyclerViewSampleBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="impl" />
+            android:text="基礎用法" />
 
         <Button
-            android:id="@+id/mSmartRefreshLayoutRecyclerViewSamplePlusBtn"
+            android:id="@+id/mSmartRefreshLayoutRecyclerView1Btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
-            android:text="impl_plus" />
+            android:text="进阶1" />
+        <Button
+            android:id="@+id/mSmartRefreshLayoutRecyclerView2Btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:text="进阶2" />
     </LinearLayout>
 </LinearLayout>

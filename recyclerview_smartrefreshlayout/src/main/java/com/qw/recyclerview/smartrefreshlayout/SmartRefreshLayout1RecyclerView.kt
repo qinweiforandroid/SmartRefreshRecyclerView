@@ -5,7 +5,6 @@ import com.qw.recyclerview.core.OnLoadMoreListener
 import com.qw.recyclerview.core.OnRefreshListener
 import com.qw.recyclerview.core.SmartRefreshable
 import com.scwang.smart.refresh.layout.SmartRefreshLayout
-import java.lang.IllegalArgumentException
 
 /**
  * Created by qinwei on 2021/6/30 17:47

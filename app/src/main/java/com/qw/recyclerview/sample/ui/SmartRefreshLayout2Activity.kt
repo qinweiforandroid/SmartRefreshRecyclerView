@@ -10,30 +10,30 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.qw.recyclerview.core.OnLoadMoreListener
 import com.qw.recyclerview.core.OnRefreshListener
 import com.qw.recyclerview.core.adapter.BaseViewHolder
 import com.qw.recyclerview.footer.DefaultLoadMore
 import com.qw.recyclerview.sample.R
-import com.qw.recyclerview.sample.databinding.SwipeRefreshLayoutActivityBinding
-import com.qw.recyclerview.swiperefresh.SwipeRefreshListComponent
+import com.qw.recyclerview.sample.databinding.SmartRefreshLayoutActivityBinding
+import com.qw.recyclerview.smartrefreshlayout.SmartRefresh1ListComponent
+import com.scwang.smart.refresh.layout.SmartRefreshLayout
 import java.util.*
 
 /**
  * Created by qinwei on 2021/7/1 20:38
  */
-class SwipeRefreshLayout2Activity : AppCompatActivity() {
-    private lateinit var mComponent: SwipeRefreshListComponent<String>
-    private lateinit var bind: SwipeRefreshLayoutActivityBinding
+class SmartRefreshLayout2Activity : AppCompatActivity() {
+    private lateinit var mComponent: SmartRefresh1ListComponent<String>
+    private lateinit var bind: SmartRefreshLayoutActivityBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        bind = SwipeRefreshLayoutActivityBinding.inflate(layoutInflater)
+        bind = SmartRefreshLayoutActivityBinding.inflate(layoutInflater)
         setContentView(bind.root)
         val mRecyclerView = findViewById<RecyclerView>(R.id.mRecyclerView)
-        val mSwipeRefresh = findViewById<SwipeRefreshLayout>(R.id.mSwipeRefreshLayout)
-        mComponent = object : SwipeRefreshListComponent<String>(mRecyclerView, mSwipeRefresh) {
+        val mSmartRefresh = findViewById<SmartRefreshLayout>(R.id.mSmartRefreshLayout)
+        mComponent = object : SmartRefresh1ListComponent<String>(mRecyclerView, mSmartRefresh) {
             init {
                 setLayoutManager(linearLayoutManager)
                 setLoadMoreEnable(true)
@@ -43,7 +43,7 @@ class SwipeRefreshLayout2Activity : AppCompatActivity() {
 
             override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
                 return Holder(
-                    LayoutInflater.from(this@SwipeRefreshLayout2Activity)
+                    LayoutInflater.from(this@SmartRefreshLayout2Activity)
                         .inflate(android.R.layout.simple_list_item_1, parent, false)
                 )
             }
@@ -132,18 +132,7 @@ class SwipeRefreshLayout2Activity : AppCompatActivity() {
      * @return
      */
     private fun getGridLayoutManager(spanCount: Int): GridLayoutManager {
-        return GridLayoutManager(this, spanCount).apply {
-            spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
-                override fun getSpanSize(position: Int): Int {
-                    return if (mComponent.isLoadMoreViewShow(position)) {
-                        spanCount
-                    } else {
-                        1
-                    }
-                }
-
-            }
-        }
+        return GridLayoutManager(this, spanCount)
     }
 
     /**

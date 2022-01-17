@@ -1,29 +1,24 @@
-package com.qw.recyclerview.sample
+package com.qw.recyclerview.swiperefresh
 
-import android.app.Activity
-import android.content.Context
-import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.qw.recyclerview.core.*
-import com.qw.recyclerview.core.ILoadMore
 import com.qw.recyclerview.core.adapter.BaseListAdapter
 import com.qw.recyclerview.core.adapter.BaseViewHolder
-import com.qw.recyclerview.swiperefresh.SwipeRefreshRecyclerView
 
 /**
  * SwipeRefreshRecyclerView模版组件
  * Created by qinwei on 2022/1/9 2:46 下午
  * email: qinwei_it@163.com
  */
-class SwipeRefreshRecyclerViewComponent<T> {
-    private lateinit var mLoadMoreView: ILoadMore
-    private val mRecyclerView: RecyclerView
+abstract class SwipeRefreshListComponent<T> constructor(
+    private val mRecyclerView: RecyclerView,
     private val mSwipeRefreshLayout: SwipeRefreshLayout
+) {
+    private lateinit var mLoadMoreView: ILoadMore
     private val smartRefresh: SmartRefreshHelper = SmartRefreshHelper()
     private val modules = ArrayList<T>()
     private var mInnerAdapter: BaseListAdapter = ListAdapter()
@@ -31,21 +26,8 @@ class SwipeRefreshRecyclerViewComponent<T> {
     private var onLoadMoreListener: OnLoadMoreListener? = null
     private val typeLoadMore = -1
 
-    private lateinit var mAdapter: BaseListAdapter
 
-    constructor(activity: Activity) {
-        mRecyclerView = activity.findViewById(R.id.mRecyclerView)
-        mSwipeRefreshLayout = activity.findViewById(R.id.mSwipeRefreshLayout)
-        init(activity)
-    }
-
-    constructor(fragment: Fragment) {
-        mRecyclerView = fragment.requireView().findViewById(R.id.mRecyclerView)
-        mSwipeRefreshLayout = fragment.requireView().findViewById(R.id.mSwipeRefreshLayout)
-        init(fragment.requireContext())
-    }
-
-    private fun init(context: Context) {
+    init {
         (mRecyclerView.itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
         mRecyclerView.adapter = mInnerAdapter
         smartRefresh.inject(SwipeRefreshRecyclerView(mRecyclerView, mSwipeRefreshLayout))
@@ -114,14 +96,14 @@ class SwipeRefreshRecyclerViewComponent<T> {
                     }
                 }
             }
-            return mAdapter.onCreateViewHolder(parent, viewType)
+            return this@SwipeRefreshListComponent.onCreateViewHolder(parent, viewType)
         }
 
         override fun getItemViewType(position: Int): Int {
             if (isLoadMoreViewShow(position)) {
                 return typeLoadMore
             }
-            return mAdapter.getItemViewType(position)
+            return this@SwipeRefreshListComponent.getItemViewType(position)
         }
 
         override fun getItemCount(): Int {
@@ -141,12 +123,12 @@ class SwipeRefreshRecyclerViewComponent<T> {
         }
     }
 
+    open fun getItemViewType(position: Int): Int = 0
+
+    abstract fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder
+
     fun isLoadMoreViewShow(position: Int): Boolean {
         return smartRefresh.isLoadMoreEnable() && mInnerAdapter.itemCount - 1 == position
-    }
-
-    fun setAdapter(adapter: BaseListAdapter) {
-        this.mAdapter = adapter
     }
 
     fun autoRefresh() {

@@ -10,21 +10,31 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.QRecyclerView">
-        <activity android:name=".ui.MainActivity">
+        <activity
+            android:name=".ui.MainActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".ui.SmartRefreshLayoutActivity" />
-        <activity android:name=".ui.SwipeRefreshLayout3Activity" />
-        <activity android:name=".ui.SwipeRefreshLayout2Activity" />
-        <activity android:name=".ui.SwipeRefreshLayout1Activity" />
-        <!--        <activity android:name=".ui.SmartRefreshLayoutPlusActivity"/>-->
-        <!--        <activity android:name=".ui.SwipeRefreshLayoutPlusActivity"/>-->
-
+        <activity
+            android:name=".ui.SmartRefreshLayoutActivity"
+            android:exported="true" />
+        <activity
+            android:name=".ui.SwipeRefreshLayout2Activity"
+            android:exported="true" />
+        <activity
+            android:name=".ui.SwipeRefreshLayout1Activity"
+            android:exported="true" />
+        <activity
+            android:name=".ui.SwipeRefreshLayout0Activity"
+            android:exported="true" />
+        <activity
+            android:name=".ui.SmartRefreshLayout1Activity"
+            android:exported="true" />
+        <activity
+            android:name=".ui.SmartRefreshLayout2Activity"
+            android:exported="true" />
     </application>
-
 </manifest>

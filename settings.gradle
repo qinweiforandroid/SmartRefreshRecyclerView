@@ -3,3 +3,4 @@ include ':recyclerview_swiperefresh'
 include ':recyclerview_core'
 include ':app'
 rootProject.name = "SmartRefreshRecyclerView"
+include ':recyclerview_footer'

@@ -1,23 +1,23 @@
 package com.qw.recyclerview.sample.ui
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.view.LayoutInflater
-import android.view.ViewGroup
+import android.view.*
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.qw.recyclerview.core.OnLoadMoreListener
 import com.qw.recyclerview.core.OnRefreshListener
 import com.qw.recyclerview.core.SmartRefreshHelper
+import com.qw.recyclerview.core.State
+import com.qw.recyclerview.core.adapter.BaseListAdapter
 import com.qw.recyclerview.core.adapter.BaseViewHolder
+import com.qw.recyclerview.footer.DefaultLoadMore
 import com.qw.recyclerview.sample.R
 import com.qw.recyclerview.sample.databinding.SwipeRefreshLayoutActivityBinding
-import com.qw.recyclerview.sample.loading.LoadingHelper
-import com.qw.recyclerview.sample.loading.State
 import com.qw.recyclerview.swiperefresh.SwipeRefreshRecyclerView
 import java.util.*
 
@@ -25,17 +25,18 @@ import java.util.*
  * Created by qinwei on 2021/7/1 20:38
  */
 class SwipeRefreshLayout1Activity : AppCompatActivity() {
-    private lateinit var mLoading: LoadingHelper
     private lateinit var bind: SwipeRefreshLayoutActivityBinding
     private lateinit var smartRefresh: SmartRefreshHelper
     private lateinit var adapter: ListAdapter
-    private var modules = ArrayList<String>()
+    private var modules = ArrayList<Any>()
+    private var loadMoreState = State.IDLE
+    private val TYPE_LOAD_MORE = -1
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         bind = SwipeRefreshLayoutActivityBinding.inflate(layoutInflater)
         setContentView(bind.root)
-        mLoading = LoadingHelper()
-        mLoading.inject(bind.mLoading)
 
         //1.配置RecyclerView
         val mRecyclerView = findViewById<RecyclerView>(R.id.mRecyclerView)
@@ -46,6 +47,7 @@ class SwipeRefreshLayout1Activity : AppCompatActivity() {
 
         //2.配置SwipeRefreshLayout
         val mSwipeRefreshLayout = findViewById<SwipeRefreshLayout>(R.id.mSwipeRefreshLayout)
+        //mSwipeRefreshLayout.setColorSchemeColors();
 
         //3.配置SmartRefreshHelper
         smartRefresh = SmartRefreshHelper()
@@ -67,20 +69,29 @@ class SwipeRefreshLayout1Activity : AppCompatActivity() {
             override fun onLoadMore() {
                 loadMore()
             }
+
+            override fun onStateChanged(state: State) {
+                loadMoreState = state
+                adapter.notifyDataSetChanged()
+            }
+
+            override fun getState(): State {
+                return loadMoreState
+            }
         })
-//        smartRefresh.autoRefresh()
-        mLoading.setOnRetryListener {
-            //重试回调
-        }
-        mLoading.notifyDataChanged(State.ing)
-        Handler(Looper.myLooper()!!).postDelayed({
+        //自动刷新
+        smartRefresh.autoRefresh()
+    }
+
+    private fun refresh() {
+        smartRefresh.getRecyclerView().postDelayed({
             modules.clear()
             for (i in 0..19) {
                 modules.add("" + i)
             }
+            smartRefresh.finishRefresh(true)
             adapter.notifyDataSetChanged()
-            mLoading.notifyDataChanged(State.done)
-        }, 1500)
+        }, 1000)
     }
 
     private fun loadMore() {
@@ -92,48 +103,112 @@ class SwipeRefreshLayout1Activity : AppCompatActivity() {
             if (modules.size < 100) {
                 smartRefresh.finishLoadMore(success = true, noMoreData = false)
             } else {
-                smartRefresh.finishLoadMore(success = true, noMoreData = true)
+                smartRefresh.finishLoadMore(success = false, noMoreData = true)
             }
             adapter.notifyDataSetChanged()
         }, 1000)
     }
 
-    private fun refresh() {
-        smartRefresh.getRecyclerView().postDelayed({
-            modules.clear()
-            for (i in 0..19) {
-                modules.add("" + i)
+    private val loadMore = DefaultLoadMore()
+
+    inner class ListAdapter : BaseListAdapter() {
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
+            if (viewType == TYPE_LOAD_MORE) {
+                return object : BaseViewHolder(loadMore.getView(parent.context)) {
+                    override fun initData(position: Int) {
+                        loadMore.onStateChanged(loadMoreState)
+                        loadMore.setOnRetryListener {
+                            loadMoreState = State.LOADING
+                            loadMore.onStateChanged(loadMoreState)
+                            loadMore()
+                        }
+                    }
+                }
             }
-            adapter.notifyDataSetChanged()
-            smartRefresh.finishRefresh(true)
-        }, 1000)
-    }
-
-    internal inner class ListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-        override fun getItemCount(): Int {
-            return modules.size
-        }
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
             return object : BaseViewHolder(
                 LayoutInflater.from(this@SwipeRefreshLayout1Activity)
                     .inflate(android.R.layout.simple_list_item_1, parent, false)
             ) {
-                private val label: TextView = itemView as TextView
                 override fun initData(position: Int) {
+                    val label: TextView = itemView as TextView
                     val text = modules[position]
-                    label.text = text
+                    label.text = text.toString()
                 }
             }
         }
 
-        override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {}
-        override fun onBindViewHolder(
-            holder: RecyclerView.ViewHolder,
-            position: Int,
-            payloads: List<Any>
-        ) {
-            (holder as BaseViewHolder).initData(position, payloads)
+        override fun getItemViewType(position: Int): Int {
+            if (position == itemCount - 1 && isLoadMoreViewShow()) {
+                return TYPE_LOAD_MORE
+            }
+            return super.getItemViewType(position)
         }
+
+        override fun getItemCount(): Int {
+            var count = modules.size
+            if (isLoadMoreViewShow()) {
+                count++
+            }
+            return count
+        }
+
+        override fun onViewAttachedToWindow(holder: BaseViewHolder) {
+            super.onViewAttachedToWindow(holder)
+
+        }
+    }
+
+    private fun isLoadMoreViewShow(): Boolean {
+        return true
+//        return loadMoreState != State.IDLE
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_recyclerview, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val itemId = item.itemId
+        if (itemId == R.id.action_linearLayout) {
+            smartRefresh.setLayoutManager(linearLayoutManager)
+        } else if (itemId == R.id.action_gridLayout) {
+            smartRefresh.setLayoutManager(getGridLayoutManager(2))
+        } else if (itemId == R.id.action_staggeredGridLayout) {
+            smartRefresh.setLayoutManager(getStaggeredGridLayoutManager(2))
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    private val linearLayoutManager: RecyclerView.LayoutManager
+        get() = LinearLayoutManager(this)
+
+    /**
+     * 得到GridLayoutManager
+     *
+     * @param spanCount 列数
+     * @return
+     */
+    private fun getGridLayoutManager(spanCount: Int): GridLayoutManager {
+        val manager = GridLayoutManager(this, spanCount)
+        manager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+            override fun getSpanSize(position: Int): Int {
+                return if (adapter.itemCount - 1 == position && isLoadMoreViewShow()) {
+                    manager.spanCount
+                } else 1
+            }
+        }
+        return manager
+    }
+
+    /**
+     * 得到StaggeredGridLayoutManager
+     *
+     * @param spanCount 列数
+     * @return
+     */
+    private fun getStaggeredGridLayoutManager(spanCount: Int): StaggeredGridLayoutManager {
+        return StaggeredGridLayoutManager(spanCount, StaggeredGridLayoutManager.VERTICAL)
     }
 }
