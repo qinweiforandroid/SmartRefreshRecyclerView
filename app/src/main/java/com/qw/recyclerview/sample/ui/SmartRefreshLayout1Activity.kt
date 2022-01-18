@@ -12,7 +12,9 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.qw.recyclerview.core.OnLoadMoreListener
+import com.qw.recyclerview.core.OnLoadMoreStateListener
 import com.qw.recyclerview.core.OnRefreshListener
+import com.qw.recyclerview.core.State
 import com.qw.recyclerview.core.adapter.BaseViewHolder
 import com.qw.recyclerview.footer.DefaultLoadMore
 import com.qw.recyclerview.sample.R
@@ -66,6 +68,11 @@ class SmartRefreshLayout1Activity : AppCompatActivity() {
         mComponent.smart.setOnRefreshListener(object : OnRefreshListener {
             override fun onRefresh() {
                 refresh()
+            }
+        })
+        mComponent.smart.setOnLoadMoreStateListener(object : OnLoadMoreStateListener {
+            override fun onStateChanged(state: State) {
+
             }
         })
         mComponent.smart.autoRefresh()

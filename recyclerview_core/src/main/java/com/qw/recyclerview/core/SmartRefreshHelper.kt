@@ -39,6 +39,11 @@ class SmartRefreshHelper : SmartRefreshable {
         return mSmartRefreshable.isRefreshEnable()
     }
 
+    override fun setOnLoadMoreStateListener(listener: OnLoadMoreStateListener) {
+        mSmartRefreshable.setOnLoadMoreStateListener(listener)
+    }
+
+
     override fun setLoadMoreEnable(isEnabled: Boolean) {
         mSmartRefreshable.setLoadMoreEnable(isEnabled)
     }

@@ -34,9 +34,12 @@ class SwipeRefreshLayout2Activity : AppCompatActivity() {
         val mRecyclerView = findViewById<RecyclerView>(R.id.mRecyclerView)
         val mSwipeRefresh = findViewById<SwipeRefreshLayout>(R.id.mSwipeRefreshLayout)
         mComponent = object : SwipeRefreshListComponent<String>(mRecyclerView, mSwipeRefresh) {
-            init {
-                setLayoutManager(linearLayoutManager)
-                injectLoadMore(DefaultLoadMore())
+
+            override fun onCreateBaseViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
+                return Holder(
+                    LayoutInflater.from(this@SwipeRefreshLayout2Activity)
+                        .inflate(android.R.layout.simple_list_item_1, parent, false)
+                )
             }
 
             inner class Holder(itemView: View) : BaseViewHolder(itemView) {
@@ -46,14 +49,9 @@ class SwipeRefreshLayout2Activity : AppCompatActivity() {
                     label.text = text
                 }
             }
-
-            override fun onCreateBaseViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
-                return Holder(
-                    LayoutInflater.from(this@SwipeRefreshLayout2Activity)
-                        .inflate(android.R.layout.simple_list_item_1, parent, false)
-                )
-            }
         }
+        mComponent.setLayoutManager(linearLayoutManager)
+        mComponent.injectLoadMore(DefaultLoadMore())
         mComponent.smart.setRefreshEnable(true)
         mComponent.smart.setLoadMoreEnable(true)
         mComponent.setOnLoadMoreListener(object : OnLoadMoreListener {

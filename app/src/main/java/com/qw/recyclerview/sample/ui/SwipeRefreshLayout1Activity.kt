@@ -9,10 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.qw.recyclerview.core.OnLoadMoreListener
-import com.qw.recyclerview.core.OnRefreshListener
-import com.qw.recyclerview.core.SmartRefreshHelper
-import com.qw.recyclerview.core.State
+import com.qw.recyclerview.core.*
 import com.qw.recyclerview.core.adapter.BaseListAdapter
 import com.qw.recyclerview.core.adapter.BaseViewHolder
 import com.qw.recyclerview.footer.DefaultLoadMore
@@ -29,8 +26,7 @@ class SwipeRefreshLayout1Activity : AppCompatActivity() {
     private lateinit var smartRefresh: SmartRefreshHelper
     private lateinit var adapter: ListAdapter
     private var modules = ArrayList<Any>()
-    private var loadMoreState = State.IDLE
-    private val TYPE_LOAD_MORE = -1
+    private val typeLoadMore = -1
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,70 +57,63 @@ class SwipeRefreshLayout1Activity : AppCompatActivity() {
         //设置下拉刷新监听
         smartRefresh.setOnRefreshListener(object : OnRefreshListener {
             override fun onRefresh() {
-                refresh()
+                smartRefresh.getRecyclerView().postDelayed({
+                    modules.clear()
+                    for (i in 0..19) {
+                        modules.add("" + i)
+                    }
+                    smartRefresh.finishRefresh(true)
+                    adapter.notifyDataSetChanged()
+                }, 1000)
             }
         })
         //设置加载更多监听
         smartRefresh.setOnLoadMoreListener(object : OnLoadMoreListener {
             override fun onLoadMore() {
-                loadMore()
-            }
-
-            override fun onStateChanged(state: State) {
-                loadMoreState = state
-                adapter.notifyDataSetChanged()
-            }
-
-            override fun getState(): State {
-                return loadMoreState
+                smartRefresh.getRecyclerView().postDelayed({
+                    val size = modules.size
+                    for (i in size until size + 20) {
+                        modules.add("" + i)
+                    }
+                    if (modules.size < 100) {
+                        smartRefresh.finishLoadMore(success = true, noMoreData = false)
+                    } else {
+                        smartRefresh.finishLoadMore(success = false, noMoreData = true)
+                    }
+                    adapter.notifyDataSetChanged()
+                }, 1000)
             }
         })
+        smartRefresh.setOnLoadMoreStateListener(object : OnLoadMoreStateListener {
+            override fun onStateChanged(state: State) {
+                var newState = state
+                if (state == State.NO_MORE || state == State.IDLE || state == State.ERROR) {
+                    if (modules.size == 0) {
+                        newState = State.EMPTY
+                    }
+                }
+                loadMore.notifyStateChanged(newState)
+                adapter.notifyItemChanged(adapter.itemCount - 1)
+            }
+        })
+
         //自动刷新
         smartRefresh.autoRefresh()
     }
 
-    private fun refresh() {
-        smartRefresh.getRecyclerView().postDelayed({
-            modules.clear()
-            for (i in 0..19) {
-                modules.add("" + i)
-            }
-            smartRefresh.finishRefresh(true)
-            adapter.notifyDataSetChanged()
-        }, 1000)
+    private val loadMore = DefaultLoadMore().apply {
+        setOnRetryListener {
+            notifyStateChanged(State.LOADING)
+            adapter.notifyItemChanged(adapter.itemCount - 1)
+//            onLoadMoreListener?.onLoadMore()
+        }
     }
-
-    private fun loadMore() {
-        smartRefresh.getRecyclerView().postDelayed({
-            val size = modules.size
-            for (i in size until size + 20) {
-                modules.add("" + i)
-            }
-            if (modules.size < 100) {
-                smartRefresh.finishLoadMore(success = true, noMoreData = false)
-            } else {
-                smartRefresh.finishLoadMore(success = false, noMoreData = true)
-            }
-            adapter.notifyDataSetChanged()
-        }, 1000)
-    }
-
-    private val loadMore = DefaultLoadMore()
 
     inner class ListAdapter : BaseListAdapter() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
-            if (viewType == TYPE_LOAD_MORE) {
-                return object : BaseViewHolder(loadMore.getView(parent.context)) {
-                    override fun initData(position: Int) {
-                        loadMore.onStateChanged(loadMoreState)
-                        loadMore.setOnRetryListener {
-                            loadMoreState = State.LOADING
-                            loadMore.onStateChanged(loadMoreState)
-                            loadMore()
-                        }
-                    }
-                }
+            if (viewType == typeLoadMore) {
+                return loadMore.getLoadMoreViewHolder(parent)
             }
             return object : BaseViewHolder(
                 LayoutInflater.from(this@SwipeRefreshLayout1Activity)
@@ -139,29 +128,23 @@ class SwipeRefreshLayout1Activity : AppCompatActivity() {
         }
 
         override fun getItemViewType(position: Int): Int {
-            if (position == itemCount - 1 && isLoadMoreViewShow()) {
-                return TYPE_LOAD_MORE
+            if (isLoadMoreShow(position)) {
+                return typeLoadMore
             }
             return super.getItemViewType(position)
         }
 
         override fun getItemCount(): Int {
             var count = modules.size
-            if (isLoadMoreViewShow()) {
+            if (smartRefresh.isLoadMoreEnable()) {
                 count++
             }
             return count
         }
-
-        override fun onViewAttachedToWindow(holder: BaseViewHolder) {
-            super.onViewAttachedToWindow(holder)
-
-        }
     }
 
-    private fun isLoadMoreViewShow(): Boolean {
-        return true
-//        return loadMoreState != State.IDLE
+    fun isLoadMoreShow(position: Int): Boolean {
+        return smartRefresh.isLoadMoreEnable() && adapter.itemCount - 1 == position
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -194,7 +177,7 @@ class SwipeRefreshLayout1Activity : AppCompatActivity() {
         val manager = GridLayoutManager(this, spanCount)
         manager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
             override fun getSpanSize(position: Int): Int {
-                return if (adapter.itemCount - 1 == position && isLoadMoreViewShow()) {
+                return if (isLoadMoreShow(position)) {
                     manager.spanCount
                 } else 1
             }

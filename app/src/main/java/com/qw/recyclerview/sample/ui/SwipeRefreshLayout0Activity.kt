@@ -59,16 +59,33 @@ class SwipeRefreshLayout0Activity : AppCompatActivity() {
         //设置下拉刷新监听
         smartRefresh.setOnRefreshListener(object : OnRefreshListener {
             override fun onRefresh() {
-                refresh()
+                smartRefresh.getRecyclerView().postDelayed({
+                    modules.clear()
+                    for (i in 0..19) {
+                        modules.add("" + i)
+                    }
+                    adapter.notifyDataSetChanged()
+                    smartRefresh.finishRefresh(true)
+                }, 1000)
             }
         })
         //设置加载更多监听
         smartRefresh.setOnLoadMoreListener(object : OnLoadMoreListener {
             override fun onLoadMore() {
-                loadMore()
+                smartRefresh.getRecyclerView().postDelayed({
+                    val size = modules.size
+                    for (i in size until size + 20) {
+                        modules.add("" + i)
+                    }
+                    if (modules.size < 100) {
+                        smartRefresh.finishLoadMore(success = true, noMoreData = false)
+                    } else {
+                        smartRefresh.finishLoadMore(success = true, noMoreData = true)
+                    }
+                    adapter.notifyDataSetChanged()
+                }, 1000)
             }
         })
-//        smartRefresh.autoRefresh()
         mLoading.setOnRetryListener {
             //重试回调
         }
@@ -83,32 +100,6 @@ class SwipeRefreshLayout0Activity : AppCompatActivity() {
         }, 1500)
     }
 
-    private fun loadMore() {
-        smartRefresh.getRecyclerView().postDelayed({
-            val size = modules.size
-            for (i in size until size + 20) {
-                modules.add("" + i)
-            }
-            if (modules.size < 100) {
-                smartRefresh.finishLoadMore(success = true, noMoreData = false)
-            } else {
-                smartRefresh.finishLoadMore(success = true, noMoreData = true)
-            }
-            adapter.notifyDataSetChanged()
-        }, 1000)
-    }
-
-    private fun refresh() {
-        smartRefresh.getRecyclerView().postDelayed({
-            modules.clear()
-            for (i in 0..19) {
-                modules.add("" + i)
-            }
-            adapter.notifyDataSetChanged()
-            smartRefresh.finishRefresh(true)
-        }, 1000)
-    }
-
     internal inner class ListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         override fun getItemCount(): Int {
             return modules.size
@@ -119,8 +110,8 @@ class SwipeRefreshLayout0Activity : AppCompatActivity() {
                 LayoutInflater.from(this@SwipeRefreshLayout0Activity)
                     .inflate(android.R.layout.simple_list_item_1, parent, false)
             ) {
-                private val label: TextView = itemView as TextView
                 override fun initData(position: Int) {
+                    val label: TextView = itemView as TextView
                     val text = modules[position]
                     label.text = text
                 }

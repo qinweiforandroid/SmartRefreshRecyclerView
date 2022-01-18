@@ -17,10 +17,9 @@ abstract class SwipeRefreshListComponent<T> constructor(
     mRecyclerView: RecyclerView,
     private val mSwipeRefreshLayout: SwipeRefreshLayout
 ) : BaseListComponent<T>(mRecyclerView) {
-    private lateinit var mLoadMoreView: ILoadMore
     val smart: SmartRefreshHelper = SmartRefreshHelper()
-    private var mLoadMoreState = State.IDLE
     private var onLoadMoreListener: OnLoadMoreListener? = null
+    private var loadMore: ILoadMore? = null
     private val typeLoadMore = -1
 
     init {
@@ -28,56 +27,39 @@ abstract class SwipeRefreshListComponent<T> constructor(
         smart.inject(SwipeRefreshRecyclerView(mRecyclerView, mSwipeRefreshLayout))
         smart.setRefreshEnable(false)
         smart.setLoadMoreEnable(false)
+
+        smart.setOnLoadMoreStateListener(object : OnLoadMoreStateListener {
+            override fun onStateChanged(state: State) {
+                var newState = state
+                if (state == State.NO_MORE || state == State.IDLE || state == State.ERROR) {
+                    if (modules.size == 0) {
+                        newState = State.EMPTY
+                    }
+                }
+                loadMore?.notifyStateChanged(newState)
+                adapter.notifyItemChanged(adapter.itemCount - 1)
+            }
+        })
     }
 
     fun injectLoadMore(loadMore: ILoadMore) {
-        this.mLoadMoreView = loadMore
+        this.loadMore = loadMore
+        this.loadMore?.setOnRetryListener {
+            this.loadMore?.notifyStateChanged(State.LOADING)
+            adapter.notifyItemChanged(adapter.itemCount - 1)
+            onLoadMoreListener?.onLoadMore()
+        }
     }
-
 
     fun setOnLoadMoreListener(onLoadMoreListener: OnLoadMoreListener) {
         this.onLoadMoreListener = onLoadMoreListener
-        smart.setOnLoadMoreListener(object : OnLoadMoreListener {
-            override fun onLoadMore() {
-                onLoadMoreListener.onLoadMore()
-            }
-
-            override fun onStateChanged(state: State) {
-                mLoadMoreState = state
-                SRLog.d("SwipeRefreshRecyclerViewComponent onStateChanged:${mLoadMoreState.name} ")
-                //解决第一次加载无数据情况
-                if (state == State.NO_MORE || state == State.IDLE || state == State.ERROR) {
-                    if (modules.size == 0) {
-                        mLoadMoreState = State.EMPTY
-                    }
-                }
-                adapter.notifyItemChanged(adapter.itemCount - 1)
-//                mInnerAdapter.notifyDataSetChanged()
-            }
-
-            override fun getState(): State {
-                return mLoadMoreState
-            }
-        })
+        smart.setOnLoadMoreListener(onLoadMoreListener)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
         if (viewType == typeLoadMore) {
             SRLog.d("SwipeRefreshRecyclerViewComponent typeLoadMore getView")
-            return object : BaseViewHolder(mLoadMoreView.getView(parent.context)) {
-                init {
-                    mLoadMoreView.setOnRetryListener {
-                        mLoadMoreState = State.LOADING
-                        mLoadMoreView.onStateChanged(mLoadMoreState)
-                        onLoadMoreListener?.onLoadMore()
-                    }
-                }
-
-                override fun initData(position: Int) {
-                    SRLog.d("SwipeRefreshRecyclerViewComponent initData:${mLoadMoreState.name}")
-                    mLoadMoreView.onStateChanged(mLoadMoreState)
-                }
-            }
+            return loadMore!!.getLoadMoreViewHolder(parent)
         }
         return onCreateBaseViewHolder(parent, viewType)
     }

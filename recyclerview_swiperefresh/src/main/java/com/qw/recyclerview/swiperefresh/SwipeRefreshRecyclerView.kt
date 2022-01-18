@@ -4,25 +4,27 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.qw.recyclerview.core.OnLoadMoreListener
-import com.qw.recyclerview.core.OnRefreshListener
-import com.qw.recyclerview.core.SRLog
-import com.qw.recyclerview.core.SmartRefreshable
-import com.qw.recyclerview.core.State
+import com.qw.recyclerview.core.*
 import java.lang.IllegalArgumentException
 
 /**
+ * 下拉刷新: 由SwipeRefreshLayout提供
+ * 加载更多: 需要自己实现，目前方案是监听RecyclerView滑动事件
  * Created by qinwei on 2021/6/29 21:44
  */
 class SwipeRefreshRecyclerView(
     private val mRecyclerView: RecyclerView,
     private val mSwipeRefreshLayout: SwipeRefreshLayout
 ) : SmartRefreshable {
+
     private var mRefreshEnable: Boolean = false
     private var mLoadMoreEnable: Boolean = false
     private var onRefreshListener: OnRefreshListener? = null
     private var onLoadMoreListener: OnLoadMoreListener? = null
     private var state = SmartRefreshable.REFRESH_IDLE
+
+    private var loadMoreStateChangedListener: OnLoadMoreStateListener? = null
+    private var loadMoreState = State.IDLE
 
     init {
         mRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -31,7 +33,7 @@ class SwipeRefreshRecyclerView(
                 SRLog.d("SwipeRefreshRecyclerView onScrollStateChanged newState:$newState")
                 if (!mLoadMoreEnable) return
                 if (onLoadMoreListener == null) return
-                when (onLoadMoreListener?.getState()) {
+                when (loadMoreState) {
                     State.NO_MORE,
                     State.ERROR,
                     State.EMPTY -> {
@@ -44,7 +46,7 @@ class SwipeRefreshRecyclerView(
 
                 if (newState == RecyclerView.SCROLL_STATE_IDLE && checkedIsNeedLoadMore()) {
                     state = SmartRefreshable.REFRESH_UP
-                    onLoadMoreListener?.onStateChanged(State.LOADING)
+                    loadMoreStateChangedListener?.onStateChanged(State.LOADING)
                     SRLog.d("SwipeRefreshRecyclerView onScrollStateChanged onLoadMore")
                     onLoadMoreListener?.onLoadMore()
                 }
@@ -72,9 +74,8 @@ class SwipeRefreshRecyclerView(
         if (layoutManager is LinearLayoutManager) {
             lastVisiblePosition = layoutManager.findLastVisibleItemPosition()
         } else if (layoutManager is StaggeredGridLayoutManager) {
-            val sdlm = layoutManager
             lastVisiblePosition =
-                sdlm.findLastCompletelyVisibleItemPositions(null)[sdlm.findLastCompletelyVisibleItemPositions(
+                layoutManager.findLastCompletelyVisibleItemPositions(null)[layoutManager.findLastCompletelyVisibleItemPositions(
                     null
                 ).size - 1]
         }
@@ -110,6 +111,10 @@ class SwipeRefreshRecyclerView(
         return mRefreshEnable
     }
 
+    override fun setOnLoadMoreStateListener(listener: OnLoadMoreStateListener) {
+        this.loadMoreStateChangedListener = listener
+    }
+
     override fun setLoadMoreEnable(isEnabled: Boolean) {
         mLoadMoreEnable = isEnabled
     }
@@ -130,11 +135,12 @@ class SwipeRefreshRecyclerView(
         SRLog.d("SwipeRefreshRecyclerView finishRefresh success:$success")
         mSwipeRefreshLayout.isRefreshing = false
         if (mLoadMoreEnable) {
-            if (success) {
-                onLoadMoreListener?.onStateChanged(State.IDLE)
+            loadMoreState = if (success) {
+                State.IDLE
             } else {
-                onLoadMoreListener?.onStateChanged(State.ERROR)
+                State.ERROR
             }
+            loadMoreStateChangedListener?.onStateChanged(loadMoreState)
         }
         markIdle()
     }
@@ -144,7 +150,7 @@ class SwipeRefreshRecyclerView(
         if (!mLoadMoreEnable) {
             return
         }
-        val state: State = if (success) {
+        loadMoreState = if (success) {
             if (noMoreData) {
                 State.NO_MORE
             } else {
@@ -153,7 +159,7 @@ class SwipeRefreshRecyclerView(
         } else {
             State.ERROR
         }
-        onLoadMoreListener?.onStateChanged(state)
+        loadMoreStateChangedListener?.onStateChanged(loadMoreState)
         markIdle()
     }
 }

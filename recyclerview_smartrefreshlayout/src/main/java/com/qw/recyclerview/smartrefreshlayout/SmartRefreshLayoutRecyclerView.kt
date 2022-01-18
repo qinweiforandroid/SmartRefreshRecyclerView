@@ -3,10 +3,7 @@ package com.qw.recyclerview.smartrefreshlayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.qw.recyclerview.core.OnLoadMoreListener
-import com.qw.recyclerview.core.OnRefreshListener
-import com.qw.recyclerview.core.SmartRefreshable
-import com.qw.recyclerview.core.State
+import com.qw.recyclerview.core.*
 import com.scwang.smart.refresh.layout.SmartRefreshLayout
 
 /**
@@ -21,14 +18,17 @@ class SmartRefreshLayoutRecyclerView(
     private var onRefreshListener: OnRefreshListener? = null
     private var onLoadMoreListener: OnLoadMoreListener? = null
     private var state = SmartRefreshable.REFRESH_IDLE
+    private var loadMoreStateChangedListener: OnLoadMoreStateListener? = null
+    private var loadMoreState = State.IDLE
 
     init {
         mRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
+                SRLog.d("SmartRefreshLayoutRecyclerView onScrollStateChanged newState:$newState")
                 if (!mLoadMoreEnable) return
                 if (onLoadMoreListener == null) return
-                when (onLoadMoreListener?.getState()) {
+                when (loadMoreState) {
                     State.NO_MORE,
                     State.ERROR,
                     State.EMPTY -> {
@@ -41,8 +41,8 @@ class SmartRefreshLayoutRecyclerView(
 
                 if (newState == RecyclerView.SCROLL_STATE_IDLE && checkedIsNeedLoadMore()) {
                     state = SmartRefreshable.REFRESH_UP
-                    mSmartRefreshLayout.setEnableRefresh(false)
-                    onLoadMoreListener?.onStateChanged(State.LOADING)
+                    loadMoreStateChangedListener?.onStateChanged(State.LOADING)
+                    SRLog.d("SmartRefreshLayoutRecyclerView onScrollStateChanged onLoadMore")
                     onLoadMoreListener?.onLoadMore()
                 }
             }
@@ -108,6 +108,10 @@ class SmartRefreshLayoutRecyclerView(
         return mRefreshEnable
     }
 
+    override fun setOnLoadMoreStateListener(listener: OnLoadMoreStateListener) {
+        this.loadMoreStateChangedListener = listener
+    }
+
     override fun setLoadMoreEnable(isEnabled: Boolean) {
         mLoadMoreEnable = isEnabled
     }
@@ -124,9 +128,14 @@ class SmartRefreshLayoutRecyclerView(
     }
 
     override fun finishRefresh(success: Boolean) {
-        mSmartRefreshLayout.finishRefresh()
-        if (success) {
-            onLoadMoreListener?.onStateChanged(State.IDLE)
+        mSmartRefreshLayout.finishRefresh(success)
+        if (mLoadMoreEnable) {
+            loadMoreState = if (success) {
+                State.IDLE
+            } else {
+                State.ERROR
+            }
+            loadMoreStateChangedListener?.onStateChanged(loadMoreState)
         }
         markIdle()
     }
@@ -135,21 +144,16 @@ class SmartRefreshLayoutRecyclerView(
         if (!mLoadMoreEnable) {
             return
         }
-        getRecyclerView().postDelayed({
-            val state: State = if (success) {
-                if (noMoreData) {
-                    State.EMPTY
-                } else {
-                    State.IDLE
-                }
+        loadMoreState = if (success) {
+            if (noMoreData) {
+                State.NO_MORE
             } else {
-                State.ERROR
+                State.IDLE
             }
-            onLoadMoreListener?.onStateChanged(state)
-            if (mRefreshEnable) {
-                mSmartRefreshLayout.setEnableRefresh(true)
-            }
-            markIdle()
-        }, 200)
+        } else {
+            State.ERROR
+        }
+        loadMoreStateChangedListener?.onStateChanged(loadMoreState)
+        markIdle()
     }
 }

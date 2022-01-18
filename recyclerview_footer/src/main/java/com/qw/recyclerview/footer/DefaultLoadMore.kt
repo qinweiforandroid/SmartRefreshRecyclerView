@@ -1,101 +1,76 @@
 package com.qw.recyclerview.footer
 
-import android.content.Context
-import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import com.qw.recyclerview.core.ILoadMore
+import com.qw.recyclerview.core.SRLog
 import com.qw.recyclerview.core.State
+import com.qw.recyclerview.core.adapter.BaseViewHolder
 
 /**
  * @author qinwei
  */
 class DefaultLoadMore : ILoadMore {
+    private var onRetryFunction: () -> Unit = { }
+    private var state = State.IDLE
+    override fun getState(): State {
+        return state
+    }
 
-    private lateinit var footerView: FooterView
-    private lateinit var function: () -> Unit
+    override fun setOnRetryListener(function: () -> Unit) {
+        this.onRetryFunction = function
+    }
 
-    inner class FooterView : LinearLayout, View.OnClickListener {
-        private var mProgressBar: ProgressBar? = null
-        private var mFooterLabel: TextView? = null
-        private var state = State.IDLE
+    override fun notifyStateChanged(state: State) {
+        this.state = state
+    }
 
-        constructor(context: Context, attrs: AttributeSet?, defStyle: Int) : super(
-            context,
-            attrs,
-            defStyle
-        ) {
-            initializeView(context)
-        }
+    override fun getLoadMoreViewHolder(parent: ViewGroup): BaseViewHolder {
+        return FooterHolder(
+            LayoutInflater.from(parent.context).inflate(R.layout.sr_widget_footer, parent, false)
+        )
+    }
 
-        constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
-            initializeView(context)
-        }
-
-        constructor(context: Context) : super(context) {
-            initializeView(context)
-        }
-
-        private fun initializeView(context: Context) {
-            LayoutInflater.from(context).inflate(R.layout.sr_widget_footer, this)
-            mProgressBar = findViewById<View>(R.id.mProgressBar) as ProgressBar
-            mFooterLabel = findViewById<View>(R.id.mFooterLabel) as TextView
-            onStateChanged(State.IDLE)
-        }
-
-        override fun onClick(v: View) {
-            function.invoke()
-        }
-
-        fun onStateChanged(state: State) {
-            this.state = state
-            setOnClickListener(null)
+    private inner class FooterHolder(itemView: View) : BaseViewHolder(itemView),
+        View.OnClickListener {
+        private val mProgressBar = itemView.findViewById<View>(R.id.mProgressBar) as ProgressBar
+        private val mFooterLabel = itemView.findViewById<View>(R.id.mFooterLabel) as TextView
+        override fun initData(position: Int) {
+            itemView.setOnClickListener(null)
+            SRLog.d("SwipeRefreshRecyclerViewComponent initData:${state.name}")
             when (state) {
                 State.ERROR -> {
-                    setOnClickListener(this)
-                    mFooterLabel!!.text = "加载失败,点击重试"
-                    mProgressBar!!.visibility = GONE
-                    this.visibility = VISIBLE
+                    itemView.setOnClickListener(this)
+                    mFooterLabel.text = "加载失败,点击重试"
+                    mProgressBar.visibility = LinearLayout.GONE
+                    itemView.visibility = LinearLayout.VISIBLE
                 }
                 State.EMPTY,
                 State.IDLE -> {
-                    this.visibility = INVISIBLE
+                    itemView.visibility = LinearLayout.INVISIBLE
                 }
                 State.LOADING -> {
-                    mFooterLabel!!.text = "正在加载..."
-                    mProgressBar!!.visibility = VISIBLE
-                    this.visibility = VISIBLE
+                    mFooterLabel.text = "正在加载..."
+                    mProgressBar.visibility = LinearLayout.VISIBLE
+                    itemView.visibility = LinearLayout.VISIBLE
                 }
                 State.NO_MORE -> {
-                    mProgressBar!!.visibility = GONE
-                    mFooterLabel!!.text = "--没有更多数据了--"
-                    this.visibility = VISIBLE
+                    mProgressBar.visibility = LinearLayout.GONE
+                    mFooterLabel.text = "--没有更多数据了--"
+                    itemView.visibility = LinearLayout.VISIBLE
                 }
-
                 else -> {
 
                 }
             }
         }
-    }
 
-    override fun getView(context: Context): View {
-        footerView = FooterView(context)
-        footerView.layoutParams = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
-        )
-        return footerView
-    }
-
-    override fun onStateChanged(loadMoreState: State) {
-        footerView.onStateChanged(loadMoreState)
-    }
-
-    override fun setOnRetryListener(function: () -> Unit) {
-        this.function = function
+        override fun onClick(v: View?) {
+            onRetryFunction.invoke()
+        }
     }
 }
