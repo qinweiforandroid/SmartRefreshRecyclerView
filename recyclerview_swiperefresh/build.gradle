@@ -32,7 +32,7 @@ dependencies {
     implementation "androidx.core:core-ktx:1.6.0"
     api "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
     if (rootProject.ext.isRelease) {
-        api 'com.qw.smart:recyclerview-core:2.0.0-alpha01'
+        api 'com.qw.smart:recyclerview-core:2.0.0-alpha02'
     } else {
         api project(':recyclerview_core')
     }
