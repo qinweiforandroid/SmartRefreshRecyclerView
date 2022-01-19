@@ -9,9 +9,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.qw.recyclerview.SmartRefreshHelper
 import com.qw.recyclerview.core.*
-import com.qw.recyclerview.core.adapter.BaseListAdapter
-import com.qw.recyclerview.core.adapter.BaseViewHolder
+import com.qw.recyclerview.core.BaseListAdapter
+import com.qw.recyclerview.core.BaseViewHolder
+import com.qw.recyclerview.loadmore.State
 import com.qw.recyclerview.footer.DefaultLoadMore
 import com.qw.recyclerview.sample.R
 import com.qw.recyclerview.sample.databinding.SwipeRefreshLayoutActivityBinding
@@ -28,6 +30,13 @@ class SwipeRefreshLayout1Activity : AppCompatActivity() {
     private var modules = ArrayList<Any>()
     private val typeLoadMore = -1
 
+    private val defaultLoadMore = DefaultLoadMore().apply {
+        setOnRetryListener {
+            notifyStateChanged(State.LOADING)
+            adapter.notifyItemChanged(adapter.itemCount - 1)
+            loadMore()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,21 +79,9 @@ class SwipeRefreshLayout1Activity : AppCompatActivity() {
         //设置加载更多监听
         smartRefresh.setOnLoadMoreListener(object : OnLoadMoreListener {
             override fun onLoadMore() {
-                smartRefresh.getRecyclerView().postDelayed({
-                    val size = modules.size
-                    for (i in size until size + 20) {
-                        modules.add("" + i)
-                    }
-                    if (modules.size < 100) {
-                        smartRefresh.finishLoadMore(success = true, noMoreData = false)
-                    } else {
-                        smartRefresh.finishLoadMore(success = false, noMoreData = true)
-                    }
-                    adapter.notifyDataSetChanged()
-                }, 1000)
+                loadMore()
             }
-        })
-        smartRefresh.setOnLoadMoreStateListener(object : OnLoadMoreStateListener {
+
             override fun onStateChanged(state: State) {
                 var newState = state
                 if (state == State.NO_MORE || state == State.IDLE || state == State.ERROR) {
@@ -92,7 +89,7 @@ class SwipeRefreshLayout1Activity : AppCompatActivity() {
                         newState = State.EMPTY
                     }
                 }
-                loadMore.notifyStateChanged(newState)
+                defaultLoadMore.notifyStateChanged(newState)
                 adapter.notifyItemChanged(adapter.itemCount - 1)
             }
         })
@@ -101,19 +98,27 @@ class SwipeRefreshLayout1Activity : AppCompatActivity() {
         smartRefresh.autoRefresh()
     }
 
-    private val loadMore = DefaultLoadMore().apply {
-        setOnRetryListener {
-            notifyStateChanged(State.LOADING)
-            adapter.notifyItemChanged(adapter.itemCount - 1)
-//            onLoadMoreListener?.onLoadMore()
-        }
+    private fun loadMore() {
+        smartRefresh.getRecyclerView().postDelayed({
+            val size = modules.size
+            for (i in size until size + 20) {
+                modules.add("" + i)
+            }
+            if (modules.size < 100) {
+                smartRefresh.finishLoadMore(success = true, noMoreData = false)
+            } else {
+                smartRefresh.finishLoadMore(success = false, noMoreData = true)
+            }
+            adapter.notifyDataSetChanged()
+        }, 1000)
     }
+
 
     inner class ListAdapter : BaseListAdapter() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
             if (viewType == typeLoadMore) {
-                return loadMore.getLoadMoreViewHolder(parent)
+                return defaultLoadMore.onCreateLoadMoreViewHolder(parent)
             }
             return object : BaseViewHolder(
                 LayoutInflater.from(this@SwipeRefreshLayout1Activity)
@@ -155,17 +160,19 @@ class SwipeRefreshLayout1Activity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val itemId = item.itemId
         if (itemId == R.id.action_linearLayout) {
-            smartRefresh.setLayoutManager(linearLayoutManager)
+            smartRefresh.setLayoutManager(LinearLayoutManager(this))
         } else if (itemId == R.id.action_gridLayout) {
             smartRefresh.setLayoutManager(getGridLayoutManager(2))
         } else if (itemId == R.id.action_staggeredGridLayout) {
-            smartRefresh.setLayoutManager(getStaggeredGridLayoutManager(2))
+            smartRefresh.setLayoutManager(
+                StaggeredGridLayoutManager(
+                    2,
+                    StaggeredGridLayoutManager.VERTICAL
+                )
+            )
         }
         return super.onOptionsItemSelected(item)
     }
-
-    private val linearLayoutManager: RecyclerView.LayoutManager
-        get() = LinearLayoutManager(this)
 
     /**
      * 得到GridLayoutManager
@@ -185,13 +192,4 @@ class SwipeRefreshLayout1Activity : AppCompatActivity() {
         return manager
     }
 
-    /**
-     * 得到StaggeredGridLayoutManager
-     *
-     * @param spanCount 列数
-     * @return
-     */
-    private fun getStaggeredGridLayoutManager(spanCount: Int): StaggeredGridLayoutManager {
-        return StaggeredGridLayoutManager(spanCount, StaggeredGridLayoutManager.VERTICAL)
-    }
 }

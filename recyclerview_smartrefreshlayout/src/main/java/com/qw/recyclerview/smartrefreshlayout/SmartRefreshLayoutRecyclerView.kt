@@ -4,6 +4,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.qw.recyclerview.core.*
+import com.qw.recyclerview.loadmore.State
 import com.scwang.smart.refresh.layout.SmartRefreshLayout
 
 /**
@@ -18,7 +19,6 @@ class SmartRefreshLayoutRecyclerView(
     private var onRefreshListener: OnRefreshListener? = null
     private var onLoadMoreListener: OnLoadMoreListener? = null
     private var state = SmartRefreshable.REFRESH_IDLE
-    private var loadMoreStateChangedListener: OnLoadMoreStateListener? = null
     private var loadMoreState = State.IDLE
 
     init {
@@ -41,7 +41,7 @@ class SmartRefreshLayoutRecyclerView(
 
                 if (newState == RecyclerView.SCROLL_STATE_IDLE && checkedIsNeedLoadMore()) {
                     state = SmartRefreshable.REFRESH_UP
-                    loadMoreStateChangedListener?.onStateChanged(State.LOADING)
+                    onLoadMoreListener?.onStateChanged(State.LOADING)
                     SRLog.d("SmartRefreshLayoutRecyclerView onScrollStateChanged onLoadMore")
                     onLoadMoreListener?.onLoadMore()
                 }
@@ -108,9 +108,6 @@ class SmartRefreshLayoutRecyclerView(
         return mRefreshEnable
     }
 
-    override fun setOnLoadMoreStateListener(listener: OnLoadMoreStateListener) {
-        this.loadMoreStateChangedListener = listener
-    }
 
     override fun setLoadMoreEnable(isEnabled: Boolean) {
         mLoadMoreEnable = isEnabled
@@ -135,7 +132,7 @@ class SmartRefreshLayoutRecyclerView(
             } else {
                 State.ERROR
             }
-            loadMoreStateChangedListener?.onStateChanged(loadMoreState)
+            onLoadMoreListener?.onStateChanged(loadMoreState)
         }
         markIdle()
     }
@@ -153,7 +150,7 @@ class SmartRefreshLayoutRecyclerView(
         } else {
             State.ERROR
         }
-        loadMoreStateChangedListener?.onStateChanged(loadMoreState)
+        onLoadMoreListener?.onStateChanged(loadMoreState)
         markIdle()
     }
 }

@@ -1,6 +1,9 @@
-package com.qw.recyclerview.core
+package com.qw.recyclerview
 
 import androidx.recyclerview.widget.RecyclerView
+import com.qw.recyclerview.core.OnLoadMoreListener
+import com.qw.recyclerview.core.OnRefreshListener
+import com.qw.recyclerview.core.SmartRefreshable
 
 /**
  * Created by qinwei on 2021/6/29 21:08
@@ -37,10 +40,6 @@ class SmartRefreshHelper : SmartRefreshable {
 
     override fun isRefreshEnable(): Boolean {
         return mSmartRefreshable.isRefreshEnable()
-    }
-
-    override fun setOnLoadMoreStateListener(listener: OnLoadMoreStateListener) {
-        mSmartRefreshable.setOnLoadMoreStateListener(listener)
     }
 
 

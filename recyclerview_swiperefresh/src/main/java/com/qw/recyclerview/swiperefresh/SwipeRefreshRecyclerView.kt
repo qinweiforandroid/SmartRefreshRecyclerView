@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.qw.recyclerview.core.*
+import com.qw.recyclerview.loadmore.State
 import java.lang.IllegalArgumentException
 
 /**
@@ -23,7 +24,6 @@ class SwipeRefreshRecyclerView(
     private var onLoadMoreListener: OnLoadMoreListener? = null
     private var state = SmartRefreshable.REFRESH_IDLE
 
-    private var loadMoreStateChangedListener: OnLoadMoreStateListener? = null
     private var loadMoreState = State.IDLE
 
     init {
@@ -46,7 +46,7 @@ class SwipeRefreshRecyclerView(
 
                 if (newState == RecyclerView.SCROLL_STATE_IDLE && checkedIsNeedLoadMore()) {
                     state = SmartRefreshable.REFRESH_UP
-                    loadMoreStateChangedListener?.onStateChanged(State.LOADING)
+                    onLoadMoreListener?.onStateChanged(State.LOADING)
                     SRLog.d("SwipeRefreshRecyclerView onScrollStateChanged onLoadMore")
                     onLoadMoreListener?.onLoadMore()
                 }
@@ -111,9 +111,6 @@ class SwipeRefreshRecyclerView(
         return mRefreshEnable
     }
 
-    override fun setOnLoadMoreStateListener(listener: OnLoadMoreStateListener) {
-        this.loadMoreStateChangedListener = listener
-    }
 
     override fun setLoadMoreEnable(isEnabled: Boolean) {
         mLoadMoreEnable = isEnabled
@@ -140,7 +137,7 @@ class SwipeRefreshRecyclerView(
             } else {
                 State.ERROR
             }
-            loadMoreStateChangedListener?.onStateChanged(loadMoreState)
+            onLoadMoreListener?.onStateChanged(loadMoreState)
         }
         markIdle()
     }
@@ -159,7 +156,7 @@ class SwipeRefreshRecyclerView(
         } else {
             State.ERROR
         }
-        loadMoreStateChangedListener?.onStateChanged(loadMoreState)
+        onLoadMoreListener?.onStateChanged(loadMoreState)
         markIdle()
     }
 }

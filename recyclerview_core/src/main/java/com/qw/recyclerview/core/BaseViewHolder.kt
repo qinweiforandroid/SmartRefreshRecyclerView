@@ -1,4 +1,4 @@
-package com.qw.recyclerview.core.adapter
+package com.qw.recyclerview.core
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView

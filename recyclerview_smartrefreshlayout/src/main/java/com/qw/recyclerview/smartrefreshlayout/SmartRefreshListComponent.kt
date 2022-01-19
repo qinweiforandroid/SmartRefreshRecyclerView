@@ -4,8 +4,12 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.qw.recyclerview.SmartRefreshHelper
 import com.qw.recyclerview.core.*
-import com.qw.recyclerview.core.adapter.BaseViewHolder
+import com.qw.recyclerview.core.BaseViewHolder
+import com.qw.recyclerview.loadmore.AbsLoadMore
+import com.qw.recyclerview.loadmore.State
+import com.qw.recyclerview.template.BaseListComponent
 import com.scwang.smart.refresh.layout.SmartRefreshLayout
 
 /**
@@ -19,7 +23,7 @@ abstract class SmartRefreshListComponent<T> constructor(
 ) : BaseListComponent<T>(mRecyclerView) {
     val smart: SmartRefreshHelper = SmartRefreshHelper()
     private var onLoadMoreListener: OnLoadMoreListener? = null
-    private var loadMore: ILoadMore? = null
+    private var loadMore: AbsLoadMore? = null
     private val typeLoadMore = -1
 
     init {
@@ -27,7 +31,23 @@ abstract class SmartRefreshListComponent<T> constructor(
         smart.inject(SmartRefreshLayoutRecyclerView(mRecyclerView, mSmartRefreshLayout))
         smart.setRefreshEnable(false)
         smart.setLoadMoreEnable(false)
-        smart.setOnLoadMoreStateListener(object : OnLoadMoreStateListener {
+    }
+
+    fun injectLoadMore(loadMore: AbsLoadMore) {
+        this.loadMore = loadMore
+        this.loadMore?.setOnRetryListener {
+            this.loadMore?.notifyStateChanged(State.LOADING)
+            onLoadMoreListener?.onLoadMore()
+        }
+    }
+
+    fun setOnLoadMoreListener(onLoadMoreListener: OnLoadMoreListener) {
+        this.onLoadMoreListener = onLoadMoreListener
+        smart.setOnLoadMoreListener(object : OnLoadMoreListener {
+            override fun onLoadMore() {
+                onLoadMoreListener.onLoadMore()
+            }
+
             override fun onStateChanged(state: State) {
                 var newState = state
                 if (state == State.NO_MORE || state == State.IDLE || state == State.ERROR) {
@@ -38,26 +58,14 @@ abstract class SmartRefreshListComponent<T> constructor(
                 loadMore?.notifyStateChanged(newState)
                 adapter.notifyItemChanged(adapter.itemCount - 1)
             }
+
         })
-    }
-
-    fun injectLoadMore(loadMore: ILoadMore) {
-        this.loadMore = loadMore
-        this.loadMore?.setOnRetryListener {
-            this.loadMore?.notifyStateChanged(State.LOADING)
-            onLoadMoreListener?.onLoadMore()
-        }
-    }
-
-    fun setOnLoadMoreListener(onLoadMoreListener: OnLoadMoreListener) {
-        this.onLoadMoreListener = onLoadMoreListener
-        smart.setOnLoadMoreListener(onLoadMoreListener)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
         if (viewType == typeLoadMore) {
             SRLog.d("SwipeRefreshRecyclerViewComponent typeLoadMore getView")
-            return loadMore!!.getLoadMoreViewHolder(parent)
+            return loadMore!!.onCreateLoadMoreViewHolder(parent)
         }
         return onCreateBaseViewHolder(parent, viewType)
     }

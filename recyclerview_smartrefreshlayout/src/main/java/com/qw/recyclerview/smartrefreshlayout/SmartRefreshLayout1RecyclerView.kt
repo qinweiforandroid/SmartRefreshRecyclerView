@@ -2,7 +2,6 @@ package com.qw.recyclerview.smartrefreshlayout
 
 import androidx.recyclerview.widget.RecyclerView
 import com.qw.recyclerview.core.OnLoadMoreListener
-import com.qw.recyclerview.core.OnLoadMoreStateListener
 import com.qw.recyclerview.core.OnRefreshListener
 import com.qw.recyclerview.core.SmartRefreshable
 import com.scwang.smart.refresh.layout.SmartRefreshLayout
@@ -67,9 +66,6 @@ class SmartRefreshLayout1RecyclerView(
 
     override fun isRefreshEnable(): Boolean {
         return mRefreshEnable
-    }
-
-    override fun setOnLoadMoreStateListener(listener: OnLoadMoreStateListener) {
     }
 
     override fun setLoadMoreEnable(isEnabled: Boolean) {

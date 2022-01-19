@@ -6,30 +6,17 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
-import com.qw.recyclerview.core.ILoadMore
+import com.qw.recyclerview.loadmore.AbsLoadMore
 import com.qw.recyclerview.core.SRLog
-import com.qw.recyclerview.core.State
-import com.qw.recyclerview.core.adapter.BaseViewHolder
+import com.qw.recyclerview.loadmore.State
+import com.qw.recyclerview.core.BaseViewHolder
 
 /**
  * @author qinwei
  */
-class DefaultLoadMore : ILoadMore {
-    private var onRetryFunction: () -> Unit = { }
-    private var state = State.IDLE
-    override fun getState(): State {
-        return state
-    }
+class DefaultLoadMore : AbsLoadMore() {
 
-    override fun setOnRetryListener(function: () -> Unit) {
-        this.onRetryFunction = function
-    }
-
-    override fun notifyStateChanged(state: State) {
-        this.state = state
-    }
-
-    override fun getLoadMoreViewHolder(parent: ViewGroup): BaseViewHolder {
+    override fun onCreateLoadMoreViewHolder(parent: ViewGroup): BaseViewHolder {
         return FooterHolder(
             LayoutInflater.from(parent.context).inflate(R.layout.sr_widget_footer, parent, false)
         )
@@ -41,8 +28,8 @@ class DefaultLoadMore : ILoadMore {
         private val mFooterLabel = itemView.findViewById<View>(R.id.mFooterLabel) as TextView
         override fun initData(position: Int) {
             itemView.setOnClickListener(null)
-            SRLog.d("SwipeRefreshRecyclerViewComponent initData:${state.name}")
-            when (state) {
+            SRLog.d("SwipeRefreshRecyclerViewComponent initData:${getState().name}")
+            when (getState()) {
                 State.ERROR -> {
                     itemView.setOnClickListener(this)
                     mFooterLabel.text = "加载失败,点击重试"
@@ -70,7 +57,7 @@ class DefaultLoadMore : ILoadMore {
         }
 
         override fun onClick(v: View?) {
-            onRetryFunction.invoke()
+            retry.invoke()
         }
     }
 }

@@ -2,8 +2,8 @@ package com.qw.recyclerview.smartrefreshlayout
 
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.RecyclerView
-import com.qw.recyclerview.core.BaseListComponent
-import com.qw.recyclerview.core.SmartRefreshHelper
+import com.qw.recyclerview.template.BaseListComponent
+import com.qw.recyclerview.SmartRefreshHelper
 import com.scwang.smart.refresh.layout.SmartRefreshLayout
 
 /**

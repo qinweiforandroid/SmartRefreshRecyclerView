@@ -43,12 +43,6 @@ interface SmartRefreshable {
     fun isRefreshEnable(): Boolean
 
     /**
-     * 设置加载更多状态变化监听
-     */
-    fun setOnLoadMoreStateListener(listener: OnLoadMoreStateListener)
-
-
-    /**
      * 启用加载更多
      */
     fun setLoadMoreEnable(isEnabled: Boolean)

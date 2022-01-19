@@ -1,9 +1,9 @@
-package com.qw.recyclerview.core
+package com.qw.recyclerview.template
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.qw.recyclerview.core.adapter.BaseListAdapter
-import com.qw.recyclerview.core.adapter.BaseViewHolder
+import com.qw.recyclerview.core.BaseListAdapter
+import com.qw.recyclerview.core.BaseViewHolder
 
 /**
  * SwipeRefreshRecyclerView模版组件

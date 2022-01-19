@@ -12,8 +12,8 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.qw.recyclerview.core.OnLoadMoreListener
 import com.qw.recyclerview.core.OnRefreshListener
-import com.qw.recyclerview.core.SmartRefreshHelper
-import com.qw.recyclerview.core.adapter.BaseViewHolder
+import com.qw.recyclerview.SmartRefreshHelper
+import com.qw.recyclerview.core.BaseViewHolder
 import com.qw.recyclerview.sample.R
 import com.qw.recyclerview.sample.databinding.SwipeRefreshLayoutActivityBinding
 import com.qw.recyclerview.sample.loading.LoadingHelper
