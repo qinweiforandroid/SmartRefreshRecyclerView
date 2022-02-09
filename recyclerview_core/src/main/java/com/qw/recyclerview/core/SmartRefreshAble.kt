@@ -2,7 +2,7 @@ package com.qw.recyclerview.core
 
 import androidx.recyclerview.widget.RecyclerView
 
-interface SmartRefreshable {
+interface ISmartRecyclerView {
     companion object {
         const val REFRESH_IDLE = 0
         const val REFRESH_PULL = 1
@@ -15,27 +15,27 @@ interface SmartRefreshable {
     /**
      * 设置布局管理器
      */
-    fun setLayoutManager(layoutManager: RecyclerView.LayoutManager)
+    fun setLayoutManager(layoutManager: RecyclerView.LayoutManager): ISmartRecyclerView
 
     /**
      * 设置动画
      */
-    fun setItemAnimator(itemAnimator: RecyclerView.ItemAnimator)
+    fun setItemAnimator(itemAnimator: RecyclerView.ItemAnimator): ISmartRecyclerView
 
     /**
      * 设置下拉刷新listener
      */
-    fun setOnRefreshListener(onRefreshListener: OnRefreshListener)
+    fun setOnRefreshListener(onRefreshListener: OnRefreshListener): ISmartRecyclerView
 
     /**
      * 设置加载更多listener
      */
-    fun setOnLoadMoreListener(onLoadMoreListener: OnLoadMoreListener)
+    fun setOnLoadMoreListener(onLoadMoreListener: OnLoadMoreListener): ISmartRecyclerView
 
     /**
      * 启用下拉刷新
      */
-    fun setRefreshEnable(isEnabled: Boolean)
+    fun setRefreshEnable(isEnabled: Boolean): ISmartRecyclerView
 
     /**
      * 是否支持下拉刷新
@@ -45,7 +45,7 @@ interface SmartRefreshable {
     /**
      * 启用加载更多
      */
-    fun setLoadMoreEnable(isEnabled: Boolean)
+    fun setLoadMoreEnable(isEnabled: Boolean): ISmartRecyclerView
 
 
     /**

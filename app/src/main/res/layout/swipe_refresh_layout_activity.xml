@@ -8,7 +8,16 @@
     android:focusableInTouchMode="true"
     tools:context=".ui.MainActivity">
 
-    <include layout="@layout/recyclerview_swiperefresh_layout" />
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/mSwipeRefreshLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/mRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 
     <com.qw.recyclerview.sample.loading.LoadingView

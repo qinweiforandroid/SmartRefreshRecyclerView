@@ -1,14 +1,14 @@
-package com.qw.recyclerview.smartrefreshlayout
+package com.qw.recyclerview.smartrefreshlayout.template
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.qw.recyclerview.SmartRefreshHelper
 import com.qw.recyclerview.core.*
 import com.qw.recyclerview.core.BaseViewHolder
 import com.qw.recyclerview.loadmore.AbsLoadMore
 import com.qw.recyclerview.loadmore.State
+import com.qw.recyclerview.smartrefreshlayout.SmartRecyclerView
 import com.qw.recyclerview.template.BaseListComponent
 import com.scwang.smart.refresh.layout.SmartRefreshLayout
 
@@ -17,20 +17,18 @@ import com.scwang.smart.refresh.layout.SmartRefreshLayout
  * Created by qinwei on 2022/1/9 2:46 下午
  * email: qinwei_it@163.com
  */
-abstract class SmartRefreshListComponent<T> constructor(
+abstract class SmartListComponent<T> constructor(
     mRecyclerView: RecyclerView,
     private val mSmartRefreshLayout: SmartRefreshLayout
 ) : BaseListComponent<T>(mRecyclerView) {
-    val smart: SmartRefreshHelper = SmartRefreshHelper()
+
     private var onLoadMoreListener: OnLoadMoreListener? = null
     private var loadMore: AbsLoadMore? = null
     private val typeLoadMore = -1
-
-    init {
+    val smart: ISmartRecyclerView = SmartRecyclerView(mRecyclerView, mSmartRefreshLayout).apply {
+        setRefreshEnable(false)
+        setLoadMoreEnable(false)
         (mRecyclerView.itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
-        smart.inject(SmartRefreshLayoutRecyclerView(mRecyclerView, mSmartRefreshLayout))
-        smart.setRefreshEnable(false)
-        smart.setLoadMoreEnable(false)
     }
 
     fun injectLoadMore(loadMore: AbsLoadMore) {

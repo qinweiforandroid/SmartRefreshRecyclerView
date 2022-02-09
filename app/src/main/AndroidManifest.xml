@@ -19,22 +19,22 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.SmartRefreshLayoutActivity"
+            android:name=".ui.smart.ListWithRefreshAndLoadMoreActivity"
             android:exported="true" />
         <activity
-            android:name=".ui.SwipeRefreshLayout2Activity"
+            android:name=".ui.swipe.SwipeRefreshListComponentActivity"
             android:exported="true" />
         <activity
-            android:name=".ui.SwipeRefreshLayout1Activity"
+            android:name=".ui.swipe.SwipeListWithRefreshAndLoadMoreActivity"
             android:exported="true" />
         <activity
-            android:name=".ui.SwipeRefreshLayout0Activity"
+            android:name=".ui.swipe.SwipeListWithRefreshActivity"
             android:exported="true" />
         <activity
-            android:name=".ui.SmartRefreshLayout1Activity"
+            android:name=".ui.smart.ListWithRefreshActivity"
             android:exported="true" />
         <activity
-            android:name=".ui.SmartRefreshLayout2Activity"
+            android:name=".ui.smart.SmartRefresh1ListComponentActivity"
             android:exported="true" />
     </application>
 </manifest>

@@ -1,4 +1,4 @@
-package com.qw.recyclerview.sample.ui
+package com.qw.recyclerview.sample.ui.smart
 
 import android.os.Bundle
 import android.os.Handler
@@ -15,28 +15,25 @@ import com.qw.recyclerview.core.OnRefreshListener
 import com.qw.recyclerview.core.BaseViewHolder
 import com.qw.recyclerview.sample.R
 import com.qw.recyclerview.sample.databinding.SmartRefreshLayoutActivityBinding
-import com.qw.recyclerview.smartrefreshlayout.SmartRefresh1ListComponent
-import com.scwang.smart.refresh.layout.SmartRefreshLayout
+import com.qw.recyclerview.smartrefreshlayout.template.SmartV2ListComponent
 import java.util.*
 
 /**
  * Created by qinwei on 2021/7/1 20:38
  */
-class SmartRefreshLayout2Activity : AppCompatActivity() {
-    private lateinit var mComponent: SmartRefresh1ListComponent<String>
+class SmartRefresh1ListComponentActivity : AppCompatActivity() {
+    private lateinit var mList: SmartV2ListComponent<String>
     private lateinit var bind: SmartRefreshLayoutActivityBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         bind = SmartRefreshLayoutActivityBinding.inflate(layoutInflater)
         setContentView(bind.root)
-        val mRecyclerView = findViewById<RecyclerView>(R.id.mRecyclerView)
-        val mSmartRefresh = findViewById<SmartRefreshLayout>(R.id.mSmartRefreshLayout)
-
-        mComponent = object : SmartRefresh1ListComponent<String>(mRecyclerView, mSmartRefresh) {
+        mList = object :
+            SmartV2ListComponent<String>(bind.mRecyclerView, bind.mSmartRefreshLayout) {
             override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
                 return Holder(
-                    LayoutInflater.from(this@SmartRefreshLayout2Activity)
+                    LayoutInflater.from(this@SmartRefresh1ListComponentActivity)
                         .inflate(android.R.layout.simple_list_item_1, parent, false)
                 )
             }
@@ -44,58 +41,47 @@ class SmartRefreshLayout2Activity : AppCompatActivity() {
             inner class Holder(itemView: View) : BaseViewHolder(itemView) {
                 override fun initData(position: Int) {
                     val label: TextView = itemView as TextView
-                    val text = mComponent.modules[position]
+                    val text = mList.modules[position]
                     label.text = text
                 }
             }
         }
-        mComponent.setLayoutManager(linearLayoutManager)
-        mComponent.smart.setRefreshEnable(true)
-        mComponent.smart.setLoadMoreEnable(true)
-        mComponent.smart.setOnLoadMoreListener(object : OnLoadMoreListener {
-            override fun onLoadMore() {
-                loadMore()
-            }
-        })
-
-        mComponent.smart.setOnRefreshListener(object : OnRefreshListener {
-            override fun onRefresh() {
-                refresh()
-            }
-        })
-        mComponent.smart.autoRefresh()
+        mList.smart.setLayoutManager(linearLayoutManager)
+            .setRefreshEnable(true)
+            .setLoadMoreEnable(true)
+            .setOnLoadMoreListener(object : OnLoadMoreListener {
+                override fun onLoadMore() {
+                    Handler(Looper.myLooper()!!).postDelayed({
+                        loadMore()
+                    }, 1000)
+                }
+            })
+            .setOnRefreshListener(object : OnRefreshListener {
+                override fun onRefresh() {
+                    Handler(Looper.myLooper()!!).postDelayed({
+                        refresh()
+                    }, 1000)
+                }
+            })
+        mList.smart.autoRefresh()
     }
 
     private fun refresh() {
-        Handler(Looper.myLooper()!!).postDelayed({
-            mComponent.modules.clear()
-            for (i in 0..19) {
-                mComponent.modules.add("" + i)
-            }
-            mComponent.smart.finishRefresh(true)
-            mComponent.adapter.notifyDataSetChanged()
-        }, 1000)
+        mList.modules.clear()
+        for (i in 0..19) {
+            mList.modules.add("" + i)
+        }
+        mList.smart.finishRefresh(true)
+        mList.adapter.notifyDataSetChanged()
     }
 
     private fun loadMore() {
-        Handler(Looper.myLooper()!!).postDelayed({
-            val size = mComponent.modules.size
-            for (i in size until size + 20) {
-                mComponent.modules.add("" + i)
-            }
-            if (mComponent.modules.size < 100) {
-                mComponent.smart.finishLoadMore(
-                    success = true,
-                    noMoreData = false
-                )
-            } else {
-                mComponent.smart.finishLoadMore(
-                    success = false,
-                    noMoreData = true
-                )
-            }
-            mComponent.adapter.notifyItemRangeInserted(size, 20)
-        }, 1000)
+        val size = mList.modules.size
+        for (i in size until size + 20) {
+            mList.modules.add("" + i)
+        }
+        mList.smart.finishLoadMore(true, mList.modules.size > 100)
+        mList.adapter.notifyItemRangeInserted(size, 20)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -106,13 +92,13 @@ class SmartRefreshLayout2Activity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_linearLayout -> {
-                mComponent.setLayoutManager(LinearLayoutManager(this))
+                mList.setLayoutManager(LinearLayoutManager(this))
             }
             R.id.action_gridLayout -> {
-                mComponent.setLayoutManager(getGridLayoutManager(2))
+                mList.setLayoutManager(getGridLayoutManager(2))
             }
             R.id.action_staggeredGridLayout -> {
-                mComponent.setLayoutManager(getStaggeredGridLayoutManager(2))
+                mList.setLayoutManager(getStaggeredGridLayoutManager(2))
             }
         }
         return super.onOptionsItemSelected(item)

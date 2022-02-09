@@ -13,16 +13,16 @@ import java.lang.IllegalArgumentException
  * 加载更多: 需要自己实现，目前方案是监听RecyclerView滑动事件
  * Created by qinwei on 2021/6/29 21:44
  */
-class SwipeRefreshRecyclerView(
+class SwipeRecyclerView(
     private val mRecyclerView: RecyclerView,
     private val mSwipeRefreshLayout: SwipeRefreshLayout
-) : SmartRefreshable {
+) : ISmartRecyclerView {
 
     private var mRefreshEnable: Boolean = false
     private var mLoadMoreEnable: Boolean = false
     private var onRefreshListener: OnRefreshListener? = null
     private var onLoadMoreListener: OnLoadMoreListener? = null
-    private var state = SmartRefreshable.REFRESH_IDLE
+    private var state = ISmartRecyclerView.REFRESH_IDLE
 
     private var loadMoreState = State.IDLE
 
@@ -42,10 +42,10 @@ class SwipeRefreshRecyclerView(
                     else -> {
                     }
                 }
-                if (state != SmartRefreshable.REFRESH_IDLE) return
+                if (state != ISmartRecyclerView.REFRESH_IDLE) return
 
                 if (newState == RecyclerView.SCROLL_STATE_IDLE && checkedIsNeedLoadMore()) {
-                    state = SmartRefreshable.REFRESH_UP
+                    state = ISmartRecyclerView.REFRESH_UP
                     onLoadMoreListener?.onStateChanged(State.LOADING)
                     SRLog.d("SwipeRefreshRecyclerView onScrollStateChanged onLoadMore")
                     onLoadMoreListener?.onLoadMore()
@@ -53,7 +53,7 @@ class SwipeRefreshRecyclerView(
             }
         })
         mSwipeRefreshLayout.setOnRefreshListener {
-            state = SmartRefreshable.REFRESH_PULL
+            state = ISmartRecyclerView.REFRESH_PULL
             SRLog.d("SwipeRefreshRecyclerView onRefresh")
             onRefreshListener?.onRefresh()
         }
@@ -65,7 +65,7 @@ class SwipeRefreshRecyclerView(
     }
 
     private fun markIdle() {
-        state = SmartRefreshable.REFRESH_IDLE
+        state = ISmartRecyclerView.REFRESH_IDLE
     }
 
     private fun checkedIsNeedLoadMore(): Boolean {
@@ -86,25 +86,30 @@ class SwipeRefreshRecyclerView(
         return mRecyclerView
     }
 
-    override fun setLayoutManager(layoutManager: RecyclerView.LayoutManager) {
+    override fun setLayoutManager(layoutManager: RecyclerView.LayoutManager): ISmartRecyclerView {
         mRecyclerView.layoutManager = layoutManager
+        return this
     }
 
-    override fun setItemAnimator(itemAnimator: RecyclerView.ItemAnimator) {
+    override fun setItemAnimator(itemAnimator: RecyclerView.ItemAnimator): ISmartRecyclerView {
         mRecyclerView.itemAnimator = itemAnimator
+        return this
     }
 
-    override fun setOnRefreshListener(onRefreshListener: OnRefreshListener) {
+    override fun setOnRefreshListener(onRefreshListener: OnRefreshListener): ISmartRecyclerView {
         this.onRefreshListener = onRefreshListener
+        return this
     }
 
-    override fun setOnLoadMoreListener(onLoadMoreListener: OnLoadMoreListener) {
+    override fun setOnLoadMoreListener(onLoadMoreListener: OnLoadMoreListener): ISmartRecyclerView {
         this.onLoadMoreListener = onLoadMoreListener
+        return this
     }
 
-    override fun setRefreshEnable(isEnabled: Boolean) {
+    override fun setRefreshEnable(isEnabled: Boolean): ISmartRecyclerView {
         mRefreshEnable = isEnabled
         mSwipeRefreshLayout.isEnabled = isEnabled
+        return this
     }
 
     override fun isRefreshEnable(): Boolean {
@@ -112,8 +117,9 @@ class SwipeRefreshRecyclerView(
     }
 
 
-    override fun setLoadMoreEnable(isEnabled: Boolean) {
+    override fun setLoadMoreEnable(isEnabled: Boolean): ISmartRecyclerView {
         mLoadMoreEnable = isEnabled
+        return this
     }
 
     override fun isLoadMoreEnable(): Boolean {
@@ -122,7 +128,7 @@ class SwipeRefreshRecyclerView(
 
     override fun autoRefresh() {
         if (mRefreshEnable) {
-            state = SmartRefreshable.REFRESH_PULL
+            state = ISmartRecyclerView.REFRESH_PULL
             mSwipeRefreshLayout.isRefreshing = true
             onRefreshListener?.onRefresh()
         }

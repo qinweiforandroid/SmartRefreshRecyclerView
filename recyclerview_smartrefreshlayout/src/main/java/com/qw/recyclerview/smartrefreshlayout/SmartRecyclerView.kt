@@ -10,15 +10,15 @@ import com.scwang.smart.refresh.layout.SmartRefreshLayout
 /**
  * Created by qinwei on 2021/6/29 21:44
  */
-class SmartRefreshLayoutRecyclerView(
+class SmartRecyclerView(
     private val mRecyclerView: RecyclerView,
     private val mSmartRefreshLayout: SmartRefreshLayout
-) : SmartRefreshable {
+) : ISmartRecyclerView {
     private var mRefreshEnable: Boolean = false
     private var mLoadMoreEnable: Boolean = false
     private var onRefreshListener: OnRefreshListener? = null
     private var onLoadMoreListener: OnLoadMoreListener? = null
-    private var state = SmartRefreshable.REFRESH_IDLE
+    private var state = ISmartRecyclerView.REFRESH_IDLE
     private var loadMoreState = State.IDLE
 
     init {
@@ -37,10 +37,10 @@ class SmartRefreshLayoutRecyclerView(
                     else -> {
                     }
                 }
-                if (state != SmartRefreshable.REFRESH_IDLE) return
+                if (state != ISmartRecyclerView.REFRESH_IDLE) return
 
                 if (newState == RecyclerView.SCROLL_STATE_IDLE && checkedIsNeedLoadMore()) {
-                    state = SmartRefreshable.REFRESH_UP
+                    state = ISmartRecyclerView.REFRESH_UP
                     onLoadMoreListener?.onStateChanged(State.LOADING)
                     SRLog.d("SmartRefreshLayoutRecyclerView onScrollStateChanged onLoadMore")
                     onLoadMoreListener?.onLoadMore()
@@ -48,7 +48,7 @@ class SmartRefreshLayoutRecyclerView(
             }
         })
         mSmartRefreshLayout.setOnRefreshListener {
-            state = SmartRefreshable.REFRESH_PULL
+            state = ISmartRecyclerView.REFRESH_PULL
             onRefreshListener?.onRefresh()
         }
         mSmartRefreshLayout.setEnableRefresh(mRefreshEnable)
@@ -61,7 +61,7 @@ class SmartRefreshLayoutRecyclerView(
     }
 
     private fun markIdle() {
-        state = SmartRefreshable.REFRESH_IDLE
+        state = ISmartRecyclerView.REFRESH_IDLE
     }
 
     private fun checkedIsNeedLoadMore(): Boolean {
@@ -83,25 +83,30 @@ class SmartRefreshLayoutRecyclerView(
         return mRecyclerView
     }
 
-    override fun setLayoutManager(layoutManager: RecyclerView.LayoutManager) {
+    override fun setLayoutManager(layoutManager: RecyclerView.LayoutManager): ISmartRecyclerView {
         mRecyclerView.layoutManager = layoutManager
+        return this
     }
 
-    override fun setItemAnimator(itemAnimator: RecyclerView.ItemAnimator) {
+    override fun setItemAnimator(itemAnimator: RecyclerView.ItemAnimator): ISmartRecyclerView {
         mRecyclerView.itemAnimator = itemAnimator
+        return this
     }
 
-    override fun setOnRefreshListener(onRefreshListener: OnRefreshListener) {
+    override fun setOnRefreshListener(onRefreshListener: OnRefreshListener): ISmartRecyclerView {
         this.onRefreshListener = onRefreshListener
+        return this
     }
 
-    override fun setOnLoadMoreListener(onLoadMoreListener: OnLoadMoreListener) {
+    override fun setOnLoadMoreListener(onLoadMoreListener: OnLoadMoreListener): ISmartRecyclerView {
         this.onLoadMoreListener = onLoadMoreListener
+        return this
     }
 
-    override fun setRefreshEnable(isEnabled: Boolean) {
+    override fun setRefreshEnable(isEnabled: Boolean): ISmartRecyclerView {
         mRefreshEnable = isEnabled
         mSmartRefreshLayout.setEnableRefresh(isEnabled)
+        return this
     }
 
     override fun isRefreshEnable(): Boolean {
@@ -109,8 +114,9 @@ class SmartRefreshLayoutRecyclerView(
     }
 
 
-    override fun setLoadMoreEnable(isEnabled: Boolean) {
+    override fun setLoadMoreEnable(isEnabled: Boolean): ISmartRecyclerView {
         mLoadMoreEnable = isEnabled
+        return this
     }
 
     override fun isLoadMoreEnable(): Boolean {
@@ -119,7 +125,7 @@ class SmartRefreshLayoutRecyclerView(
 
     override fun autoRefresh() {
         if (mRefreshEnable) {
-            state = SmartRefreshable.REFRESH_PULL
+            state = ISmartRecyclerView.REFRESH_PULL
             mSmartRefreshLayout.autoRefresh()
         }
     }

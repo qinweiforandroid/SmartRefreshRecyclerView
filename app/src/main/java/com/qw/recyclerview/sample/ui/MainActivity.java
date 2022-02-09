@@ -8,6 +8,12 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.qw.recyclerview.sample.databinding.ActivityMainBinding;
+import com.qw.recyclerview.sample.ui.smart.ListWithRefreshActivity;
+import com.qw.recyclerview.sample.ui.smart.SmartRefresh1ListComponentActivity;
+import com.qw.recyclerview.sample.ui.smart.ListWithRefreshAndLoadMoreActivity;
+import com.qw.recyclerview.sample.ui.swipe.SwipeListWithRefreshActivity;
+import com.qw.recyclerview.sample.ui.swipe.SwipeListWithRefreshAndLoadMoreActivity;
+import com.qw.recyclerview.sample.ui.swipe.SwipeRefreshListComponentActivity;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -22,39 +28,39 @@ public class MainActivity extends AppCompatActivity {
         bind.mSwipeRefreshRecyclerViewSample1Btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, SwipeRefreshLayout0Activity.class));
+                startActivity(new Intent(MainActivity.this, SwipeListWithRefreshActivity.class));
             }
         });
 
         bind.mSwipeRefreshRecyclerViewSample2Btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, SwipeRefreshLayout1Activity.class));
+                startActivity(new Intent(MainActivity.this, SwipeListWithRefreshAndLoadMoreActivity.class));
             }
         });
 
         bind.mSwipeRefreshRecyclerViewSample3Btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, SwipeRefreshLayout2Activity.class));
+                startActivity(new Intent(MainActivity.this, SwipeRefreshListComponentActivity.class));
             }
         });
         bind.mSmartRefreshLayoutRecyclerViewSampleBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, SmartRefreshLayoutActivity.class));
+                startActivity(new Intent(MainActivity.this, ListWithRefreshAndLoadMoreActivity.class));
             }
         });
         bind.mSmartRefreshLayoutRecyclerView1Btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, SmartRefreshLayout1Activity.class));
+                startActivity(new Intent(MainActivity.this, ListWithRefreshActivity.class));
             }
         });
         bind.mSmartRefreshLayoutRecyclerView2Btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, SmartRefreshLayout2Activity.class));
+                startActivity(new Intent(MainActivity.this, SmartRefresh1ListComponentActivity.class));
             }
         });
     }

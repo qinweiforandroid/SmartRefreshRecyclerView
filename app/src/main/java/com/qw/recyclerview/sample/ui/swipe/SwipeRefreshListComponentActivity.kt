@@ -1,4 +1,4 @@
-package com.qw.recyclerview.sample.ui
+package com.qw.recyclerview.sample.ui.swipe
 
 import android.os.Bundle
 import android.os.Handler
@@ -10,34 +10,34 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.qw.recyclerview.core.OnLoadMoreListener
 import com.qw.recyclerview.core.OnRefreshListener
 import com.qw.recyclerview.core.BaseViewHolder
 import com.qw.recyclerview.footer.DefaultLoadMore
 import com.qw.recyclerview.sample.R
 import com.qw.recyclerview.sample.databinding.SwipeRefreshLayoutActivityBinding
-import com.qw.recyclerview.swiperefresh.SwipeRefreshListComponent
+import com.qw.recyclerview.swiperefresh.template.SwipeListComponent
 import java.util.*
 
 /**
  * Created by qinwei on 2021/7/1 20:38
  */
-class SwipeRefreshLayout2Activity : AppCompatActivity() {
-    private lateinit var mComponent: SwipeRefreshListComponent<String>
+class SwipeRefreshListComponentActivity : AppCompatActivity() {
+    private lateinit var mList: SwipeListComponent<String>
     private lateinit var bind: SwipeRefreshLayoutActivityBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         bind = SwipeRefreshLayoutActivityBinding.inflate(layoutInflater)
         setContentView(bind.root)
-        val mRecyclerView = findViewById<RecyclerView>(R.id.mRecyclerView)
-        val mSwipeRefresh = findViewById<SwipeRefreshLayout>(R.id.mSwipeRefreshLayout)
-        mComponent = object : SwipeRefreshListComponent<String>(mRecyclerView, mSwipeRefresh) {
-
-            override fun onCreateBaseViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
+        bind.mRecyclerView.layoutManager = linearLayoutManager
+        mList = object : SwipeListComponent<String>(bind.mRecyclerView, bind.mSwipeRefreshLayout) {
+            override fun onCreateBaseViewHolder(
+                parent: ViewGroup,
+                viewType: Int
+            ): BaseViewHolder {
                 return Holder(
-                    LayoutInflater.from(this@SwipeRefreshLayout2Activity)
+                    LayoutInflater.from(this@SwipeRefreshListComponentActivity)
                         .inflate(android.R.layout.simple_list_item_1, parent, false)
                 )
             }
@@ -45,59 +45,47 @@ class SwipeRefreshLayout2Activity : AppCompatActivity() {
             inner class Holder(itemView: View) : BaseViewHolder(itemView) {
                 override fun initData(position: Int) {
                     val label: TextView = itemView as TextView
-                    val text = mComponent.modules[position]
+                    val text = mList.modules[position]
                     label.text = text
                 }
             }
         }
-        mComponent.setLayoutManager(linearLayoutManager)
-        mComponent.injectLoadMore(DefaultLoadMore())
-        mComponent.smart.setRefreshEnable(true)
-        mComponent.smart.setLoadMoreEnable(true)
-        mComponent.setOnLoadMoreListener(object : OnLoadMoreListener {
+        mList.smart.setRefreshEnable(true)
+        mList.smart.setLoadMoreEnable(true)
+        mList.injectLoadMore(DefaultLoadMore())
+        mList.setOnLoadMoreListener(object : OnLoadMoreListener {
             override fun onLoadMore() {
-                loadMore()
+                Handler(Looper.myLooper()!!).postDelayed({
+                    loadMore()
+                }, 1000)
             }
         })
-
-        mComponent.smart.setOnRefreshListener(object : OnRefreshListener {
+        mList.smart.setOnRefreshListener(object : OnRefreshListener {
             override fun onRefresh() {
-                refresh()
+                Handler(Looper.myLooper()!!).postDelayed({
+                    refresh()
+                }, 1000)
             }
         })
-        mComponent.smart.autoRefresh()
+        mList.smart.autoRefresh()
     }
 
     private fun refresh() {
-        Handler(Looper.myLooper()!!).postDelayed({
-            mComponent.modules.clear()
-            for (i in 0..19) {
-                mComponent.modules.add("" + i)
-            }
-            mComponent.smart.finishRefresh(true)
-            mComponent.adapter.notifyDataSetChanged()
-        }, 1000)
+        mList.modules.clear()
+        for (i in 0..19) {
+            mList.modules.add("" + i)
+        }
+        mList.smart.finishRefresh(true)
+        mList.adapter.notifyDataSetChanged()
     }
 
     private fun loadMore() {
-        Handler(Looper.myLooper()!!).postDelayed({
-            val size = mComponent.modules.size
-            for (i in size until size + 20) {
-                mComponent.modules.add("" + i)
-            }
-            if (mComponent.modules.size < 100) {
-                mComponent.smart.finishLoadMore(
-                    success = true,
-                    noMoreData = false
-                )
-            } else {
-                mComponent.smart.finishLoadMore(
-                    success = false,
-                    noMoreData = true
-                )
-            }
-            mComponent.adapter.notifyItemRangeInserted(size, 20)
-        }, 1000)
+        val size = mList.modules.size
+        for (i in size until size + 20) {
+            mList.modules.add("" + i)
+        }
+        mList.smart.finishLoadMore(success = false, noMoreData = mList.modules.size > 100)
+        mList.adapter.notifyItemRangeInserted(size, 20)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -108,13 +96,13 @@ class SwipeRefreshLayout2Activity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_linearLayout -> {
-                mComponent.setLayoutManager(LinearLayoutManager(this))
+                mList.setLayoutManager(LinearLayoutManager(this))
             }
             R.id.action_gridLayout -> {
-                mComponent.setLayoutManager(getGridLayoutManager(2))
+                mList.setLayoutManager(getGridLayoutManager(2))
             }
             R.id.action_staggeredGridLayout -> {
-                mComponent.setLayoutManager(getStaggeredGridLayoutManager(2))
+                mList.setLayoutManager(getStaggeredGridLayoutManager(2))
             }
         }
         return super.onOptionsItemSelected(item)
@@ -133,7 +121,7 @@ class SwipeRefreshLayout2Activity : AppCompatActivity() {
         return GridLayoutManager(this, spanCount).apply {
             spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
                 override fun getSpanSize(position: Int): Int {
-                    return if (mComponent.isLoadMoreShow(position)) {
+                    return if (mList.isLoadMoreShow(position)) {
                         spanCount
                     } else {
                         1
