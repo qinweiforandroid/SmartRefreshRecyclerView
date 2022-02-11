@@ -5,8 +5,10 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.qw.recyclerview.core.*
 import com.qw.recyclerview.core.BaseViewHolder
+import com.qw.recyclerview.core.ISmartRecyclerView
+import com.qw.recyclerview.core.OnLoadMoreListener
+import com.qw.recyclerview.core.SRLog
 import com.qw.recyclerview.loadmore.AbsLoadMore
 import com.qw.recyclerview.loadmore.State
 import com.qw.recyclerview.swiperefresh.SwipeRecyclerView
@@ -31,16 +33,14 @@ abstract class SwipeListComponent<T> constructor(
         setLoadMoreEnable(false)
     }
 
-    fun injectLoadMore(loadMore: AbsLoadMore) {
+    fun supportLoadMore(loadMore: AbsLoadMore, onLoadMoreListener: OnLoadMoreListener) {
         this.loadMore = loadMore
-        this.loadMore?.setOnRetryListener {
-            this.loadMore?.notifyStateChanged(State.LOADING)
+        this.loadMore!!.setOnRetryListener {
+            this.loadMore!!.onStateChanged(State.LOADING)
             adapter.notifyItemChanged(adapter.itemCount - 1)
-            onLoadMoreListener?.onLoadMore()
+            onLoadMoreListener.onLoadMore()
         }
-    }
 
-    fun setOnLoadMoreListener(onLoadMoreListener: OnLoadMoreListener) {
         this.onLoadMoreListener = onLoadMoreListener
         smart.setOnLoadMoreListener(object : OnLoadMoreListener {
             override fun onLoadMore() {
@@ -48,13 +48,7 @@ abstract class SwipeListComponent<T> constructor(
             }
 
             override fun onStateChanged(state: State) {
-                var newState = state
-                if (state == State.NO_MORE || state == State.IDLE || state == State.ERROR) {
-                    if (modules.size == 0) {
-                        newState = State.EMPTY
-                    }
-                }
-                loadMore?.notifyStateChanged(newState)
+                loadMore.onStateChanged(state)
                 adapter.notifyItemChanged(adapter.itemCount - 1)
             }
         })
@@ -98,7 +92,6 @@ abstract class SwipeListComponent<T> constructor(
     fun isLoadMoreShow(position: Int): Boolean {
         return smart.isLoadMoreEnable() && adapter.itemCount - 1 == position
     }
-
 
     fun getSwipeRefreshLayout(): SwipeRefreshLayout {
         return mSwipeRefreshLayout

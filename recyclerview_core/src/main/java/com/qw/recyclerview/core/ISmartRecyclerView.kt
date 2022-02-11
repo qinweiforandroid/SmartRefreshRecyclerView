@@ -1,6 +1,7 @@
 package com.qw.recyclerview.core
 
 import androidx.recyclerview.widget.RecyclerView
+import com.qw.recyclerview.loadmore.State
 
 interface ISmartRecyclerView {
     companion object {
@@ -62,6 +63,13 @@ interface ISmartRecyclerView {
      * 刷新完成更新ui
      */
     fun finishRefresh(success: Boolean)
+
+    /**
+     * 刷新完成更新ui
+     * @param success true刷新成功，false 刷新失敗
+     * @param state 加载更多状态
+     */
+    fun finishRefresh(success: Boolean, state: State)
 
     fun finishLoadMore(success: Boolean, noMoreData: Boolean)
 }

@@ -28,7 +28,7 @@ class SwipeListWithRefreshAndLoadMoreActivity : AppCompatActivity() {
 
     private val loadMoreModule = DefaultLoadMore().apply {
         setOnRetryListener {
-            notifyStateChanged(State.LOADING)
+            onStateChanged(State.LOADING)
             adapter.notifyItemChanged(adapter.itemCount - 1)
             loadMore()
         }
@@ -40,28 +40,22 @@ class SwipeListWithRefreshAndLoadMoreActivity : AppCompatActivity() {
         setContentView(bind.root)
 
         //1.配置RecyclerView
-        val mRecyclerView = findViewById<RecyclerView>(R.id.mRecyclerView)
-        mRecyclerView.overScrollMode = RecyclerView.OVER_SCROLL_NEVER
-        mRecyclerView.layoutManager = LinearLayoutManager(this)
+        bind.mRecyclerView.overScrollMode = RecyclerView.OVER_SCROLL_NEVER
+        bind.mRecyclerView.layoutManager = LinearLayoutManager(this)
         adapter = ListAdapter()
-        mRecyclerView.adapter = adapter
+        bind.mRecyclerView.adapter = adapter
 
         //2.配置SwipeRefreshLayout
         //mSwipeRefreshLayout.setColorSchemeColors();
 
         //3.配置SmartHelper
-        smart = SwipeRecyclerView(mRecyclerView, bind.mSwipeRefreshLayout)
+        smart = SwipeRecyclerView(bind.mRecyclerView, bind.mSwipeRefreshLayout)
             .setRefreshEnable(true)
             .setLoadMoreEnable(true)
             .setOnRefreshListener(object : OnRefreshListener {
                 override fun onRefresh() {
                     smart.getRecyclerView().postDelayed({
-                        modules.clear()
-                        for (i in 0..19) {
-                            modules.add("" + i)
-                        }
-                        smart.finishRefresh(true)
-                        adapter.notifyDataSetChanged()
+                        refresh()
                     }, 1000)
                 }
             })
@@ -71,18 +65,21 @@ class SwipeListWithRefreshAndLoadMoreActivity : AppCompatActivity() {
                 }
 
                 override fun onStateChanged(state: State) {
-                    var newState = state
-                    if (state == State.NO_MORE || state == State.IDLE || state == State.ERROR) {
-                        if (modules.size == 0) {
-                            newState = State.EMPTY
-                        }
-                    }
-                    loadMoreModule.notifyStateChanged(newState)
+                    loadMoreModule.onStateChanged(state)
                     adapter.notifyItemChanged(adapter.itemCount - 1)
                 }
             })
         //自动刷新
         smart.autoRefresh()
+    }
+
+    private fun refresh() {
+        modules.clear()
+        for (i in 0..19) {
+            modules.add("" + i)
+        }
+        adapter.notifyDataSetChanged()
+        smart.finishRefresh(true)
     }
 
     private fun loadMore() {
@@ -92,7 +89,7 @@ class SwipeListWithRefreshAndLoadMoreActivity : AppCompatActivity() {
                 modules.add("" + i)
             }
             adapter.notifyDataSetChanged()
-            smart.finishLoadMore(success = false, noMoreData = modules.size > 100)
+            smart.finishLoadMore(success = true, noMoreData = modules.size > 100)
         }, 1000)
     }
 

@@ -28,7 +28,7 @@ class DefaultLoadMore : AbsLoadMore() {
         private val mFooterLabel = itemView.findViewById<View>(R.id.mFooterLabel) as TextView
         override fun initData(position: Int) {
             itemView.setOnClickListener(null)
-            SRLog.d("SwipeRefreshRecyclerViewComponent initData:${getState().name}")
+            SRLog.d("DefaultLoadMore initData:${getState().name}")
             when (getState()) {
                 State.ERROR -> {
                     itemView.setOnClickListener(this)

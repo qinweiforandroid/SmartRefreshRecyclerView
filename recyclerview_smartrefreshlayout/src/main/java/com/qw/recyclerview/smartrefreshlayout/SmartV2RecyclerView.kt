@@ -4,6 +4,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.qw.recyclerview.core.OnLoadMoreListener
 import com.qw.recyclerview.core.OnRefreshListener
 import com.qw.recyclerview.core.ISmartRecyclerView
+import com.qw.recyclerview.loadmore.State
 import com.scwang.smart.refresh.layout.SmartRefreshLayout
 
 /**
@@ -90,6 +91,10 @@ class SmartV2RecyclerView(
     }
 
     override fun finishRefresh(success: Boolean) {
+        finishRefresh(success, State.IDLE)
+    }
+
+    override fun finishRefresh(success: Boolean, state: State) {
         mSmartRefreshLayout.finishRefresh(success)
         markIdle()
     }

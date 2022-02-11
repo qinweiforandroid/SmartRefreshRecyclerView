@@ -11,7 +11,7 @@ abstract class AbsLoadMore {
     private var state = State.IDLE
     protected var retry: () -> Unit = {}
 
-    fun notifyStateChanged(state: State) {
+    fun onStateChanged(state: State) {
         this.state = state
     }
 

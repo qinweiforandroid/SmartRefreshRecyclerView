@@ -4,8 +4,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.qw.recyclerview.core.*
 import com.qw.recyclerview.core.BaseViewHolder
+import com.qw.recyclerview.core.ISmartRecyclerView
+import com.qw.recyclerview.core.OnLoadMoreListener
+import com.qw.recyclerview.core.SRLog
 import com.qw.recyclerview.loadmore.AbsLoadMore
 import com.qw.recyclerview.loadmore.State
 import com.qw.recyclerview.smartrefreshlayout.SmartRecyclerView
@@ -31,15 +33,13 @@ abstract class SmartListComponent<T> constructor(
         (mRecyclerView.itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
     }
 
-    fun injectLoadMore(loadMore: AbsLoadMore) {
+    fun supportLoadMore(loadMore: AbsLoadMore, onLoadMoreListener: OnLoadMoreListener) {
         this.loadMore = loadMore
         this.loadMore?.setOnRetryListener {
-            this.loadMore?.notifyStateChanged(State.LOADING)
-            onLoadMoreListener?.onLoadMore()
+            this.loadMore?.onStateChanged(State.LOADING)
+            onLoadMoreListener.onLoadMore()
         }
-    }
 
-    fun setOnLoadMoreListener(onLoadMoreListener: OnLoadMoreListener) {
         this.onLoadMoreListener = onLoadMoreListener
         smart.setOnLoadMoreListener(object : OnLoadMoreListener {
             override fun onLoadMore() {
@@ -47,16 +47,9 @@ abstract class SmartListComponent<T> constructor(
             }
 
             override fun onStateChanged(state: State) {
-                var newState = state
-                if (state == State.NO_MORE || state == State.IDLE || state == State.ERROR) {
-                    if (modules.size == 0) {
-                        newState = State.EMPTY
-                    }
-                }
-                loadMore?.notifyStateChanged(newState)
+                loadMore.onStateChanged(state)
                 adapter.notifyItemChanged(adapter.itemCount - 1)
             }
-
         })
     }
 

@@ -10,14 +10,13 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.qw.recyclerview.core.BaseViewHolder
 import com.qw.recyclerview.core.OnLoadMoreListener
 import com.qw.recyclerview.core.OnRefreshListener
-import com.qw.recyclerview.core.BaseViewHolder
 import com.qw.recyclerview.footer.DefaultLoadMore
 import com.qw.recyclerview.sample.R
 import com.qw.recyclerview.sample.databinding.SwipeRefreshLayoutActivityBinding
 import com.qw.recyclerview.swiperefresh.template.SwipeListComponent
-import java.util.*
 
 /**
  * Created by qinwei on 2021/7/1 20:38
@@ -30,40 +29,40 @@ class SwipeRefreshListComponentActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         bind = SwipeRefreshLayoutActivityBinding.inflate(layoutInflater)
         setContentView(bind.root)
-        bind.mRecyclerView.layoutManager = linearLayoutManager
-        mList = object : SwipeListComponent<String>(bind.mRecyclerView, bind.mSwipeRefreshLayout) {
-            override fun onCreateBaseViewHolder(
-                parent: ViewGroup,
-                viewType: Int
-            ): BaseViewHolder {
-                return Holder(
-                    LayoutInflater.from(this@SwipeRefreshListComponentActivity)
-                        .inflate(android.R.layout.simple_list_item_1, parent, false)
-                )
-            }
+        mList =
+            object : SwipeListComponent<String>(bind.mRecyclerView, bind.mSwipeRefreshLayout) {
+                override fun onCreateBaseViewHolder(
+                    parent: ViewGroup,
+                    viewType: Int
+                ): BaseViewHolder {
+                    return Holder(
+                        LayoutInflater.from(this@SwipeRefreshListComponentActivity)
+                            .inflate(android.R.layout.simple_list_item_1, parent, false)
+                    )
+                }
 
-            inner class Holder(itemView: View) : BaseViewHolder(itemView) {
-                override fun initData(position: Int) {
-                    val label: TextView = itemView as TextView
-                    val text = mList.modules[position]
-                    label.text = text
+                inner class Holder(itemView: View) : BaseViewHolder(itemView) {
+                    override fun initData(position: Int) {
+                        val label: TextView = itemView as TextView
+                        val text = mList.modules[position]
+                        label.text = text
+                    }
                 }
             }
-        }
-        mList.smart.setRefreshEnable(true)
-        mList.smart.setLoadMoreEnable(true)
-        mList.injectLoadMore(DefaultLoadMore())
-        mList.setOnLoadMoreListener(object : OnLoadMoreListener {
+        mList.smart.setLayoutManager(linearLayoutManager)
+            .setRefreshEnable(true)
+            .setLoadMoreEnable(true)
+            .setOnRefreshListener(object : OnRefreshListener {
+                override fun onRefresh() {
+                    Handler(Looper.myLooper()!!).postDelayed({
+                        refresh()
+                    }, 1000)
+                }
+            })
+        mList.supportLoadMore(DefaultLoadMore(), object : OnLoadMoreListener {
             override fun onLoadMore() {
                 Handler(Looper.myLooper()!!).postDelayed({
                     loadMore()
-                }, 1000)
-            }
-        })
-        mList.smart.setOnRefreshListener(object : OnRefreshListener {
-            override fun onRefresh() {
-                Handler(Looper.myLooper()!!).postDelayed({
-                    refresh()
                 }, 1000)
             }
         })
@@ -75,8 +74,8 @@ class SwipeRefreshListComponentActivity : AppCompatActivity() {
         for (i in 0..19) {
             mList.modules.add("" + i)
         }
-        mList.smart.finishRefresh(true)
         mList.adapter.notifyDataSetChanged()
+        mList.smart.finishRefresh(true)
     }
 
     private fun loadMore() {
@@ -127,7 +126,6 @@ class SwipeRefreshListComponentActivity : AppCompatActivity() {
                         1
                     }
                 }
-
             }
         }
     }

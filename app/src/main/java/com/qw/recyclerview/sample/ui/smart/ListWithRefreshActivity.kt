@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.qw.recyclerview.core.OnRefreshListener
 import com.qw.recyclerview.core.BaseViewHolder
+import com.qw.recyclerview.core.OnLoadMoreListener
 import com.qw.recyclerview.footer.DefaultLoadMore
 import com.qw.recyclerview.sample.R
 import com.qw.recyclerview.sample.databinding.SmartRefreshLayoutActivityBinding
@@ -31,14 +32,6 @@ class ListWithRefreshActivity : AppCompatActivity() {
         setContentView(bind.root)
         bind.mRecyclerView.layoutManager = linearLayoutManager
         mList = object : SmartListComponent<String>(bind.mRecyclerView, bind.mSmartRefreshLayout) {
-            inner class Holder(itemView: View) : BaseViewHolder(itemView) {
-                override fun initData(position: Int) {
-                    val label: TextView = itemView as TextView
-                    val text = mList.modules[position]
-                    label.text = text
-                }
-            }
-
             override fun onCreateBaseViewHolder(
                 parent: ViewGroup,
                 viewType: Int
@@ -49,15 +42,37 @@ class ListWithRefreshActivity : AppCompatActivity() {
                 )
             }
         }
+        mList.supportLoadMore(DefaultLoadMore(), object : OnLoadMoreListener {
+            override fun onLoadMore() {
+                Handler(Looper.myLooper()!!).postDelayed({
+                    loadMore()
+                }, 1000)
+            }
+        })
         mList.smart.setRefreshEnable(true)
-            .setLoadMoreEnable(false)
+            .setLoadMoreEnable(true)
             .setOnRefreshListener(object : OnRefreshListener {
                 override fun onRefresh() {
                     refresh()
                 }
-            })
-        mList.injectLoadMore(DefaultLoadMore())
-        mList.smart.autoRefresh()
+            }).autoRefresh()
+    }
+
+    inner class Holder(itemView: View) : BaseViewHolder(itemView) {
+        override fun initData(position: Int) {
+            val label: TextView = itemView as TextView
+            val text = mList.modules[position]
+            label.text = text
+        }
+    }
+
+    private fun loadMore() {
+        val size = mList.modules.size
+        for (i in size until size + 20) {
+            mList.modules.add("" + i)
+        }
+        mList.smart.finishLoadMore(success = false, noMoreData = mList.modules.size > 100)
+        mList.adapter.notifyItemRangeInserted(size, 20)
     }
 
     private fun refresh() {
