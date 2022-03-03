@@ -59,7 +59,11 @@ class SwipeRefreshListComponentActivity : AppCompatActivity() {
                     }, 1000)
                 }
             })
-        mList.supportLoadMore(DefaultLoadMore(), object : OnLoadMoreListener {
+        val loadMore = DefaultLoadMore()
+            .setEmptyHint("我是有底线的……")
+            .setFailHint("哎呦，加载失败了")
+            .setLoadingHint("努力加载中")
+        mList.supportLoadMore(loadMore, object : OnLoadMoreListener {
             override fun onLoadMore() {
                 Handler(Looper.myLooper()!!).postDelayed({
                     loadMore()

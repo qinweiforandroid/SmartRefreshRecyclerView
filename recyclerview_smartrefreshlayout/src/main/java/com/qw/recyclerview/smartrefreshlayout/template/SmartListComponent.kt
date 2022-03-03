@@ -37,6 +37,7 @@ abstract class SmartListComponent<T> constructor(
         this.loadMore = loadMore
         this.loadMore?.setOnRetryListener {
             this.loadMore?.onStateChanged(State.LOADING)
+            adapter.notifyItemChanged(adapter.itemCount - 1)
             onLoadMoreListener.onLoadMore()
         }
 

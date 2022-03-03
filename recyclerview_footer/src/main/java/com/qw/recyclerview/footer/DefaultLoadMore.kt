@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.annotation.LayoutRes
 import com.qw.recyclerview.loadmore.AbsLoadMore
 import com.qw.recyclerview.core.SRLog
 import com.qw.recyclerview.loadmore.State
@@ -15,10 +16,34 @@ import com.qw.recyclerview.core.BaseViewHolder
  * @author qinwei
  */
 class DefaultLoadMore : AbsLoadMore() {
+    @LayoutRes
+    private var mFooterLayoutId: Int = R.layout.sr_widget_footer
+    private var mFailHint = "加载失败,点击重试"
+    private var mLoadingHint = "正在加载..."
+    private var mEmptyHint = "--没有更多数据了--"
+    fun setFooterLayoutId(@LayoutRes layoutId: Int): DefaultLoadMore {
+        mFooterLayoutId = layoutId
+        return this
+    }
+
+    fun setFailHint(text: String): DefaultLoadMore {
+        mFailHint = text
+        return this
+    }
+
+    fun setLoadingHint(text: String): DefaultLoadMore {
+        mLoadingHint = text
+        return this
+    }
+
+    fun setEmptyHint(text: String): DefaultLoadMore {
+        mEmptyHint = text
+        return this
+    }
 
     override fun onCreateLoadMoreViewHolder(parent: ViewGroup): BaseViewHolder {
         return FooterHolder(
-            LayoutInflater.from(parent.context).inflate(R.layout.sr_widget_footer, parent, false)
+            LayoutInflater.from(parent.context).inflate(mFooterLayoutId, parent, false)
         )
     }
 
@@ -32,7 +57,7 @@ class DefaultLoadMore : AbsLoadMore() {
             when (getState()) {
                 State.ERROR -> {
                     itemView.setOnClickListener(this)
-                    mFooterLabel.text = "加载失败,点击重试"
+                    mFooterLabel.text = mFailHint
                     mProgressBar.visibility = LinearLayout.GONE
                     itemView.visibility = LinearLayout.VISIBLE
                 }
@@ -41,13 +66,13 @@ class DefaultLoadMore : AbsLoadMore() {
                     itemView.visibility = LinearLayout.INVISIBLE
                 }
                 State.LOADING -> {
-                    mFooterLabel.text = "正在加载..."
+                    mFooterLabel.text = mLoadingHint
                     mProgressBar.visibility = LinearLayout.VISIBLE
                     itemView.visibility = LinearLayout.VISIBLE
                 }
                 State.NO_MORE -> {
                     mProgressBar.visibility = LinearLayout.GONE
-                    mFooterLabel.text = "--没有更多数据了--"
+                    mFooterLabel.text = mEmptyHint
                     itemView.visibility = LinearLayout.VISIBLE
                 }
                 else -> {
