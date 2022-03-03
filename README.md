@@ -22,9 +22,13 @@
 
 ```groovy
 //使用smartrefreshlayout库实现的下拉刷新
-api 'com.qw.smart:recyclerview-smartrefreshlayout:0.0.1-alpha'
+api 'com.github.qinweiforandroid.SmartRefreshRecyclerView:recyclerview-smartrefreshlayout:3.0-09f3e0fa2d-1'
 //使用swiperefreshlayout库实现的下拉刷新
-api 'com.qw.smart:recyclerview-swiperefresh:0.0.1-alpha'
+api 'com.github.qinweiforandroid.SmartRefreshRecyclerView:recyclerview-swiperefresh:3.0-09f3e0fa2d-1'
+//加载更多组件
+api 'com.github.qinweiforandroid.SmartRefreshRecyclerView:recyclerview-footer:3.0-09f3e0fa2d-1'
+//核心组件
+api 'com.github.qinweiforandroid.SmartRefreshRecyclerView:recyclerview-core:3.0-09f3e0fa2d-1'
 ```
 
 2、xml布局
