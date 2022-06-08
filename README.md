@@ -18,17 +18,28 @@
 
 ## 2、如何使用
 
-1、maven依赖
+**Step 1.** Add the JitPack repository to your build file
+
+```groovy
+	allprojects {
+		repositories {
+			...
+			maven { url 'https://jitpack.io' }
+		}
+	}
+```
+
+**Step 2.** Add the dependency
 
 ```groovy
 //使用smartrefreshlayout库实现的下拉刷新
-api 'com.github.qinweiforandroid.SmartRefreshRecyclerView:recyclerview-smartrefreshlayout:3.0-09f3e0fa2d-1'
+api 'com.github.qinweiforandroid.SmartRefreshRecyclerView:recyclerview-smartrefreshlayout:3.0.0608'
 //使用swiperefreshlayout库实现的下拉刷新
-api 'com.github.qinweiforandroid.SmartRefreshRecyclerView:recyclerview-swiperefresh:3.0-09f3e0fa2d-1'
+api 'com.github.qinweiforandroid.SmartRefreshRecyclerView:recyclerview-swiperefresh:3.0.0608'
 //加载更多组件
-api 'com.github.qinweiforandroid.SmartRefreshRecyclerView:recyclerview-footer:3.0-09f3e0fa2d-1'
+api 'com.github.qinweiforandroid.SmartRefreshRecyclerView:recyclerview-footer:3.0.0608'
 //核心组件
-api 'com.github.qinweiforandroid.SmartRefreshRecyclerView:recyclerview-core:3.0-09f3e0fa2d-1'
+api 'com.github.qinweiforandroid.SmartRefreshRecyclerView:recyclerview-core:3.0.0608'
 ```
 
 2、xml布局
