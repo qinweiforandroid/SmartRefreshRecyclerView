@@ -29,7 +29,7 @@
 	}
 ```
 
-**Step 2.** Add the dependency
+**Step 2.** Add the dependency [![](https://jitpack.io/v/qinweiforandroid/SmartRefreshRecyclerView.svg)](https://jitpack.io/#qinweiforandroid/SmartRefreshRecyclerView)
 
 ```groovy
 //使用smartrefreshlayout库实现的下拉刷新
