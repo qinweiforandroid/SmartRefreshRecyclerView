@@ -5,10 +5,8 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.qw.recyclerview.core.BaseViewHolder
-import com.qw.recyclerview.core.ISmartRecyclerView
-import com.qw.recyclerview.core.OnLoadMoreListener
-import com.qw.recyclerview.core.SRLog
+import com.qw.recyclerview.core.*
+import com.qw.recyclerview.layout.ILayoutManager
 import com.qw.recyclerview.loadmore.AbsLoadMore
 import com.qw.recyclerview.loadmore.State
 import com.qw.recyclerview.swiperefresh.SwipeRecyclerView
@@ -21,26 +19,71 @@ import com.qw.recyclerview.template.BaseListComponent
  */
 abstract class SwipeListComponent<T> constructor(
     mRecyclerView: RecyclerView,
-    private val mSwipeRefreshLayout: SwipeRefreshLayout
-) : BaseListComponent<T>(mRecyclerView) {
-
+    mSwipeRefreshLayout: SwipeRefreshLayout
+) {
     private var onLoadMoreListener: OnLoadMoreListener? = null
     private var loadMore: AbsLoadMore? = null
     private val typeLoadMore = -1
-    val smart: ISmartRecyclerView = SwipeRecyclerView(mRecyclerView, mSwipeRefreshLayout).apply {
-        (mRecyclerView.itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
-        setRefreshEnable(false)
-        setLoadMoreEnable(false)
+    private val listComponent = object : BaseListComponent<T>(mRecyclerView) {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
+            if (viewType == typeLoadMore) {
+                SRLog.d("SwipeRefreshRecyclerViewComponent typeLoadMore getView")
+                return loadMore!!.onCreateLoadMoreViewHolder(parent)
+            }
+            return onCreateBaseViewHolder(parent, viewType)
+        }
+
+        override fun onViewAttachedToWindow(holder: BaseViewHolder) {
+            val lp = holder.itemView.layoutParams
+            if (lp != null && lp is StaggeredGridLayoutManager.LayoutParams) {
+                lp.isFullSpan = isLoadMoreShow(holder.layoutPosition)
+            }
+        }
+
+        override fun getItemCount(): Int {
+            var count = super.getItemCount()
+            if (smart.isLoadMoreEnable()) {
+                count++
+            }
+            return count
+        }
+
+        override fun getItemViewType(position: Int): Int {
+            if (isLoadMoreShow(position)) {
+                return typeLoadMore
+            }
+            return getItemViewTypeByPosition(position)
+        }
     }
 
-    fun supportLoadMore(loadMore: AbsLoadMore, onLoadMoreListener: OnLoadMoreListener) {
+    val adapter: BaseListAdapter
+        get() {
+            return listComponent.adapter
+        }
+
+    val modules: ArrayList<T>
+        get() {
+            return listComponent.modules
+        }
+
+    private val smart: ISmartRecyclerView =
+        SwipeRecyclerView(mRecyclerView, mSwipeRefreshLayout).apply {
+            (mRecyclerView.itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
+            setRefreshEnable(false)
+            setLoadMoreEnable(false)
+        }
+
+
+    fun supportLoadMore(
+        loadMore: AbsLoadMore,
+        onLoadMoreListener: OnLoadMoreListener
+    ) {
         this.loadMore = loadMore
         this.loadMore!!.setOnRetryListener {
             this.loadMore!!.onStateChanged(State.LOADING)
-            adapter.notifyItemChanged(adapter.itemCount - 1)
+            listComponent.adapter.notifyItemChanged(listComponent.adapter.itemCount - 1)
             onLoadMoreListener.onLoadMore()
         }
-
         this.onLoadMoreListener = onLoadMoreListener
         smart.setOnLoadMoreListener(object : OnLoadMoreListener {
             override fun onLoadMore() {
@@ -49,51 +92,47 @@ abstract class SwipeListComponent<T> constructor(
 
             override fun onStateChanged(state: State) {
                 loadMore.onStateChanged(state)
-                adapter.notifyItemChanged(adapter.itemCount - 1)
+                listComponent.adapter.notifyItemChanged(listComponent.adapter.itemCount - 1)
             }
         })
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
-        if (viewType == typeLoadMore) {
-            SRLog.d("SwipeRefreshRecyclerViewComponent typeLoadMore getView")
-            return loadMore!!.onCreateLoadMoreViewHolder(parent)
-        }
-        return onCreateBaseViewHolder(parent, viewType)
-    }
-
-    override fun onViewAttachedToWindow(holder: BaseViewHolder) {
-        val lp = holder.itemView.layoutParams
-        if (lp != null && lp is StaggeredGridLayoutManager.LayoutParams) {
-            lp.isFullSpan = isLoadMoreShow(holder.layoutPosition)
-        }
-    }
-
-    override fun getItemCount(): Int {
-        var count = super.getItemCount()
-        if (smart.isLoadMoreEnable()) {
-            count++
-        }
-        return count
-    }
-
-    final override fun getItemViewType(position: Int): Int {
-        if (isLoadMoreShow(position)) {
-            return typeLoadMore
-        }
-        return getItemViewTypeByPosition(position)
+        smart.setLoadMoreEnable(true)
     }
 
 
-    abstract fun onCreateBaseViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder
+    protected abstract fun onCreateBaseViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder
 
-    open fun getItemViewTypeByPosition(position: Int): Int = 0
+    protected open fun getItemViewTypeByPosition(position: Int): Int = 0
 
     fun isLoadMoreShow(position: Int): Boolean {
-        return smart.isLoadMoreEnable() && adapter.itemCount - 1 == position
+        return smart.isLoadMoreEnable() && listComponent.adapter.itemCount - 1 == position
     }
 
-    fun getSwipeRefreshLayout(): SwipeRefreshLayout {
-        return mSwipeRefreshLayout
+    fun setLayoutManager(layoutManager: ILayoutManager): ISmartRecyclerView {
+        listComponent.setLayoutManager(layoutManager.getLayoutManager())
+        return smart
+    }
+
+    fun autoRefresh() {
+        smart.autoRefresh()
+    }
+
+    /**
+     * 刷新完成更新ui
+     */
+    fun finishRefresh(success: Boolean) {
+        smart.finishRefresh(success)
+    }
+
+    /**
+     * 刷新完成更新ui
+     * @param success true刷新成功，false 刷新失敗
+     * @param state 加载更多状态
+     */
+    fun finishRefresh(success: Boolean, state: State) {
+        smart.finishRefresh(success, state)
+    }
+
+    fun finishLoadMore(success: Boolean, noMoreData: Boolean) {
+        smart.finishLoadMore(success, noMoreData)
     }
 }

@@ -40,9 +40,9 @@ abstract class BaseListComponent<T> constructor(private val mRecyclerView: Recyc
         return modules.size
     }
 
-    open fun onViewAttachedToWindow(holder: BaseViewHolder) {}
+    protected open fun onViewAttachedToWindow(holder: BaseViewHolder) {}
 
-    abstract fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder
+    protected abstract fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder
 
     fun getRecyclerView(): RecyclerView {
         return mRecyclerView

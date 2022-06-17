@@ -8,12 +8,15 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.qw.recyclerview.core.BaseViewHolder
 import com.qw.recyclerview.core.OnLoadMoreListener
 import com.qw.recyclerview.core.OnRefreshListener
 import com.qw.recyclerview.footer.DefaultLoadMore
+import com.qw.recyclerview.layout.ILayoutManager
+import com.qw.recyclerview.layout.MyGridLayoutManager
+import com.qw.recyclerview.layout.MyLinearLayoutManager
+import com.qw.recyclerview.layout.MyStaggeredGridLayoutManager
 import com.qw.recyclerview.sample.R
 import com.qw.recyclerview.sample.databinding.SwipeRefreshLayoutActivityBinding
 import com.qw.recyclerview.swiperefresh.template.SwipeListComponent
@@ -49,16 +52,6 @@ class SwipeRefreshListComponentActivity : AppCompatActivity() {
                     }
                 }
             }
-        mList.smart.setLayoutManager(linearLayoutManager)
-            .setRefreshEnable(true)
-            .setLoadMoreEnable(true)
-            .setOnRefreshListener(object : OnRefreshListener {
-                override fun onRefresh() {
-                    Handler(Looper.myLooper()!!).postDelayed({
-                        refresh()
-                    }, 1000)
-                }
-            })
         val loadMore = DefaultLoadMore()
             .setEmptyHint("我是有底线的……")
             .setFailHint("哎呦，加载失败了")
@@ -70,7 +63,15 @@ class SwipeRefreshListComponentActivity : AppCompatActivity() {
                 }, 1000)
             }
         })
-        mList.smart.autoRefresh()
+        mList.setLayoutManager(linearLayoutManager)
+            .setRefreshEnable(true)
+            .setOnRefreshListener(object : OnRefreshListener {
+                override fun onRefresh() {
+                    Handler(Looper.myLooper()!!).postDelayed({
+                        refresh()
+                    }, 1000)
+                }
+            }).autoRefresh()
     }
 
     private fun refresh() {
@@ -79,7 +80,7 @@ class SwipeRefreshListComponentActivity : AppCompatActivity() {
             mList.modules.add("" + i)
         }
         mList.adapter.notifyDataSetChanged()
-        mList.smart.finishRefresh(true)
+        mList.finishRefresh(true)
     }
 
     private fun loadMore() {
@@ -87,7 +88,7 @@ class SwipeRefreshListComponentActivity : AppCompatActivity() {
         for (i in size until size + 20) {
             mList.modules.add("" + i)
         }
-        mList.smart.finishLoadMore(success = false, noMoreData = mList.modules.size > 100)
+        mList.finishLoadMore(success = false, noMoreData = mList.modules.size > 100)
         mList.adapter.notifyItemRangeInserted(size, 20)
     }
 
@@ -99,7 +100,7 @@ class SwipeRefreshListComponentActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_linearLayout -> {
-                mList.setLayoutManager(LinearLayoutManager(this))
+                mList.setLayoutManager(MyLinearLayoutManager(this))
             }
             R.id.action_gridLayout -> {
                 mList.setLayoutManager(getGridLayoutManager(2))
@@ -111,8 +112,8 @@ class SwipeRefreshListComponentActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    private val linearLayoutManager: RecyclerView.LayoutManager
-        get() = LinearLayoutManager(this)
+    private val linearLayoutManager: ILayoutManager
+        get() = MyLinearLayoutManager(this)
 
     /**
      * 得到GridLayoutManager
@@ -120,8 +121,8 @@ class SwipeRefreshListComponentActivity : AppCompatActivity() {
      * @param spanCount 列数
      * @return
      */
-    private fun getGridLayoutManager(spanCount: Int): GridLayoutManager {
-        return GridLayoutManager(this, spanCount).apply {
+    private fun getGridLayoutManager(spanCount: Int): MyGridLayoutManager {
+        return MyGridLayoutManager(this, spanCount).apply {
             spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
                 override fun getSpanSize(position: Int): Int {
                     return if (mList.isLoadMoreShow(position)) {
@@ -140,7 +141,7 @@ class SwipeRefreshListComponentActivity : AppCompatActivity() {
      * @param spanCount 列数
      * @return
      */
-    private fun getStaggeredGridLayoutManager(spanCount: Int): StaggeredGridLayoutManager {
-        return StaggeredGridLayoutManager(spanCount, StaggeredGridLayoutManager.VERTICAL)
+    private fun getStaggeredGridLayoutManager(spanCount: Int): MyStaggeredGridLayoutManager {
+        return MyStaggeredGridLayoutManager(spanCount, StaggeredGridLayoutManager.VERTICAL)
     }
 }
