@@ -8,7 +8,7 @@ import com.qw.recyclerview.page.DefaultPage
  * Created by qinwei on 2022/6/27 22:14
  * email: qinwei_it@163.com
  */
-class SwipeRefreshListComponentVM : ViewModel() {
+class SwipeComponentVM : ViewModel() {
     private val page = DefaultPage()
     val result: MediatorLiveData<ArrayList<String>> = MediatorLiveData()
     private var size = 0

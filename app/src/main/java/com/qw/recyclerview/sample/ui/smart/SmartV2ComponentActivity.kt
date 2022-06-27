@@ -8,20 +8,20 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.qw.recyclerview.core.OnLoadMoreListener
 import com.qw.recyclerview.core.OnRefreshListener
 import com.qw.recyclerview.core.BaseViewHolder
+import com.qw.recyclerview.layout.MyLinearLayoutManager
+import com.qw.recyclerview.layout.MyStaggeredGridLayoutManager
 import com.qw.recyclerview.sample.R
 import com.qw.recyclerview.sample.databinding.SmartRefreshLayoutActivityBinding
 import com.qw.recyclerview.smartrefreshlayout.template.SmartV2ListComponent
-import java.util.*
 
 /**
  * Created by qinwei on 2021/7/1 20:38
  */
-class SmartRefresh1ListComponentActivity : AppCompatActivity() {
+class SmartV2ComponentActivity : AppCompatActivity() {
     private lateinit var mList: SmartV2ListComponent<String>
     private lateinit var bind: SmartRefreshLayoutActivityBinding
 
@@ -31,12 +31,6 @@ class SmartRefresh1ListComponentActivity : AppCompatActivity() {
         setContentView(bind.root)
         mList = object :
             SmartV2ListComponent<String>(bind.mRecyclerView, bind.mSmartRefreshLayout) {
-            override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
-                return Holder(
-                    LayoutInflater.from(this@SmartRefresh1ListComponentActivity)
-                        .inflate(android.R.layout.simple_list_item_1, parent, false)
-                )
-            }
 
             inner class Holder(itemView: View) : BaseViewHolder(itemView) {
                 override fun initData(position: Int) {
@@ -45,8 +39,15 @@ class SmartRefresh1ListComponentActivity : AppCompatActivity() {
                     label.text = text
                 }
             }
+
+            override fun onCreateBaseViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
+                return Holder(
+                    LayoutInflater.from(this@SmartV2ComponentActivity)
+                        .inflate(android.R.layout.simple_list_item_1, parent, false)
+                )
+            }
         }
-        mList.smart.setLayoutManager(linearLayoutManager)
+        mList.smart.setLayoutManager(LinearLayoutManager(this))
             .setRefreshEnable(true)
             .setLoadMoreEnable(true)
             .setOnLoadMoreListener(object : OnLoadMoreListener {
@@ -91,38 +92,20 @@ class SmartRefresh1ListComponentActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_linearLayout -> {
-                mList.setLayoutManager(LinearLayoutManager(this))
+                mList.setLayoutManager(MyLinearLayoutManager(this))
             }
             R.id.action_gridLayout -> {
-                mList.setLayoutManager(getGridLayoutManager(2))
+                mList.setLayoutManager(GridLayoutManager(this, 2))
             }
             R.id.action_staggeredGridLayout -> {
-                mList.setLayoutManager(getStaggeredGridLayoutManager(2))
+                mList.setLayoutManager(
+                    MyStaggeredGridLayoutManager(
+                        2,
+                        StaggeredGridLayoutManager.VERTICAL
+                    )
+                )
             }
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    private val linearLayoutManager: RecyclerView.LayoutManager
-        get() = LinearLayoutManager(this)
-
-    /**
-     * 得到GridLayoutManager
-     *
-     * @param spanCount 列数
-     * @return
-     */
-    private fun getGridLayoutManager(spanCount: Int): GridLayoutManager {
-        return GridLayoutManager(this, spanCount)
-    }
-
-    /**
-     * 得到StaggeredGridLayoutManager
-     *
-     * @param spanCount 列数
-     * @return
-     */
-    private fun getStaggeredGridLayoutManager(spanCount: Int): StaggeredGridLayoutManager {
-        return StaggeredGridLayoutManager(spanCount, StaggeredGridLayoutManager.VERTICAL)
     }
 }

@@ -17,7 +17,7 @@ import java.util.*
 /**
  * Created by qinwei on 2021/7/1 20:38
  */
-class ListWithRefreshAndLoadMoreActivity : AppCompatActivity() {
+class SmartV2RecyclerViewActivity : AppCompatActivity() {
     private lateinit var bind: SmartRefreshLayoutActivityBinding
     private lateinit var smart: ISmartRecyclerView
     private lateinit var adapter: ListAdapter
@@ -33,7 +33,6 @@ class ListWithRefreshAndLoadMoreActivity : AppCompatActivity() {
         adapter = ListAdapter()
         bind.mRecyclerView.adapter = adapter
         //2.配置SmartRefreshLayout
-        //3.配置SmartRefreshHelper
         smart = SmartV2RecyclerView(bind.mRecyclerView, bind.mSmartRefreshLayout)
             .setRefreshEnable(true) //设置下拉刷新可用
             .setLoadMoreEnable(true) //设置加载更多可用
@@ -77,7 +76,7 @@ class ListWithRefreshAndLoadMoreActivity : AppCompatActivity() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
             return object : BaseViewHolder(
-                LayoutInflater.from(this@ListWithRefreshAndLoadMoreActivity)
+                LayoutInflater.from(this@SmartV2RecyclerViewActivity)
                     .inflate(android.R.layout.simple_list_item_1, parent, false)
             ) {
                 override fun initData(position: Int) {

@@ -11,8 +11,10 @@
         <entry key="..\:/projects/SmartRefreshRecyclerView/recyclerview_footer/src/main/res/layout/sr_widget_footer.xml" value="0.36614583333333334" />
         <entry key="..\:/projects/SmartRefreshRecyclerView/recyclerview_swiperefresh/src/main/res/layout/recyclerview_swiperefresh_layout.xml" value="0.36614583333333334" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/recyclerview_layout_activity.xml" value="0.15217391304347827" />
         <entry key="app/src/main/res/layout/smart_refresh_layout_activity.xml" value="0.18697916666666667" />
         <entry key="app/src/main/res/layout/swipe_refresh_layout_activity.xml" value="0.21240942028985507" />
+        <entry key="app/src/main/res/layout/widget_refresh_view.xml" value="0.15217391304347827" />
         <entry key="core/src/main/res/layout/sr_widget_pulltorefresh_footer.xml" value="0.21240942028985507" />
         <entry key="recyclerview_swiperefresh/src/main/res/layout/recyclerview_swiperefresh_layout.xml" value="0.11458333333333333" />
       </map>

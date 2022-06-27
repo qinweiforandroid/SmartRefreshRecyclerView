@@ -6,15 +6,11 @@ import android.os.Looper
 import android.view.*
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.qw.recyclerview.core.BaseViewHolder
 import com.qw.recyclerview.core.OnLoadMoreListener
 import com.qw.recyclerview.core.OnRefreshListener
 import com.qw.recyclerview.footer.DefaultLoadMore
-import com.qw.recyclerview.layout.MyGridLayoutManager
 import com.qw.recyclerview.layout.MyLinearLayoutManager
 import com.qw.recyclerview.layout.MyStaggeredGridLayoutManager
 import com.qw.recyclerview.sample.R
@@ -24,7 +20,7 @@ import com.qw.recyclerview.smartrefreshlayout.template.SmartListComponent
 /**
  * Created by qinwei on 2021/7/1 20:38
  */
-class ListWithRefreshActivity : AppCompatActivity() {
+class SmartComponentActivity : AppCompatActivity() {
     private lateinit var mList: SmartListComponent<String>
     private lateinit var bind: SmartRefreshLayoutActivityBinding
 
@@ -32,14 +28,13 @@ class ListWithRefreshActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         bind = SmartRefreshLayoutActivityBinding.inflate(layoutInflater)
         setContentView(bind.root)
-        bind.mRecyclerView.layoutManager = linearLayoutManager
         mList = object : SmartListComponent<String>(bind.mRecyclerView, bind.mSmartRefreshLayout) {
             override fun onCreateBaseViewHolder(
                 parent: ViewGroup,
                 viewType: Int
             ): BaseViewHolder {
                 return Holder(
-                    LayoutInflater.from(this@ListWithRefreshActivity)
+                    LayoutInflater.from(this@SmartComponentActivity)
                         .inflate(android.R.layout.simple_list_item_1, parent, false)
                 )
             }
@@ -51,7 +46,8 @@ class ListWithRefreshActivity : AppCompatActivity() {
                 }, 1000)
             }
         })
-        mList.smart.setRefreshEnable(true)
+        mList.smart.setLayoutManager(MyLinearLayoutManager(this))
+            .setRefreshEnable(true)
             .setLoadMoreEnable(true)
             .setOnRefreshListener(object : OnRefreshListener {
                 override fun onRefresh() {
@@ -99,45 +95,17 @@ class ListWithRefreshActivity : AppCompatActivity() {
                 mList.setLayoutManager(MyLinearLayoutManager(this))
             }
             R.id.action_gridLayout -> {
-                mList.setLayoutManager(getGridLayoutManager(2))
+                mList.setLayoutManager(mList.getGridLayoutManager(2))
             }
             R.id.action_staggeredGridLayout -> {
-                mList.setLayoutManager(getStaggeredGridLayoutManager(2))
+                mList.setLayoutManager(
+                    MyStaggeredGridLayoutManager(
+                        2,
+                        StaggeredGridLayoutManager.VERTICAL
+                    )
+                )
             }
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    private val linearLayoutManager: RecyclerView.LayoutManager
-        get() = LinearLayoutManager(this)
-
-    /**
-     * 得到GridLayoutManager
-     *
-     * @param spanCount 列数
-     * @return
-     */
-    private fun getGridLayoutManager(spanCount: Int): MyGridLayoutManager {
-        return MyGridLayoutManager(this, spanCount).apply {
-            spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
-                override fun getSpanSize(position: Int): Int {
-                    return if (mList.isLoadMoreShow(position)) {
-                        spanCount
-                    } else {
-                        1
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * 得到StaggeredGridLayoutManager
-     *
-     * @param spanCount 列数
-     * @return
-     */
-    private fun getStaggeredGridLayoutManager(spanCount: Int): MyStaggeredGridLayoutManager {
-        return MyStaggeredGridLayoutManager(spanCount, StaggeredGridLayoutManager.VERTICAL)
     }
 }

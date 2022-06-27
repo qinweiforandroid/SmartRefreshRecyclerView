@@ -19,22 +19,25 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.smart.ListWithRefreshAndLoadMoreActivity"
+            android:name=".ui.smart.SmartV2RecyclerViewActivity"
             android:exported="true" />
         <activity
-            android:name=".ui.swipe.SwipeRefreshListComponentActivity"
+            android:name=".ui.swipe.SwipeComponentActivity"
             android:exported="true" />
         <activity
-            android:name=".ui.swipe.SwipeListWithRefreshAndLoadMoreActivity"
+            android:name=".ui.swipe.SwipeRecyclerViewActivity"
             android:exported="true" />
         <activity
-            android:name=".ui.swipe.SwipeListWithRefreshActivity"
+            android:name=".ui.recyclerview.Recycler1Activity"
             android:exported="true" />
         <activity
-            android:name=".ui.smart.ListWithRefreshActivity"
+            android:name=".ui.recyclerview.Recycler2Activity"
             android:exported="true" />
         <activity
-            android:name=".ui.smart.SmartRefresh1ListComponentActivity"
+            android:name=".ui.smart.SmartComponentActivity"
+            android:exported="true" />
+        <activity
+            android:name=".ui.smart.SmartV2ComponentActivity"
             android:exported="true" />
     </application>
 </manifest>

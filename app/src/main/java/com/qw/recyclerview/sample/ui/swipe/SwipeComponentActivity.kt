@@ -21,16 +21,16 @@ import com.qw.recyclerview.swiperefresh.template.SwipeListComponent
 /**
  * Created by qinwei on 2021/7/1 20:38
  */
-class SwipeRefreshListComponentActivity : AppCompatActivity() {
+class SwipeComponentActivity : AppCompatActivity() {
     private lateinit var mList: SwipeListComponent<String>
     private lateinit var bind: SwipeRefreshLayoutActivityBinding
-    private lateinit var mVM: SwipeRefreshListComponentVM
+    private lateinit var mVM: SwipeComponentVM
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         bind = SwipeRefreshLayoutActivityBinding.inflate(layoutInflater)
         setContentView(bind.root)
-        mVM = ViewModelProvider(this)[SwipeRefreshListComponentVM::class.java]
+        mVM = ViewModelProvider(this)[SwipeComponentVM::class.java]
         mVM.result.observe(this) {
             if (mVM.isFirstPage()) {
                 mList.modules.clear()
@@ -51,7 +51,7 @@ class SwipeRefreshListComponentActivity : AppCompatActivity() {
                     viewType: Int
                 ): BaseViewHolder {
                     return Holder(
-                        LayoutInflater.from(this@SwipeRefreshListComponentActivity)
+                        LayoutInflater.from(this@SwipeComponentActivity)
                             .inflate(android.R.layout.simple_list_item_1, parent, false)
                     )
                 }

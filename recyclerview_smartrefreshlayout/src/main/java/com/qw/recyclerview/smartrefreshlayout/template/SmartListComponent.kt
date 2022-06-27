@@ -2,10 +2,12 @@ package com.qw.recyclerview.smartrefreshlayout.template
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.qw.recyclerview.core.*
 import com.qw.recyclerview.layout.ILayoutManager
+import com.qw.recyclerview.layout.MyGridLayoutManager
 import com.qw.recyclerview.loadmore.AbsLoadMore
 import com.qw.recyclerview.loadmore.State
 import com.qw.recyclerview.smartrefreshlayout.SmartRecyclerView
@@ -18,7 +20,7 @@ import com.scwang.smart.refresh.layout.SmartRefreshLayout
  * email: qinwei_it@163.com
  */
 abstract class SmartListComponent<T> constructor(
-    mRecyclerView: RecyclerView,
+    private val mRecyclerView: RecyclerView,
     private val mSmartRefreshLayout: SmartRefreshLayout
 ) {
 
@@ -107,5 +109,19 @@ abstract class SmartListComponent<T> constructor(
 
     fun getSwipeRefreshLayout(): SmartRefreshLayout {
         return mSmartRefreshLayout
+    }
+
+    fun getGridLayoutManager(spanCount: Int): MyGridLayoutManager {
+        return MyGridLayoutManager(mRecyclerView.context, spanCount).apply {
+            spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+                override fun getSpanSize(position: Int): Int {
+                    return if (isLoadMoreShow(position)) {
+                        spanCount
+                    } else {
+                        1
+                    }
+                }
+            }
+        }
     }
 }

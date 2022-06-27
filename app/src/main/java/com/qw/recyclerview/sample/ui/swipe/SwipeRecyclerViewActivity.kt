@@ -19,7 +19,7 @@ import java.util.*
 /**
  * Created by qinwei on 2021/7/1 20:38
  */
-class SwipeListWithRefreshAndLoadMoreActivity : AppCompatActivity() {
+class SwipeRecyclerViewActivity : AppCompatActivity() {
     private lateinit var bind: SwipeRefreshLayoutActivityBinding
     private lateinit var smart: ISmartRecyclerView
     private lateinit var adapter: ListAdapter
@@ -39,16 +39,11 @@ class SwipeListWithRefreshAndLoadMoreActivity : AppCompatActivity() {
         bind = SwipeRefreshLayoutActivityBinding.inflate(layoutInflater)
         setContentView(bind.root)
 
-        //1.配置RecyclerView
         bind.mRecyclerView.overScrollMode = RecyclerView.OVER_SCROLL_NEVER
         bind.mRecyclerView.layoutManager = LinearLayoutManager(this)
         adapter = ListAdapter()
         bind.mRecyclerView.adapter = adapter
 
-        //2.配置SwipeRefreshLayout
-        //mSwipeRefreshLayout.setColorSchemeColors();
-
-        //3.配置SmartHelper
         smart = SwipeRecyclerView(bind.mRecyclerView, bind.mSwipeRefreshLayout)
             .setRefreshEnable(true)
             .setLoadMoreEnable(true)
@@ -69,7 +64,6 @@ class SwipeListWithRefreshAndLoadMoreActivity : AppCompatActivity() {
                     adapter.notifyItemChanged(adapter.itemCount - 1)
                 }
             })
-        //自动刷新
         smart.autoRefresh()
     }
 
@@ -100,7 +94,7 @@ class SwipeListWithRefreshAndLoadMoreActivity : AppCompatActivity() {
                 return loadMoreModule.onCreateLoadMoreViewHolder(parent)
             }
             return object : BaseViewHolder(
-                LayoutInflater.from(this@SwipeListWithRefreshAndLoadMoreActivity)
+                LayoutInflater.from(this@SwipeRecyclerViewActivity)
                     .inflate(android.R.layout.simple_list_item_1, parent, false)
             ) {
                 override fun initData(position: Int) {
