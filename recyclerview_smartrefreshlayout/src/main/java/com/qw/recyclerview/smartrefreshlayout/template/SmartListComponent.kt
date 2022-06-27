@@ -4,10 +4,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.qw.recyclerview.core.BaseViewHolder
-import com.qw.recyclerview.core.ISmartRecyclerView
-import com.qw.recyclerview.core.OnLoadMoreListener
-import com.qw.recyclerview.core.SRLog
+import com.qw.recyclerview.core.*
+import com.qw.recyclerview.layout.ILayoutManager
 import com.qw.recyclerview.loadmore.AbsLoadMore
 import com.qw.recyclerview.loadmore.State
 import com.qw.recyclerview.smartrefreshlayout.SmartRecyclerView
@@ -22,16 +20,57 @@ import com.scwang.smart.refresh.layout.SmartRefreshLayout
 abstract class SmartListComponent<T> constructor(
     mRecyclerView: RecyclerView,
     private val mSmartRefreshLayout: SmartRefreshLayout
-) : BaseListComponent<T>(mRecyclerView) {
+) {
 
     private var onLoadMoreListener: OnLoadMoreListener? = null
     private var loadMore: AbsLoadMore? = null
     private val typeLoadMore = -1
+    private val listComponent = object : BaseListComponent<T>(mRecyclerView) {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
+            if (viewType == typeLoadMore) {
+                SRLog.d("SwipeRefreshRecyclerViewComponent typeLoadMore getView")
+                return loadMore!!.onCreateLoadMoreViewHolder(parent)
+            }
+            return onCreateBaseViewHolder(parent, viewType)
+        }
+
+        override fun onViewAttachedToWindow(holder: BaseViewHolder) {
+            val lp = holder.itemView.layoutParams
+            if (lp != null && lp is StaggeredGridLayoutManager.LayoutParams) {
+                lp.isFullSpan = isLoadMoreShow(holder.layoutPosition)
+            }
+        }
+
+        override fun getItemCount(): Int {
+            var count = super.getItemCount()
+            if (smart.isLoadMoreEnable()) {
+                count++
+            }
+            return count
+        }
+
+        override fun getItemViewType(position: Int): Int {
+            if (isLoadMoreShow(position)) {
+                return typeLoadMore
+            }
+            return getItemViewTypeByPosition(position)
+        }
+    }
     val smart: ISmartRecyclerView = SmartRecyclerView(mRecyclerView, mSmartRefreshLayout).apply {
         setRefreshEnable(false)
         setLoadMoreEnable(false)
         (mRecyclerView.itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
     }
+    val adapter: BaseListAdapter
+        get() {
+            return listComponent.adapter
+        }
+
+    val modules: ArrayList<T>
+        get() {
+            return listComponent.modules
+        }
+
 
     fun supportLoadMore(loadMore: AbsLoadMore, onLoadMoreListener: OnLoadMoreListener) {
         this.loadMore = loadMore
@@ -54,39 +93,13 @@ abstract class SmartListComponent<T> constructor(
         })
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
-        if (viewType == typeLoadMore) {
-            SRLog.d("SwipeRefreshRecyclerViewComponent typeLoadMore getView")
-            return loadMore!!.onCreateLoadMoreViewHolder(parent)
-        }
-        return onCreateBaseViewHolder(parent, viewType)
-    }
-
-    override fun onViewAttachedToWindow(holder: BaseViewHolder) {
-        val lp = holder.itemView.layoutParams
-        if (lp != null && lp is StaggeredGridLayoutManager.LayoutParams) {
-            lp.isFullSpan = isLoadMoreShow(holder.layoutPosition)
-        }
-    }
-
-    override fun getItemCount(): Int {
-        var count = super.getItemCount()
-        if (smart.isLoadMoreEnable()) {
-            count++
-        }
-        return count
-    }
-
-    final override fun getItemViewType(position: Int): Int {
-        if (isLoadMoreShow(position)) {
-            return typeLoadMore
-        }
-        return getItemViewTypeByPosition(position)
-    }
-
     abstract fun onCreateBaseViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder
 
     open fun getItemViewTypeByPosition(position: Int): Int = 0
+    fun setLayoutManager(layoutManager: ILayoutManager): ISmartRecyclerView {
+        listComponent.setLayoutManager(layoutManager.getLayoutManager())
+        return smart
+    }
 
     fun isLoadMoreShow(position: Int): Boolean {
         return smart.isLoadMoreEnable() && adapter.itemCount - 1 == position

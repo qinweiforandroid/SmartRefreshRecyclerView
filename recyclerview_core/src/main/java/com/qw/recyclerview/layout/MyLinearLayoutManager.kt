@@ -18,4 +18,8 @@ class MyLinearLayoutManager : LinearLayoutManager, ILayoutManager {
     override fun getLayoutManager(): RecyclerView.LayoutManager {
         return this
     }
+
+    override fun getLastVisibleItemPosition(): Int {
+        return findLastVisibleItemPosition()
+    }
 }

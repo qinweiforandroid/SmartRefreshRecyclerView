@@ -62,8 +62,7 @@ class SmartRefresh1ListComponentActivity : AppCompatActivity() {
                         refresh()
                     }, 1000)
                 }
-            })
-        mList.smart.autoRefresh()
+            }).autoRefresh()
     }
 
     private fun refresh() {

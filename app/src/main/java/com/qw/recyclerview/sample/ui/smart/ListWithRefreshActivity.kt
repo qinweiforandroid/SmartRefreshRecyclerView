@@ -14,6 +14,9 @@ import com.qw.recyclerview.core.BaseViewHolder
 import com.qw.recyclerview.core.OnLoadMoreListener
 import com.qw.recyclerview.core.OnRefreshListener
 import com.qw.recyclerview.footer.DefaultLoadMore
+import com.qw.recyclerview.layout.MyGridLayoutManager
+import com.qw.recyclerview.layout.MyLinearLayoutManager
+import com.qw.recyclerview.layout.MyStaggeredGridLayoutManager
 import com.qw.recyclerview.sample.R
 import com.qw.recyclerview.sample.databinding.SmartRefreshLayoutActivityBinding
 import com.qw.recyclerview.smartrefreshlayout.template.SmartListComponent
@@ -93,7 +96,7 @@ class ListWithRefreshActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_linearLayout -> {
-                mList.setLayoutManager(LinearLayoutManager(this))
+                mList.setLayoutManager(MyLinearLayoutManager(this))
             }
             R.id.action_gridLayout -> {
                 mList.setLayoutManager(getGridLayoutManager(2))
@@ -114,8 +117,8 @@ class ListWithRefreshActivity : AppCompatActivity() {
      * @param spanCount 列数
      * @return
      */
-    private fun getGridLayoutManager(spanCount: Int): GridLayoutManager {
-        return GridLayoutManager(this, spanCount).apply {
+    private fun getGridLayoutManager(spanCount: Int): MyGridLayoutManager {
+        return MyGridLayoutManager(this, spanCount).apply {
             spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
                 override fun getSpanSize(position: Int): Int {
                     return if (mList.isLoadMoreShow(position)) {
@@ -134,7 +137,7 @@ class ListWithRefreshActivity : AppCompatActivity() {
      * @param spanCount 列数
      * @return
      */
-    private fun getStaggeredGridLayoutManager(spanCount: Int): StaggeredGridLayoutManager {
-        return StaggeredGridLayoutManager(spanCount, StaggeredGridLayoutManager.VERTICAL)
+    private fun getStaggeredGridLayoutManager(spanCount: Int): MyStaggeredGridLayoutManager {
+        return MyStaggeredGridLayoutManager(spanCount, StaggeredGridLayoutManager.VERTICAL)
     }
 }

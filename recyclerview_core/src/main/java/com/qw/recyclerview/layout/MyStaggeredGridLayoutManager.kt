@@ -21,4 +21,10 @@ class MyStaggeredGridLayoutManager: StaggeredGridLayoutManager,ILayoutManager {
     override fun getLayoutManager(): RecyclerView.LayoutManager {
         return this
     }
+
+    override fun getLastVisibleItemPosition(): Int {
+       return findLastCompletelyVisibleItemPositions(null)[findLastCompletelyVisibleItemPositions(
+            null
+        ).size - 1]
+    }
 }

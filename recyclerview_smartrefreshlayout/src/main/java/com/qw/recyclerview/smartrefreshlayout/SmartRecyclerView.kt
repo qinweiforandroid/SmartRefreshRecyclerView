@@ -4,6 +4,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.qw.recyclerview.core.*
+import com.qw.recyclerview.layout.ILayoutManager
 import com.qw.recyclerview.loadmore.State
 import com.scwang.smart.refresh.layout.SmartRefreshLayout
 
@@ -70,11 +71,15 @@ class SmartRecyclerView(
         if (layoutManager is LinearLayoutManager) {
             lastVisiblePosition = layoutManager.findLastVisibleItemPosition()
         } else if (layoutManager is StaggeredGridLayoutManager) {
-            val sdlm = layoutManager
             lastVisiblePosition =
-                sdlm.findLastCompletelyVisibleItemPositions(null)[sdlm.findLastCompletelyVisibleItemPositions(
-                    null
-                ).size - 1]
+                layoutManager.findLastCompletelyVisibleItemPositions(null)[layoutManager
+                    .findLastCompletelyVisibleItemPositions(
+                        null
+                    ).size - 1]
+        } else {
+            if (layoutManager is ILayoutManager) {
+                lastVisiblePosition = layoutManager.getLastVisibleItemPosition()
+            }
         }
         return mRecyclerView.adapter!!.itemCount - lastVisiblePosition <= 5
     }

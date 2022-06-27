@@ -7,4 +7,6 @@ import androidx.recyclerview.widget.RecyclerView
  */
 interface ILayoutManager {
     fun getLayoutManager(): RecyclerView.LayoutManager
+
+    fun getLastVisibleItemPosition(): Int
 }

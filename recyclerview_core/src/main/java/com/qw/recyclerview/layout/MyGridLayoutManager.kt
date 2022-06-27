@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 /**
  * create by qinwei at 2022/6/17 19:18
  */
-class MyGridLayoutManager: GridLayoutManager,ILayoutManager {
+class MyGridLayoutManager : GridLayoutManager, ILayoutManager {
     constructor(
         context: Context?,
         attrs: AttributeSet?,
@@ -20,5 +20,9 @@ class MyGridLayoutManager: GridLayoutManager,ILayoutManager {
 
     override fun getLayoutManager(): RecyclerView.LayoutManager {
         return this
+    }
+
+    override fun getLastVisibleItemPosition(): Int {
+        return findLastVisibleItemPosition()
     }
 }

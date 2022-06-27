@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.qw.recyclerview.core.*
+import com.qw.recyclerview.layout.ILayoutManager
 import com.qw.recyclerview.loadmore.State
 import java.lang.IllegalArgumentException
 
@@ -75,9 +76,14 @@ class SwipeRecyclerView(
             lastVisiblePosition = layoutManager.findLastVisibleItemPosition()
         } else if (layoutManager is StaggeredGridLayoutManager) {
             lastVisiblePosition =
-                layoutManager.findLastCompletelyVisibleItemPositions(null)[layoutManager.findLastCompletelyVisibleItemPositions(
-                    null
-                ).size - 1]
+                layoutManager.findLastCompletelyVisibleItemPositions(null)[layoutManager
+                    .findLastCompletelyVisibleItemPositions(
+                        null
+                    ).size - 1]
+        } else {
+            if (layoutManager is ILayoutManager) {
+                lastVisiblePosition = layoutManager.getLastVisibleItemPosition()
+            }
         }
         return mRecyclerView.adapter!!.itemCount - lastVisiblePosition <= 5
     }
