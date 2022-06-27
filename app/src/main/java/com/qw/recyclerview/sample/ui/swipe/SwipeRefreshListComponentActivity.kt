@@ -6,14 +6,12 @@ import android.os.Looper
 import android.view.*
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.GridLayoutManager
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.qw.recyclerview.core.BaseViewHolder
 import com.qw.recyclerview.core.OnLoadMoreListener
 import com.qw.recyclerview.core.OnRefreshListener
 import com.qw.recyclerview.footer.DefaultLoadMore
-import com.qw.recyclerview.layout.ILayoutManager
-import com.qw.recyclerview.layout.MyGridLayoutManager
 import com.qw.recyclerview.layout.MyLinearLayoutManager
 import com.qw.recyclerview.layout.MyStaggeredGridLayoutManager
 import com.qw.recyclerview.sample.R
@@ -26,11 +24,26 @@ import com.qw.recyclerview.swiperefresh.template.SwipeListComponent
 class SwipeRefreshListComponentActivity : AppCompatActivity() {
     private lateinit var mList: SwipeListComponent<String>
     private lateinit var bind: SwipeRefreshLayoutActivityBinding
+    private lateinit var mVM: SwipeRefreshListComponentVM
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         bind = SwipeRefreshLayoutActivityBinding.inflate(layoutInflater)
         setContentView(bind.root)
+        mVM = ViewModelProvider(this)[SwipeRefreshListComponentVM::class.java]
+        mVM.result.observe(this) {
+            if (mVM.isFirstPage()) {
+                mList.modules.clear()
+                mList.modules.addAll(it)
+                mList.finishRefresh(true)
+                mList.adapter.notifyDataSetChanged()
+            } else {
+                val size = mList.modules.size
+                mList.modules.addAll(it)
+                mList.finishLoadMore(true, !mVM.hasMore())
+                mList.adapter.notifyItemRangeInserted(size, it.size)
+            }
+        }
         mList =
             object : SwipeListComponent<String>(bind.mRecyclerView, bind.mSwipeRefreshLayout) {
                 override fun onCreateBaseViewHolder(
@@ -58,37 +71,19 @@ class SwipeRefreshListComponentActivity : AppCompatActivity() {
         mList.supportLoadMore(loadMore, object : OnLoadMoreListener {
             override fun onLoadMore() {
                 Handler(Looper.myLooper()!!).postDelayed({
-                    loadMore()
+                    mVM.loadMore()
                 }, 1000)
             }
         })
-        mList.setLayoutManager(linearLayoutManager)
+        mList.setLayoutManager(MyLinearLayoutManager(this))
             .setRefreshEnable(true)
             .setOnRefreshListener(object : OnRefreshListener {
                 override fun onRefresh() {
                     Handler(Looper.myLooper()!!).postDelayed({
-                        refresh()
+                        mVM.refresh()
                     }, 1000)
                 }
             }).autoRefresh()
-    }
-
-    private fun refresh() {
-        mList.modules.clear()
-        for (i in 0..19) {
-            mList.modules.add("" + i)
-        }
-        mList.adapter.notifyDataSetChanged()
-        mList.finishRefresh(true)
-    }
-
-    private fun loadMore() {
-        val size = mList.modules.size
-        for (i in size until size + 20) {
-            mList.modules.add("" + i)
-        }
-        mList.finishLoadMore(success = false, noMoreData = mList.modules.size > 100)
-        mList.adapter.notifyItemRangeInserted(size, 20)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -102,45 +97,17 @@ class SwipeRefreshListComponentActivity : AppCompatActivity() {
                 mList.setLayoutManager(MyLinearLayoutManager(this))
             }
             R.id.action_gridLayout -> {
-                mList.setLayoutManager(getGridLayoutManager(2))
+                mList.setLayoutManager(mList.getGridLayoutManager(2))
             }
             R.id.action_staggeredGridLayout -> {
-                mList.setLayoutManager(getStaggeredGridLayoutManager(2))
+                mList.setLayoutManager(
+                    MyStaggeredGridLayoutManager(
+                        2,
+                        StaggeredGridLayoutManager.VERTICAL
+                    )
+                )
             }
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    private val linearLayoutManager: ILayoutManager
-        get() = MyLinearLayoutManager(this)
-
-    /**
-     * 得到GridLayoutManager
-     *
-     * @param spanCount 列数
-     * @return
-     */
-    private fun getGridLayoutManager(spanCount: Int): MyGridLayoutManager {
-        return MyGridLayoutManager(this, spanCount).apply {
-            spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
-                override fun getSpanSize(position: Int): Int {
-                    return if (mList.isLoadMoreShow(position)) {
-                        spanCount
-                    } else {
-                        1
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * 得到StaggeredGridLayoutManager
-     *
-     * @param spanCount 列数
-     * @return
-     */
-    private fun getStaggeredGridLayoutManager(spanCount: Int): MyStaggeredGridLayoutManager {
-        return MyStaggeredGridLayoutManager(spanCount, StaggeredGridLayoutManager.VERTICAL)
     }
 }

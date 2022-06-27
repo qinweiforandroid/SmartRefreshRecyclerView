@@ -2,11 +2,13 @@ package com.qw.recyclerview.swiperefresh.template
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.qw.recyclerview.core.*
 import com.qw.recyclerview.layout.ILayoutManager
+import com.qw.recyclerview.layout.MyGridLayoutManager
 import com.qw.recyclerview.loadmore.AbsLoadMore
 import com.qw.recyclerview.loadmore.State
 import com.qw.recyclerview.swiperefresh.SwipeRecyclerView
@@ -18,9 +20,10 @@ import com.qw.recyclerview.template.BaseListComponent
  * email: qinwei_it@163.com
  */
 abstract class SwipeListComponent<T> constructor(
-    mRecyclerView: RecyclerView,
+    private val mRecyclerView: RecyclerView,
     mSwipeRefreshLayout: SwipeRefreshLayout
 ) {
+
     private var onLoadMoreListener: OnLoadMoreListener? = null
     private var loadMore: AbsLoadMore? = null
     private val typeLoadMore = -1
@@ -104,7 +107,7 @@ abstract class SwipeListComponent<T> constructor(
     protected open fun getItemViewTypeByPosition(position: Int): Int = 0
 
     fun isLoadMoreShow(position: Int): Boolean {
-        return smart.isLoadMoreEnable() && listComponent.adapter.itemCount - 1 == position
+        return smart.isLoadMoreEnable() && adapter.itemCount - 1 == position
     }
 
     fun setLayoutManager(layoutManager: ILayoutManager): ISmartRecyclerView {
@@ -134,5 +137,19 @@ abstract class SwipeListComponent<T> constructor(
 
     fun finishLoadMore(success: Boolean, noMoreData: Boolean) {
         smart.finishLoadMore(success, noMoreData)
+    }
+
+    fun getGridLayoutManager(spanCount: Int): MyGridLayoutManager {
+        return MyGridLayoutManager(mRecyclerView.context, spanCount).apply {
+            spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+                override fun getSpanSize(position: Int): Int {
+                    return if (isLoadMoreShow(position)) {
+                        spanCount
+                    } else {
+                        1
+                    }
+                }
+            }
+        }
     }
 }
