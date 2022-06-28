@@ -257,7 +257,9 @@ override fun onCreate(savedInstanceState: Bundle?) {
 
 ## 3、联系我
 
-有什么问题可以加QQ（备注来源）或发邮件沟通
+有什么问题可以加QQ、QQ群（备注来源）或发邮件沟通
 
+* QQ群：139402565
 * QQ：435231045
 * 邮箱：qinwei_it@163.com
+
