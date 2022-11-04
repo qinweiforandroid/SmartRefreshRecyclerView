@@ -112,6 +112,7 @@ class SwipeRecyclerViewActivity : AppCompatActivity() {
             return super.getItemViewType(position)
         }
 
+
         override fun getItemCount(): Int {
             var count = modules.size
             if (smart.isLoadMoreEnable()) {

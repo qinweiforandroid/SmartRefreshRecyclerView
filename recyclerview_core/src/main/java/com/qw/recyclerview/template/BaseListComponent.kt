@@ -2,6 +2,7 @@ package com.qw.recyclerview.template
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.qw.recyclerview.core.BaseListAdapter
 import com.qw.recyclerview.core.BaseViewHolder
 
@@ -21,10 +22,6 @@ abstract class BaseListComponent<T> constructor(private val mRecyclerView: Recyc
             return this@BaseListComponent.getItemViewType(position)
         }
 
-        override fun onViewAttachedToWindow(holder: BaseViewHolder) {
-            this@BaseListComponent.onViewAttachedToWindow(holder)
-        }
-
         override fun getItemCount(): Int {
             return this@BaseListComponent.getItemCount()
         }
@@ -39,8 +36,6 @@ abstract class BaseListComponent<T> constructor(private val mRecyclerView: Recyc
     open fun getItemCount(): Int {
         return modules.size
     }
-
-    protected open fun onViewAttachedToWindow(holder: BaseViewHolder) {}
 
     protected abstract fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder
 

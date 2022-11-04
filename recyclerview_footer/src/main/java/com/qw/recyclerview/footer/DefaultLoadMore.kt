@@ -7,6 +7,7 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.annotation.LayoutRes
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.qw.recyclerview.loadmore.AbsLoadMore
 import com.qw.recyclerview.core.SRLog
 import com.qw.recyclerview.loadmore.State
@@ -51,6 +52,13 @@ class DefaultLoadMore : AbsLoadMore() {
         View.OnClickListener {
         private val mProgressBar = itemView.findViewById<View>(R.id.mProgressBar) as ProgressBar
         private val mFooterLabel = itemView.findViewById<View>(R.id.mFooterLabel) as TextView
+        override fun onViewAttachedToWindow() {
+            val lp = itemView.layoutParams
+            if (lp != null && lp is StaggeredGridLayoutManager.LayoutParams) {
+                lp.isFullSpan = true
+            }
+        }
+
         override fun initData(position: Int) {
             itemView.setOnClickListener(null)
             SRLog.d("DefaultLoadMore initData:${getState().name}")

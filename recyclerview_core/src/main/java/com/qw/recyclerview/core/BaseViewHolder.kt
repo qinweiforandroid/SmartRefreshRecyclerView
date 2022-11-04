@@ -11,4 +11,8 @@ abstract class BaseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView
     open fun initData(position: Int, payloads: List<Any>) {
         initData(position)
     }
+
+    open fun onViewAttachedToWindow() {
+
+    }
 }

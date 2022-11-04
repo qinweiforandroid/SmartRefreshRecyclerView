@@ -36,12 +36,6 @@ abstract class SwipeListComponent<T> constructor(
             return onCreateBaseViewHolder(parent, viewType)
         }
 
-        override fun onViewAttachedToWindow(holder: BaseViewHolder) {
-            val lp = holder.itemView.layoutParams
-            if (lp != null && lp is StaggeredGridLayoutManager.LayoutParams) {
-                lp.isFullSpan = isLoadMoreShow(holder.layoutPosition)
-            }
-        }
 
         override fun getItemCount(): Int {
             var count = super.getItemCount()
