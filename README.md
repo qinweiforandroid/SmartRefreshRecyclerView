@@ -25,13 +25,13 @@
 
 ```groovy
 //核心组件（必须）
-api 'com.github.qinweiforandroid.SmartRefreshRecyclerView:recyclerview-core:3.0.0628'
+api 'com.github.qinweiforandroid.SmartRefreshRecyclerView:recyclerview-core:3.0.1104'
 //使用smartrefreshlayout库实现的下拉刷新
-api 'com.github.qinweiforandroid.SmartRefreshRecyclerView:recyclerview-smartrefreshlayout:3.0.0628'
+api 'com.github.qinweiforandroid.SmartRefreshRecyclerView:recyclerview-smartrefreshlayout:3.0.1104'
 //使用swiperefreshlayout库实现的下拉刷新（推荐）
-api 'com.github.qinweiforandroid.SmartRefreshRecyclerView:recyclerview-swiperefresh:3.0.0628'
+api 'com.github.qinweiforandroid.SmartRefreshRecyclerView:recyclerview-swiperefresh:3.0.1104'
 //用到加载更多需要引入
-api 'com.github.qinweiforandroid.SmartRefreshRecyclerView:recyclerview-footer:3.0.0628'
+api 'com.github.qinweiforandroid.SmartRefreshRecyclerView:recyclerview-footer:3.0.1104'
 ```
 
 以recyclerview-swiperefresh为例
