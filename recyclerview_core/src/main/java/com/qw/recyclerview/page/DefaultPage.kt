@@ -17,9 +17,19 @@ class DefaultPage : IPage {
         mWillLoadPage = mCurrentPage + 1
     }
 
+    /**
+     * case 1:  mWillLoadPage=2
+     * pull down mWillLoadPage=1, req error mCurrentPage=0 isFirstPage() true
+     * check data is empty  if true state view show error else toast error msg
+     *
+     * case 2:  mWillLoadPage=2
+     * pull down mWillLoadPage=1, req ok  mCurrentPage=1 isFirstPage() true
+     * clear data  add new data notify refresh
+     */
     override fun isFirstPage(): Boolean {
-        return mCurrentPage <= 1
+        return mWillLoadPage == 1
     }
+    
 
     override fun hasMore(): Boolean {
         return mCurrentPage != mLastPage
