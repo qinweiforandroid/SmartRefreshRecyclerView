@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.content.Intent
 import com.qw.recyclerview.sample.databinding.ActivityMainBinding
+import com.qw.recyclerview.sample.ui.drag.DragSwipeListActivity
 import com.qw.recyclerview.sample.ui.recyclerview.Recycler1Activity
 import com.qw.recyclerview.sample.ui.recyclerview.Recycler2Activity
 import com.qw.recyclerview.sample.ui.swipe.SwipeRecyclerViewActivity
@@ -71,6 +72,14 @@ class MainActivity : AppCompatActivity() {
                 Intent(
                     this@MainActivity,
                     SmartV2ComponentActivity::class.java
+                )
+            )
+        }
+        bind.mDragSwipeBtn.setOnClickListener {
+            startActivity(
+                Intent(
+                    this@MainActivity,
+                    DragSwipeListActivity::class.java
                 )
             )
         }

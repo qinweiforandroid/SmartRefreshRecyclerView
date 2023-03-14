@@ -91,4 +91,18 @@
             android:layout_marginLeft="8dp"
             android:text="进阶写法2" />
     </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="recyclerview_drag_swipe"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Overline" />
+
+    <Button
+        android:id="@+id/mDragSwipeBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="drag swipe" />
 </LinearLayout>

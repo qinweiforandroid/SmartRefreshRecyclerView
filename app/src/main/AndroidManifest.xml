@@ -39,5 +39,8 @@
         <activity
             android:name=".ui.smart.SmartV2ComponentActivity"
             android:exported="true" />
+        <activity
+            android:name=".ui.drag.DragSwipeListActivity"
+            android:exported="true" />
     </application>
 </manifest>
