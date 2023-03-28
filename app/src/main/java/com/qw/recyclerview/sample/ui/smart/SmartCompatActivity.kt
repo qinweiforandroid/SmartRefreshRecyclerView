@@ -15,26 +15,26 @@ import com.qw.recyclerview.layout.MyLinearLayoutManager
 import com.qw.recyclerview.layout.MyStaggeredGridLayoutManager
 import com.qw.recyclerview.sample.R
 import com.qw.recyclerview.sample.databinding.SmartRefreshLayoutActivityBinding
-import com.qw.recyclerview.smartrefreshlayout.template.SmartListComponent
+import com.qw.recyclerview.smartrefreshlayout.template.SmartListCompat
 
 /**
  * Created by qinwei on 2021/7/1 20:38
  */
-class SmartComponentActivity : AppCompatActivity() {
-    private lateinit var mList: SmartListComponent<String>
+class SmartCompatActivity : AppCompatActivity() {
+    private lateinit var mList: SmartListCompat<String>
     private lateinit var bind: SmartRefreshLayoutActivityBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         bind = SmartRefreshLayoutActivityBinding.inflate(layoutInflater)
         setContentView(bind.root)
-        mList = object : SmartListComponent<String>(bind.mRecyclerView, bind.mSmartRefreshLayout) {
+        mList = object : SmartListCompat<String>(bind.mRecyclerView, bind.mSmartRefreshLayout) {
             override fun onCreateBaseViewHolder(
                 parent: ViewGroup,
                 viewType: Int
             ): BaseViewHolder {
                 return Holder(
-                    LayoutInflater.from(this@SmartComponentActivity)
+                    LayoutInflater.from(this@SmartCompatActivity)
                         .inflate(android.R.layout.simple_list_item_1, parent, false)
                 )
             }

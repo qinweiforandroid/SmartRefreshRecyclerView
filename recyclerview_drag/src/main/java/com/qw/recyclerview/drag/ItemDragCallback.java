@@ -1,4 +1,4 @@
-package com.qw.recyclerview.core;
+package com.qw.recyclerview.drag;
 
 /**
  * item拖拽监听
@@ -6,11 +6,6 @@ package com.qw.recyclerview.core;
  */
 
 public interface ItemDragCallback {
-    /**
-     * 开始拖拽
-     */
-    void onDragStart();
-
     boolean isLongPressDragEnabled();
 
     /**
@@ -19,6 +14,11 @@ public interface ItemDragCallback {
      * @return
      */
     boolean isItemViewSwipeEnabled();
+
+    /**
+     * 开始拖拽
+     */
+    void onDragStart();
 
     /**
      * 结束拖拽

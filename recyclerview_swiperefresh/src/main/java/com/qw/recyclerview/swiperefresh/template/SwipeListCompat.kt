@@ -4,7 +4,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.qw.recyclerview.core.*
 import com.qw.recyclerview.layout.ILayoutManager
@@ -12,64 +11,26 @@ import com.qw.recyclerview.layout.MyGridLayoutManager
 import com.qw.recyclerview.loadmore.AbsLoadMore
 import com.qw.recyclerview.loadmore.State
 import com.qw.recyclerview.swiperefresh.SwipeRecyclerView
-import com.qw.recyclerview.template.BaseListComponent
+import com.qw.recyclerview.template.ListCompat
 
 /**
  * SwipeRefreshRecyclerView模版组件
  * Created by qinwei on 2022/1/9 2:46 下午
  * email: qinwei_it@163.com
  */
-abstract class SwipeListComponent<T> constructor(
+abstract class SwipeListCompat<T> constructor(
     private val mRecyclerView: RecyclerView,
     mSwipeRefreshLayout: SwipeRefreshLayout
-) {
-
+) : ListCompat<T>(mRecyclerView) {
     private var onLoadMoreListener: OnLoadMoreListener? = null
     private var loadMore: AbsLoadMore? = null
     private val typeLoadMore = -1
-    private val listComponent = object : BaseListComponent<T>(mRecyclerView) {
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
-            if (viewType == typeLoadMore) {
-                SRLog.d("SwipeRefreshRecyclerViewComponent typeLoadMore getView")
-                return loadMore!!.onCreateLoadMoreViewHolder(parent)
-            }
-            return onCreateBaseViewHolder(parent, viewType)
-        }
 
-
-        override fun getItemCount(): Int {
-            var count = super.getItemCount()
-            if (smart.isLoadMoreEnable()) {
-                count++
-            }
-            return count
-        }
-
-        override fun getItemViewType(position: Int): Int {
-            if (isLoadMoreShow(position)) {
-                return typeLoadMore
-            }
-            return getItemViewTypeByPosition(position)
-        }
+    val smart: ISmartRecyclerView = SwipeRecyclerView(mRecyclerView, mSwipeRefreshLayout).apply {
+        (mRecyclerView.itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
+        setRefreshEnable(false)
+        setLoadMoreEnable(false)
     }
-
-    val adapter: BaseListAdapter
-        get() {
-            return listComponent.adapter
-        }
-
-    val modules: ArrayList<T>
-        get() {
-            return listComponent.modules
-        }
-
-    private val smart: ISmartRecyclerView =
-        SwipeRecyclerView(mRecyclerView, mSwipeRefreshLayout).apply {
-            (mRecyclerView.itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
-            setRefreshEnable(false)
-            setLoadMoreEnable(false)
-        }
-
 
     fun supportLoadMore(
         loadMore: AbsLoadMore,
@@ -78,7 +39,7 @@ abstract class SwipeListComponent<T> constructor(
         this.loadMore = loadMore
         this.loadMore!!.setOnRetryListener {
             this.loadMore!!.onStateChanged(State.LOADING)
-            listComponent.adapter.notifyItemChanged(listComponent.adapter.itemCount - 1)
+            adapter.notifyItemChanged(adapter.itemCount - 1)
             onLoadMoreListener.onLoadMore()
         }
         this.onLoadMoreListener = onLoadMoreListener
@@ -89,12 +50,34 @@ abstract class SwipeListComponent<T> constructor(
 
             override fun onStateChanged(state: State) {
                 loadMore.onStateChanged(state)
-                listComponent.adapter.notifyItemChanged(listComponent.adapter.itemCount - 1)
+                adapter.notifyItemChanged(adapter.itemCount - 1)
             }
         })
         smart.setLoadMoreEnable(true)
     }
 
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
+        if (viewType == typeLoadMore) {
+            SRLog.d("SwipeListCompat onCreateViewHolder load more type")
+            return loadMore!!.onCreateLoadMoreViewHolder(parent)
+        }
+        return onCreateBaseViewHolder(parent, viewType)
+    }
+
+    override fun getItemCount(): Int {
+        var count = super.getItemCount()
+        if (smart.isLoadMoreEnable()) {
+            count++
+        }
+        return count
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        if (isLoadMoreShow(position)) {
+            return typeLoadMore
+        }
+        return getItemViewTypeByPosition(position)
+    }
 
     protected abstract fun onCreateBaseViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder
 
@@ -102,11 +85,6 @@ abstract class SwipeListComponent<T> constructor(
 
     fun isLoadMoreShow(position: Int): Boolean {
         return smart.isLoadMoreEnable() && adapter.itemCount - 1 == position
-    }
-
-    fun setLayoutManager(layoutManager: ILayoutManager): ISmartRecyclerView {
-        listComponent.setLayoutManager(layoutManager.getLayoutManager())
-        return smart
     }
 
     fun autoRefresh() {

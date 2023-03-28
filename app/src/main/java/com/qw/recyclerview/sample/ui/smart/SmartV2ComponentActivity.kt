@@ -16,13 +16,13 @@ import com.qw.recyclerview.layout.MyLinearLayoutManager
 import com.qw.recyclerview.layout.MyStaggeredGridLayoutManager
 import com.qw.recyclerview.sample.R
 import com.qw.recyclerview.sample.databinding.SmartRefreshLayoutActivityBinding
-import com.qw.recyclerview.smartrefreshlayout.template.SmartV2ListComponent
+import com.qw.recyclerview.smartrefreshlayout.template.SmartListV2Compat
 
 /**
  * Created by qinwei on 2021/7/1 20:38
  */
 class SmartV2ComponentActivity : AppCompatActivity() {
-    private lateinit var mList: SmartV2ListComponent<String>
+    private lateinit var mList: SmartListV2Compat<String>
     private lateinit var bind: SmartRefreshLayoutActivityBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,7 +30,7 @@ class SmartV2ComponentActivity : AppCompatActivity() {
         bind = SmartRefreshLayoutActivityBinding.inflate(layoutInflater)
         setContentView(bind.root)
         mList = object :
-            SmartV2ListComponent<String>(bind.mRecyclerView, bind.mSmartRefreshLayout) {
+            SmartListV2Compat<String>(bind.mRecyclerView, bind.mSmartRefreshLayout) {
 
             inner class Holder(itemView: View) : BaseViewHolder(itemView) {
                 override fun initData(position: Int) {

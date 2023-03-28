@@ -26,7 +26,7 @@ class SmartRecyclerView(
         mRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
-                SRLog.d("SmartRefreshLayoutRecyclerView onScrollStateChanged newState:$newState")
+                SRLog.d("SmartRecyclerView onScrollStateChanged newState:$newState")
                 if (!mLoadMoreEnable) return
                 if (onLoadMoreListener == null) return
                 when (loadMoreState) {
@@ -43,7 +43,7 @@ class SmartRecyclerView(
                 if (newState == RecyclerView.SCROLL_STATE_IDLE && checkedIsNeedLoadMore()) {
                     state = ISmartRecyclerView.REFRESH_UP
                     onLoadMoreListener?.onStateChanged(State.LOADING)
-                    SRLog.d("SmartRefreshLayoutRecyclerView onScrollStateChanged onLoadMore")
+                    SRLog.d("SmartRecyclerView onScrollStateChanged onLoadMore")
                     onLoadMoreListener?.onLoadMore()
                 }
             }

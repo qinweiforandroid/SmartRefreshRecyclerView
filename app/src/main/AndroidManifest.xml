@@ -34,7 +34,7 @@
             android:name=".ui.recyclerview.Recycler2Activity"
             android:exported="true" />
         <activity
-            android:name=".ui.smart.SmartComponentActivity"
+            android:name=".ui.smart.SmartCompatActivity"
             android:exported="true" />
         <activity
             android:name=".ui.smart.SmartV2ComponentActivity"

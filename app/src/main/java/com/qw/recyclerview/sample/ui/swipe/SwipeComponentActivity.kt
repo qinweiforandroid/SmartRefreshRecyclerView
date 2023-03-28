@@ -16,13 +16,13 @@ import com.qw.recyclerview.layout.MyLinearLayoutManager
 import com.qw.recyclerview.layout.MyStaggeredGridLayoutManager
 import com.qw.recyclerview.sample.R
 import com.qw.recyclerview.sample.databinding.SwipeRefreshLayoutActivityBinding
-import com.qw.recyclerview.swiperefresh.template.SwipeListComponent
+import com.qw.recyclerview.swiperefresh.template.SwipeListCompat
 
 /**
  * Created by qinwei on 2021/7/1 20:38
  */
 class SwipeComponentActivity : AppCompatActivity() {
-    private lateinit var mList: SwipeListComponent<String>
+    private lateinit var mList: SwipeListCompat<String>
     private lateinit var bind: SwipeRefreshLayoutActivityBinding
     private lateinit var mVM: SwipeComponentVM
 
@@ -45,7 +45,7 @@ class SwipeComponentActivity : AppCompatActivity() {
             }
         }
         mList =
-            object : SwipeListComponent<String>(bind.mRecyclerView, bind.mSwipeRefreshLayout) {
+            object : SwipeListCompat<String>(bind.mRecyclerView, bind.mSwipeRefreshLayout) {
                 override fun onCreateBaseViewHolder(
                     parent: ViewGroup,
                     viewType: Int
@@ -76,7 +76,7 @@ class SwipeComponentActivity : AppCompatActivity() {
             }
         })
         mList.setLayoutManager(MyLinearLayoutManager(this))
-            .setRefreshEnable(true)
+        mList.smart.setRefreshEnable(true)
             .setOnRefreshListener(object : OnRefreshListener {
                 override fun onRefresh() {
                     Handler(Looper.myLooper()!!).postDelayed({

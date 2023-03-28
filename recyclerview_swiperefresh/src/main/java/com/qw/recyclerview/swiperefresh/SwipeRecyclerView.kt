@@ -31,7 +31,7 @@ class SwipeRecyclerView(
         mRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
-                SRLog.d("SwipeRefreshRecyclerView onScrollStateChanged newState:$newState")
+                SRLog.d("SwipeRecyclerView onScrollStateChanged newState:$newState")
                 if (!mLoadMoreEnable) return
                 if (onLoadMoreListener == null) return
                 when (loadMoreState) {
@@ -48,14 +48,14 @@ class SwipeRecyclerView(
                 if (newState == RecyclerView.SCROLL_STATE_IDLE && checkedIsNeedLoadMore()) {
                     state = ISmartRecyclerView.REFRESH_UP
                     onLoadMoreListener?.onStateChanged(State.LOADING)
-                    SRLog.d("SwipeRefreshRecyclerView onScrollStateChanged onLoadMore")
+                    SRLog.d("SwipeRecyclerView onScrollStateChanged onLoadMore")
                     onLoadMoreListener?.onLoadMore()
                 }
             }
         })
         mSwipeRefreshLayout.setOnRefreshListener {
             state = ISmartRecyclerView.REFRESH_PULL
-            SRLog.d("SwipeRefreshRecyclerView onRefresh")
+            SRLog.d("SwipeRecyclerView onRefresh")
             onRefreshListener?.onRefresh()
         }
         mSwipeRefreshLayout.isEnabled = mRefreshEnable
@@ -151,7 +151,7 @@ class SwipeRecyclerView(
     }
 
     override fun finishRefresh(success: Boolean, state: State) {
-        SRLog.d("SwipeRefreshRecyclerView finishRefresh success:$success")
+        SRLog.d("SwipeRecyclerView finishRefresh success:$success")
         mSwipeRefreshLayout.isRefreshing = false
         if (mLoadMoreEnable) {
             loadMoreState = state
@@ -161,7 +161,7 @@ class SwipeRecyclerView(
     }
 
     override fun finishLoadMore(success: Boolean, noMoreData: Boolean) {
-        SRLog.d("SwipeRefreshRecyclerView finishLoadMore success:$success ,noMoreData:$noMoreData")
+        SRLog.d("SwipeRecyclerView finishLoadMore success:$success ,noMoreData:$noMoreData")
         if (!mLoadMoreEnable) {
             return
         }

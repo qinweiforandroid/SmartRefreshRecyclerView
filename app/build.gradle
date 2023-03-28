@@ -43,6 +43,7 @@ dependencies {
     implementation project(':recyclerview_swiperefresh')
     implementation project(':recyclerview_smartrefreshlayout')
     implementation project(':recyclerview_footer')
+    implementation project(':recyclerview_drag')
     implementation project(':recyclerview_core')
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'

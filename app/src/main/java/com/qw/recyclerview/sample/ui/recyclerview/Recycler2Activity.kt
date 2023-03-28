@@ -8,25 +8,23 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.qw.recyclerview.core.BaseViewHolder
 import com.qw.recyclerview.sample.databinding.RecyclerviewLayoutActivityBinding
-import com.qw.recyclerview.sample.loading.ILoading
 import com.qw.recyclerview.sample.loading.State
-import com.qw.recyclerview.template.BaseListComponent
+import com.qw.recyclerview.template.ListCompat
 
 /**
  * Created by qinwei on 2021/7/1 20:38
  */
 class Recycler2Activity : AppCompatActivity() {
     private lateinit var bind: RecyclerviewLayoutActivityBinding
-    private lateinit var listComponent: BaseListComponent<String>
+    private lateinit var listCompat: ListCompat<String>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         bind = RecyclerviewLayoutActivityBinding.inflate(layoutInflater)
         setContentView(bind.root)
-        listComponent = object : BaseListComponent<String>(bind.mRecyclerView) {
+        listCompat = object : ListCompat<String>(bind.mRecyclerView) {
             override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
                 return object : BaseViewHolder(
                     LayoutInflater.from(this@Recycler2Activity)
@@ -40,14 +38,14 @@ class Recycler2Activity : AppCompatActivity() {
                 }
             }
         }
-        listComponent.setLayoutManager(LinearLayoutManager(this))
+        listCompat.setLayoutManager(LinearLayoutManager(this))
 
         bind.mLoading.notifyDataChanged(State.ing)
         Handler(Looper.myLooper()!!).postDelayed({
             for (i in 0..19) {
-                listComponent.modules.add("" + i)
+                listCompat.modules.add("" + i)
             }
-            listComponent.adapter.notifyDataSetChanged()
+            listCompat.adapter.notifyDataSetChanged()
             bind.mLoading.notifyDataChanged(State.done)
         }, 1000)
     }

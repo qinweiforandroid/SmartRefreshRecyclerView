@@ -123,7 +123,7 @@ abstract class BaseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView
 
 ## 2、扩展的一些工具
 
-### 2.1、`BaseListComponent<T>`
+### 2.1、`ListCompat<T>`
 
 * 不用自己定义数据源
 * 不用自己写adapter
@@ -183,12 +183,12 @@ class Recycler2Activity : AppCompatActivity() {
 }
 ```
 
-### 2.2、`SwipeListComponent<T>`
+### 2.2、`SwipeListCompat<T>`
 
-极力推荐使用此组建来实现列表的需求
+推荐使用此组建来实现列表的需求
 
 * 对SwipeRecyclerView二次封装
-* 支持动态配置加载更多状态
+* 支持动态配置加载更多样式
 * 下拉刷新，上拉加载更多
 
 **引入布局**
@@ -214,44 +214,43 @@ override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     bind = SwipeRefreshLayoutActivityBinding.inflate(layoutInflater)
     setContentView(bind.root)
-    val mList =
-        object : SwipeListComponent<String>(bind.mRecyclerView, bind.mSwipeRefreshLayout) {
-            override fun onCreateBaseViewHolder(
-                parent: ViewGroup,
-                viewType: Int
-            ): BaseViewHolder {
-                return Holder(
-                    LayoutInflater.from(this@SwipeComponentActivity)
-                        .inflate(android.R.layout.simple_list_item_1, parent, false)
-                )
-            }
+    val mList = object : SwipeListCompat<String>(bind.mRecyclerView, bind.mSwipeRefreshLayout) {
+      override fun onCreateBaseViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+      ): BaseViewHolder {
+        return Holder(
+          LayoutInflater.from(this@SwipeComponentActivity)
+          .inflate(android.R.layout.simple_list_item_1, parent, false)
+        )
+      }
 
-            inner class Holder(itemView: View) : BaseViewHolder(itemView) {
-                override fun initData(position: Int) {
-                    val label: TextView = itemView as TextView
-                    val text = mList.modules[position]
-                    label.text = text
-                }
-            }
+      inner class Holder(itemView: View) : BaseViewHolder(itemView) {
+        override fun initData(position: Int) {
+          val label: TextView = itemView as TextView
+          val text = mList.modules[position]
+          label.text = text
         }
+      }
+    }
   //构建加载更多UI组件（这里可自行扩展样式）
     val loadMore = DefaultLoadMore()
         .setEmptyHint("我是有底线的……")
         .setFailHint("哎呦，加载失败了")
         .setLoadingHint("努力加载中")
-  //SwipeListComponent 配置 loadmore
+  //SwipeListCompat 配置 loadmore
     mList.supportLoadMore(loadMore, object : OnLoadMoreListener {
         override fun onLoadMore() {
 
         }
     })
     mList.setLayoutManager(MyLinearLayoutManager(this))
-        .setRefreshEnable(true)
-        .setOnRefreshListener(object : OnRefreshListener {
-            override fun onRefresh() {
-
-            }
-        }).autoRefresh()
+    mList.smart.setRefreshEnable(true)
+         .setOnRefreshListener(object : OnRefreshListener {
+             override fun onRefresh() {
+ 
+             }
+         }).autoRefresh()
 }
 ```
 

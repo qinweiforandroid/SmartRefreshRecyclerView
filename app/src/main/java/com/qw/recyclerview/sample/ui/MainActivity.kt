@@ -10,7 +10,7 @@ import com.qw.recyclerview.sample.ui.recyclerview.Recycler2Activity
 import com.qw.recyclerview.sample.ui.swipe.SwipeRecyclerViewActivity
 import com.qw.recyclerview.sample.ui.swipe.SwipeComponentActivity
 import com.qw.recyclerview.sample.ui.smart.SmartV2RecyclerViewActivity
-import com.qw.recyclerview.sample.ui.smart.SmartComponentActivity
+import com.qw.recyclerview.sample.ui.smart.SmartCompatActivity
 import com.qw.recyclerview.sample.ui.smart.SmartV2ComponentActivity
 
 class MainActivity : AppCompatActivity() {
@@ -63,7 +63,7 @@ class MainActivity : AppCompatActivity() {
             startActivity(
                 Intent(
                     this@MainActivity,
-                    SmartComponentActivity::class.java
+                    SmartCompatActivity::class.java
                 )
             )
         }

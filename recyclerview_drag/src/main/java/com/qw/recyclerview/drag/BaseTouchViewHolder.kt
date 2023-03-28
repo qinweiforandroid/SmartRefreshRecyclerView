@@ -1,6 +1,7 @@
-package com.qw.recyclerview.core
+package com.qw.recyclerview.drag
 
 import android.view.View
+import com.qw.recyclerview.core.BaseViewHolder
 
 /**
  * Created by qinwei on 2023/3/14 20:42
