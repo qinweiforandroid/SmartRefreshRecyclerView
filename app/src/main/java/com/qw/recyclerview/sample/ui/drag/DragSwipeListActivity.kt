@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.*
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -18,7 +19,7 @@ import com.qw.recyclerview.layout.MyLinearLayoutManager
 import com.qw.recyclerview.layout.MyStaggeredGridLayoutManager
 import com.qw.recyclerview.sample.R
 import com.qw.recyclerview.sample.databinding.SwipeRefreshLayoutActivityBinding
-import com.qw.recyclerview.sample.ui.swipe.SwipeComponentVM
+import com.qw.recyclerview.sample.ui.swipe.SwipeCompatVM
 import com.qw.recyclerview.swiperefresh.template.SwipeListCompat
 import java.util.*
 
@@ -28,13 +29,13 @@ import java.util.*
 class DragSwipeListActivity : AppCompatActivity() {
     private lateinit var mList: SwipeListCompat<String>
     private lateinit var bind: SwipeRefreshLayoutActivityBinding
-    private lateinit var mVM: SwipeComponentVM
+    private lateinit var mVM: SwipeCompatVM
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         bind = SwipeRefreshLayoutActivityBinding.inflate(layoutInflater)
         setContentView(bind.root)
-        mVM = ViewModelProvider(this)[SwipeComponentVM::class.java]
+        mVM = ViewModelProvider(this)[SwipeCompatVM::class.java]
         mVM.result.observe(this) {
             if (mVM.isFirstPage()) {
                 mList.modules.clear()
@@ -84,9 +85,11 @@ class DragSwipeListActivity : AppCompatActivity() {
             }
         }
         ItemTouchHelper(object : ItemTouchCallback() {
-            override fun onMove(fromPosition: Int, toPosition: Int) {
-                Collections.swap(mList.modules, fromPosition, toPosition)
-                mList.adapter.notifyItemMoved(fromPosition, toPosition)
+            override fun onMove(from: Int, target: Int) {
+                Log.d("drag", "from:${from} target:${target}")
+                val fromItem = mList.modules.removeAt(from)
+                mList.modules.add(target, fromItem)
+                mList.adapter.notifyItemMoved(from, target)
             }
 
             override fun onSwiped(position: Int) {
@@ -95,10 +98,11 @@ class DragSwipeListActivity : AppCompatActivity() {
             }
 
             override fun isItemViewSwipeEnabled(): Boolean {
-                return false
+                return true
             }
 
         }).attachToRecyclerView(bind.mRecyclerView)
+        Log.d("drag", "attachToRecyclerView")
         mList.setLayoutManager(MyLinearLayoutManager(this))
         mList.smart.setRefreshEnable(true)
             .setOnRefreshListener(object : OnRefreshListener {
@@ -120,9 +124,11 @@ class DragSwipeListActivity : AppCompatActivity() {
             R.id.action_linearLayout -> {
                 mList.setLayoutManager(MyLinearLayoutManager(this))
             }
+
             R.id.action_gridLayout -> {
                 mList.setLayoutManager(mList.getGridLayoutManager(2))
             }
+
             R.id.action_staggeredGridLayout -> {
                 mList.setLayoutManager(
                     MyStaggeredGridLayoutManager(

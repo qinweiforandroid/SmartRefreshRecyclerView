@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.qw.recyclerview.sample">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application
         android:name=".MyApplication"
@@ -22,7 +21,7 @@
             android:name=".ui.smart.SmartV2RecyclerViewActivity"
             android:exported="true" />
         <activity
-            android:name=".ui.swipe.SwipeComponentActivity"
+            android:name=".ui.swipe.SwipeCompatActivity"
             android:exported="true" />
         <activity
             android:name=".ui.swipe.SwipeRecyclerViewActivity"
@@ -37,7 +36,7 @@
             android:name=".ui.smart.SmartCompatActivity"
             android:exported="true" />
         <activity
-            android:name=".ui.smart.SmartV2ComponentActivity"
+            android:name=".ui.smart.SmartV2CompatActivity"
             android:exported="true" />
         <activity
             android:name=".ui.drag.DragSwipeListActivity"

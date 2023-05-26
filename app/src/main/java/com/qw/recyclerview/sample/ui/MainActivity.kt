@@ -8,10 +8,10 @@ import com.qw.recyclerview.sample.ui.drag.DragSwipeListActivity
 import com.qw.recyclerview.sample.ui.recyclerview.Recycler1Activity
 import com.qw.recyclerview.sample.ui.recyclerview.Recycler2Activity
 import com.qw.recyclerview.sample.ui.swipe.SwipeRecyclerViewActivity
-import com.qw.recyclerview.sample.ui.swipe.SwipeComponentActivity
+import com.qw.recyclerview.sample.ui.swipe.SwipeCompatActivity
 import com.qw.recyclerview.sample.ui.smart.SmartV2RecyclerViewActivity
 import com.qw.recyclerview.sample.ui.smart.SmartCompatActivity
-import com.qw.recyclerview.sample.ui.smart.SmartV2ComponentActivity
+import com.qw.recyclerview.sample.ui.smart.SmartV2CompatActivity
 
 class MainActivity : AppCompatActivity() {
     private lateinit var bind: ActivityMainBinding
@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity() {
             startActivity(
                 Intent(
                     this@MainActivity,
-                    SwipeComponentActivity::class.java
+                    SwipeCompatActivity::class.java
                 )
             )
         }
@@ -71,7 +71,7 @@ class MainActivity : AppCompatActivity() {
             startActivity(
                 Intent(
                     this@MainActivity,
-                    SmartV2ComponentActivity::class.java
+                    SmartV2CompatActivity::class.java
                 )
             )
         }

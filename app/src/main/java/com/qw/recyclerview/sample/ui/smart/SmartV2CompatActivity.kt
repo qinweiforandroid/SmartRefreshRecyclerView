@@ -21,7 +21,7 @@ import com.qw.recyclerview.smartrefreshlayout.template.SmartListV2Compat
 /**
  * Created by qinwei on 2021/7/1 20:38
  */
-class SmartV2ComponentActivity : AppCompatActivity() {
+class SmartV2CompatActivity : AppCompatActivity() {
     private lateinit var mList: SmartListV2Compat<String>
     private lateinit var bind: SmartRefreshLayoutActivityBinding
 
@@ -42,7 +42,7 @@ class SmartV2ComponentActivity : AppCompatActivity() {
 
             override fun onCreateBaseViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
                 return Holder(
-                    LayoutInflater.from(this@SmartV2ComponentActivity)
+                    LayoutInflater.from(this@SmartV2CompatActivity)
                         .inflate(android.R.layout.simple_list_item_1, parent, false)
                 )
             }
