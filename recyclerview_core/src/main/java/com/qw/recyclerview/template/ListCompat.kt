@@ -1,6 +1,7 @@
 package com.qw.recyclerview.template
 
 import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.qw.recyclerview.core.BaseListAdapter
 import com.qw.recyclerview.core.BaseViewHolder
@@ -17,6 +18,20 @@ abstract class ListCompat<T> constructor(private val mRecyclerView: RecyclerView
             return this@ListCompat.onCreateViewHolder(parent, viewType)
         }
 
+        override fun onBindViewHolder(holder: BaseViewHolder, position: Int) {
+            holder.bindModel(modules[position] as Any)
+            super.onBindViewHolder(holder, position)
+        }
+
+        override fun onBindViewHolder(
+            holder: BaseViewHolder,
+            position: Int,
+            payloads: MutableList<Any>
+        ) {
+            holder.bindModel(modules[position] as Any)
+            super.onBindViewHolder(holder, position, payloads)
+        }
+
         override fun getItemViewType(position: Int): Int {
             return this@ListCompat.getItemViewType(position)
         }
@@ -27,6 +42,7 @@ abstract class ListCompat<T> constructor(private val mRecyclerView: RecyclerView
     }
 
     init {
+        setLayoutManager(LinearLayoutManager(mRecyclerView.context))
         mRecyclerView.adapter = adapter
     }
 

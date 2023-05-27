@@ -5,8 +5,10 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.qw.recyclerview.core.*
-import com.qw.recyclerview.layout.ILayoutManager
+import com.qw.recyclerview.core.BaseViewHolder
+import com.qw.recyclerview.core.ISmartRecyclerView
+import com.qw.recyclerview.core.OnLoadMoreListener
+import com.qw.recyclerview.core.SRLog
 import com.qw.recyclerview.layout.MyGridLayoutManager
 import com.qw.recyclerview.loadmore.AbsLoadMore
 import com.qw.recyclerview.loadmore.State
@@ -83,7 +85,7 @@ abstract class SwipeListCompat<T> constructor(
 
     protected open fun getItemViewTypeByPosition(position: Int): Int = 0
 
-    fun isLoadMoreShow(position: Int): Boolean {
+    private fun isLoadMoreShow(position: Int): Boolean {
         return smart.isLoadMoreEnable() && adapter.itemCount - 1 == position
     }
 

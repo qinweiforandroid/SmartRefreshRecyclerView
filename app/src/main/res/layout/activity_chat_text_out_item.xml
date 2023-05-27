@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:paddingLeft="5dp"
+    android:paddingTop="5dp"
+    android:paddingRight="5dp"
+    android:paddingBottom="10dp">
+
+    <TextView
+        android:id="@+id/mChatTimeLabel"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:textSize="12sp" />
+
+    <RelativeLayout
+        android:id="@+id/mChatOutLayout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/mChatTimeLabel">
+
+        <ImageView
+            android:id="@+id/mChatOutAvatarImg"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:background="@drawable/mini_avatar" />
+
+        <TextView
+            android:id="@+id/mChatOutMsgLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginRight="3dp"
+            android:layout_toLeftOf="@id/mChatOutAvatarImg"
+            android:background="@drawable/chat_tomsg_selector"
+            android:gravity="center_vertical"
+            android:maxWidth="250dp"
+            android:minHeight="45dp"
+            android:paddingLeft="10dp"
+            android:paddingTop="6dp"
+            android:paddingRight="15dp"
+            android:paddingBottom="6dp"
+            android:textColor="@color/black"
+            android:textSize="15sp"
+            tools:text="这个月房租我先交一部分3月底我在补齐… 目前还差5000多 3月底能凑够一个季度的" />
+
+        <ProgressBar
+            android:id="@+id/mChatOutMsgStatus"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:layout_alignBottom="@id/mChatOutMsgLabel"
+            android:layout_marginRight="5dp"
+            android:layout_marginBottom="2dp"
+            android:layout_toLeftOf="@id/mChatOutMsgLabel"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/mChatOutMsgResendBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/mChatOutMsgStatus"
+            android:layout_marginRight="5dp"
+            android:layout_marginBottom="2dp"
+            android:layout_toLeftOf="@id/mChatOutMsgStatus"
+            android:text="重发"
+            android:visibility="gone" />
+    </RelativeLayout>
+
+</RelativeLayout>

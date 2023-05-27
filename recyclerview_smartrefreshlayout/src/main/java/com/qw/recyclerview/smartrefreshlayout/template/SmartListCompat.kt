@@ -18,8 +18,7 @@ import com.scwang.smart.refresh.layout.SmartRefreshLayout
  * email: qinwei_it@163.com
  */
 abstract class SmartListCompat<T> constructor(
-    private val mRecyclerView: RecyclerView,
-    mSmartRefreshLayout: SmartRefreshLayout
+    private val mRecyclerView: RecyclerView, mSmartRefreshLayout: SmartRefreshLayout
 ) : ListCompat<T>(mRecyclerView) {
 
     private var onLoadMoreListener: OnLoadMoreListener? = null
@@ -50,6 +49,10 @@ abstract class SmartListCompat<T> constructor(
     final override fun getItemViewType(position: Int): Int {
         if (isLoadMoreShow(position)) {
             return typeLoadMore
+        }
+        val item = modules[position]
+        if (item is IItemViewType) {
+            return item.getItemViewType()
         }
         return getItemViewTypeByPosition(position)
     }
