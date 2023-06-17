@@ -7,7 +7,12 @@ import android.util.Log
  */
 class SRLog {
     companion object {
-        var debug = false
+        private var debug = false
+
+        fun setDebug(flag: Boolean) {
+            debug = flag
+        }
+
         fun d(msg: String) {
             if (debug) {
                 Log.d("SmartRefresh", msg)

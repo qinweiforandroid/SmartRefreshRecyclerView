@@ -19,14 +19,22 @@ abstract class ListCompat<T> constructor(private val mRecyclerView: RecyclerView
         }
 
         override fun onBindViewHolder(holder: BaseViewHolder, position: Int) {
-            holder.bindModel(modules[position] as Any)
+            tryBindModel(holder, position)
             super.onBindViewHolder(holder, position)
+        }
+
+        private fun tryBindModel(holder: BaseViewHolder, position: Int) {
+            if (position < modules.size) {
+                holder.bindModel(modules[position] as Any)
+            } else {
+                holder.bindModel(Any())
+            }
         }
 
         override fun onBindViewHolder(
             holder: BaseViewHolder, position: Int, payloads: MutableList<Any>
         ) {
-            holder.bindModel(modules[position] as Any)
+            tryBindModel(holder, position)
             super.onBindViewHolder(holder, position, payloads)
         }
 

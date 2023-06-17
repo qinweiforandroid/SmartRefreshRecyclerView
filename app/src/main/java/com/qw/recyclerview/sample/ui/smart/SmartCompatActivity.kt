@@ -29,10 +29,7 @@ class SmartCompatActivity : AppCompatActivity() {
         bind = SmartRefreshLayoutActivityBinding.inflate(layoutInflater)
         setContentView(bind.root)
         mList = object : SmartListCompat<String>(bind.mRecyclerView, bind.mSmartRefreshLayout) {
-            override fun onCreateBaseViewHolder(
-                parent: ViewGroup,
-                viewType: Int
-            ): BaseViewHolder {
+            override fun onCreateBaseViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
                 return Holder(
                     LayoutInflater.from(this@SmartCompatActivity)
                         .inflate(android.R.layout.simple_list_item_1, parent, false)
@@ -46,10 +43,8 @@ class SmartCompatActivity : AppCompatActivity() {
                 }, 1000)
             }
         })
-        mList.smart.setLayoutManager(MyLinearLayoutManager(this))
-            .setRefreshEnable(true)
-            .setLoadMoreEnable(true)
-            .setOnRefreshListener(object : OnRefreshListener {
+        mList.smart.setLayoutManager(MyLinearLayoutManager(this)).setRefreshEnable(true)
+            .setLoadMoreEnable(true).setOnRefreshListener(object : OnRefreshListener {
                 override fun onRefresh() {
                     refresh()
                 }
@@ -94,14 +89,15 @@ class SmartCompatActivity : AppCompatActivity() {
             R.id.action_linearLayout -> {
                 mList.setLayoutManager(MyLinearLayoutManager(this))
             }
+
             R.id.action_gridLayout -> {
                 mList.setLayoutManager(mList.getGridLayoutManager(2))
             }
+
             R.id.action_staggeredGridLayout -> {
                 mList.setLayoutManager(
                     MyStaggeredGridLayoutManager(
-                        2,
-                        StaggeredGridLayoutManager.VERTICAL
+                        2, StaggeredGridLayoutManager.VERTICAL
                     )
                 )
             }
