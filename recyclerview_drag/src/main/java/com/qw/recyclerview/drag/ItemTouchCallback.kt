@@ -46,18 +46,29 @@ abstract class ItemTouchCallback : ItemTouchHelper.Callback() {
         viewHolder: RecyclerView.ViewHolder,
         target: RecyclerView.ViewHolder
     ): Boolean {
-        onMove(viewHolder.adapterPosition, target.adapterPosition)
         return true
     }
 
-
-    abstract fun onMove(from: Int, target: Int)
-
-    override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-        onSwiped(viewHolder.adapterPosition)
+    override fun onMoved(
+        recyclerView: RecyclerView,
+        viewHolder: RecyclerView.ViewHolder,
+        fromPos: Int,
+        target: RecyclerView.ViewHolder,
+        toPos: Int,
+        x: Int,
+        y: Int
+    ) {
+        super.onMoved(recyclerView, viewHolder, fromPos, target, toPos, x, y)
+        onMoved(viewHolder.adapterPosition, target.adapterPosition)
     }
 
-    abstract fun onSwiped(position: Int)
+    abstract fun onMoved(from: Int, target: Int)
+
+    override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+        onSwiped(viewHolder.adapterPosition, direction)
+    }
+
+    abstract fun onSwiped(direction: Int, position: Int)
 
     override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
         if (actionState != ItemTouchHelper.ACTION_STATE_IDLE) {

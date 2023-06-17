@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.qw.recyclerview.core.*
 import com.qw.recyclerview.drag.BaseTouchViewHolder
@@ -21,7 +22,6 @@ import com.qw.recyclerview.sample.R
 import com.qw.recyclerview.sample.databinding.SwipeRefreshLayoutActivityBinding
 import com.qw.recyclerview.sample.ui.swipe.SwipeCompatVM
 import com.qw.recyclerview.swiperefresh.template.SwipeListCompat
-import java.util.*
 
 /**
  * Created by qinwei on 2021/7/1 20:38
@@ -49,6 +49,7 @@ class DragSwipeListActivity : AppCompatActivity() {
                 mList.adapter.notifyItemRangeInserted(size, it.size)
             }
         }
+        bind.mRecyclerView.layoutManager = LinearLayoutManager(this)
         bind.mRecyclerView.itemAnimator = DefaultItemAnimator()
         mList = object : SwipeListCompat<String>(bind.mRecyclerView, bind.mSwipeRefreshLayout) {
             override fun onCreateBaseViewHolder(
@@ -85,33 +86,27 @@ class DragSwipeListActivity : AppCompatActivity() {
             }
         }
         ItemTouchHelper(object : ItemTouchCallback() {
-            override fun onMove(from: Int, target: Int) {
+            override fun onMoved(from: Int, target: Int) {
                 Log.d("drag", "from:${from} target:${target}")
-                val fromItem = mList.modules.removeAt(from)
-                mList.modules.add(target, fromItem)
-                mList.adapter.notifyItemMoved(from, target)
+                mList.onMoved(from, target)
             }
 
-            override fun onSwiped(position: Int) {
-                mList.modules.removeAt(position)
-                mList.adapter.notifyItemRemoved(position)
+            override fun onSwiped(direction: Int, position: Int) {
+                mList.onRemoved(position)
             }
 
             override fun isItemViewSwipeEnabled(): Boolean {
                 return true
             }
-
         }).attachToRecyclerView(bind.mRecyclerView)
         Log.d("drag", "attachToRecyclerView")
-        mList.setLayoutManager(MyLinearLayoutManager(this))
-        mList.smart.setRefreshEnable(true)
-            .setOnRefreshListener(object : OnRefreshListener {
-                override fun onRefresh() {
-                    Handler(Looper.myLooper()!!).postDelayed({
-                        mVM.refresh()
-                    }, 1000)
-                }
-            }).autoRefresh()
+        mList.smart.setRefreshEnable(true).setOnRefreshListener(object : OnRefreshListener {
+            override fun onRefresh() {
+                Handler(Looper.myLooper()!!).postDelayed({
+                    mVM.refresh()
+                }, 1000)
+            }
+        }).autoRefresh()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

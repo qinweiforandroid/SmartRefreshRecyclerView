@@ -7,7 +7,7 @@ import com.qw.recyclerview.core.BaseListAdapter
 import com.qw.recyclerview.core.BaseViewHolder
 
 /**
- * SwipeRefreshRecyclerView模版组件
+ * ListCompat列表组件，内置adapter和数据源
  * Created by qinwei on 2022/1/9 2:46 下午
  * email: qinwei_it@163.com
  */
@@ -24,9 +24,7 @@ abstract class ListCompat<T> constructor(private val mRecyclerView: RecyclerView
         }
 
         override fun onBindViewHolder(
-            holder: BaseViewHolder,
-            position: Int,
-            payloads: MutableList<Any>
+            holder: BaseViewHolder, position: Int, payloads: MutableList<Any>
         ) {
             holder.bindModel(modules[position] as Any)
             super.onBindViewHolder(holder, position, payloads)
@@ -46,12 +44,42 @@ abstract class ListCompat<T> constructor(private val mRecyclerView: RecyclerView
         mRecyclerView.adapter = adapter
     }
 
+    /**
+     * 更改数据源位置并且通知adapter更新位置
+     * @param from 原位置
+     * @param target 目标位置
+     */
+    fun onMoved(from: Int, target: Int) {
+        val fromItem = modules.removeAt(from)
+        modules.add(target, fromItem)
+        adapter.notifyItemMoved(from, target)
+    }
+
+    /**
+     * 删除指定位置数据并通知adapter更新
+     * @param position 侧滑位置
+     */
+    fun onRemoved(position: Int) {
+        modules.removeAt(position)
+        adapter.notifyItemRemoved(position)
+    }
+
+    /**
+     * 获取视图类型 call from RecyclerView.Adapter.getItemViewType(position: Int)
+     * @param position 视图所处位置
+     */
     open fun getItemViewType(position: Int): Int = 0
 
+    /**
+     * call from  RecyclerView.Adapter.getItemCount()
+     */
     open fun getItemCount(): Int {
         return modules.size
     }
 
+    /**
+     * call from  RecyclerView.Adapter.onCreateViewHolder(parent: ViewGroup, viewType: Int)
+     */
     protected abstract fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder
 
     fun getRecyclerView(): RecyclerView {
