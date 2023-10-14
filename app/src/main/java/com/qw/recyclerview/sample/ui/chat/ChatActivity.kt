@@ -25,14 +25,39 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
     private val receiverId = "li"
 
 
+    class Smart<T> constructor(
+        private val recyclerView: RecyclerView, private val smartRefreshLayout: SmartRefreshLayout
+    ) {
+        private val mMultiType = MultiTypeUseCase()
+        fun register(viewType: Int, delegate: ItemViewDelegate): Smart<T> {
+            mMultiType.register(viewType, delegate)
+            return this
+        }
+
+        fun build(): SmartListCompat<T> {
+            return object : SmartListCompat<T>(recyclerView, smartRefreshLayout) {
+                override fun onCreateBaseViewHolder(
+                    parent: ViewGroup, viewType: Int
+                ): BaseViewHolder {
+                    return mMultiType.getDelegate(viewType)
+                        .onCreateViewHolder(parent.context, parent)
+                }
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val mSmartRefreshLayout = findViewById<SmartRefreshLayout>(R.id.mSmartRefreshLayout)
         val mRecyclerView = findViewById<RecyclerView>(R.id.mRecyclerView)
+//        list = Smart<Message>(mRecyclerView, mSmartRefreshLayout)
+//            .register(Message.MSG_TXT_IN, MessageInItemViewDelegate())
+//            .register(Message.MSG_TXT_TO, MessageToItemViewDelegate())
+//            .build()
+
         val mMultiType = MultiTypeUseCase()
         mMultiType.register(Message.MSG_TXT_IN, MessageInItemViewDelegate())
         mMultiType.register(Message.MSG_TXT_TO, MessageToItemViewDelegate())
-
         list = object : SmartListCompat<Message>(mRecyclerView, mSmartRefreshLayout) {
             override fun onCreateBaseViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
                 return mMultiType.getDelegate(viewType).onCreateViewHolder(parent.context, parent)
