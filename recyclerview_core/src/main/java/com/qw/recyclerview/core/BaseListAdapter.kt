@@ -27,4 +27,8 @@ abstract class BaseListAdapter : RecyclerView.Adapter<BaseViewHolder>() {
     override fun onViewAttachedToWindow(holder: BaseViewHolder) {
         holder.onViewAttachedToWindow()
     }
+
+    override fun onViewDetachedFromWindow(holder: BaseViewHolder) {
+        holder.onViewDetachedFromWindow()
+    }
 }
