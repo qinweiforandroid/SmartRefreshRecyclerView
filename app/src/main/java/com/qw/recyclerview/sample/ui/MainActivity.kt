@@ -13,6 +13,7 @@ import com.qw.recyclerview.sample.ui.swipe.SwipeCompatActivity
 import com.qw.recyclerview.sample.ui.smart.SmartV2RecyclerViewActivity
 import com.qw.recyclerview.sample.ui.smart.SmartCompatActivity
 import com.qw.recyclerview.sample.ui.smart.SmartV2CompatActivity
+import com.qw.recyclerview.sample.ui.viewpager.ViewPagerActivity
 
 class MainActivity : AppCompatActivity() {
     private lateinit var bind: ActivityMainBinding
@@ -46,6 +47,9 @@ class MainActivity : AppCompatActivity() {
         }
         bind.mChatBtn.setOnClickListener {
             startActivity(Intent(this, ChatActivity::class.java))
+        }
+        bind.mViewPagerBtn.setOnClickListener {
+            startActivity(Intent(this, ViewPagerActivity::class.java))
         }
     }
 }
