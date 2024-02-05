@@ -17,8 +17,8 @@ class MultiTypeUseCase {
         }
     }
 
-    fun getDelegate(viewType: Int): ItemViewDelegate {
-        return types[viewType]!!
+    fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
+        return types[viewType]!!.onCreateViewHolder(parent.context, parent)
     }
 }
 

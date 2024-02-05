@@ -47,5 +47,8 @@
         <activity
             android:name=".ui.viewpager.ViewPagerActivity"
             android:exported="true" />
+        <activity
+            android:name=".ui.stick.StickHeaderListActivity"
+            android:exported="true" />
     </application>
 </manifest>

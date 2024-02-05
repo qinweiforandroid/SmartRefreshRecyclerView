@@ -39,8 +39,7 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
                 override fun onCreateBaseViewHolder(
                     parent: ViewGroup, viewType: Int
                 ): BaseViewHolder {
-                    return mMultiType.getDelegate(viewType)
-                        .onCreateViewHolder(parent.context, parent)
+                    return mMultiType.onCreateViewHolder(parent, viewType)
                 }
             }
         }
@@ -60,7 +59,7 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
         mMultiType.register(Message.MSG_TXT_TO, MessageToItemViewDelegate())
         list = object : SmartListCompat<Message>(mRecyclerView, mSmartRefreshLayout) {
             override fun onCreateBaseViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
-                return mMultiType.getDelegate(viewType).onCreateViewHolder(parent.context, parent)
+                return mMultiType.onCreateViewHolder(parent, viewType)
             }
         }
         list.modules.add(sendMessage("我是要在交一个月的房租，还是押金就可以了"))

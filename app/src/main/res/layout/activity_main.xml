@@ -134,4 +134,18 @@
         android:layout_marginTop="8dp"
         android:text="viewpager" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="recyclerview_stick"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Overline" />
+
+    <Button
+        android:id="@+id/mStickBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="stick" />
+
 </LinearLayout>
