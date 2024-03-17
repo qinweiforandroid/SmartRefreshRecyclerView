@@ -40,6 +40,7 @@ class SwipeRecyclerView(
                     State.EMPTY -> {
                         return
                     }
+
                     else -> {
                     }
                 }
@@ -140,22 +141,12 @@ class SwipeRecyclerView(
         }
     }
 
-    override fun finishRefresh(success: Boolean) {
-        finishRefresh(
-            success, if (success) {
-                State.IDLE
-            } else {
-                State.ERROR
-            }
-        )
-    }
-
-    override fun finishRefresh(success: Boolean, state: State) {
+    override fun finishRefresh(success: Boolean, footerState: State) {
         SRLog.d("SwipeRecyclerView finishRefresh success:$success")
         mSwipeRefreshLayout.isRefreshing = false
         if (mLoadMoreEnable) {
-            loadMoreState = state
-            onLoadMoreListener?.onStateChanged(state)
+            loadMoreState = footerState
+            onLoadMoreListener?.onStateChanged(footerState)
         }
         markIdle()
     }

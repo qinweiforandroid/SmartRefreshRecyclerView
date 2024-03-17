@@ -90,11 +90,8 @@ class SmartV2RecyclerView(
         }
     }
 
-    override fun finishRefresh(success: Boolean) {
-        finishRefresh(success, State.IDLE)
-    }
 
-    override fun finishRefresh(success: Boolean, state: State) {
+    override fun finishRefresh(success: Boolean, footerState: State) {
         mSmartRefreshLayout.finishRefresh(success)
         markIdle()
     }

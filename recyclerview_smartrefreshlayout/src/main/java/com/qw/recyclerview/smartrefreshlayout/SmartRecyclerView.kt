@@ -35,6 +35,7 @@ class SmartRecyclerView(
                     State.EMPTY -> {
                         return
                     }
+
                     else -> {
                     }
                 }
@@ -135,21 +136,12 @@ class SmartRecyclerView(
         }
     }
 
-    override fun finishRefresh(success: Boolean) {
-        finishRefresh(
-            success, if (success) {
-                State.IDLE
-            } else {
-                State.ERROR
-            }
-        )
-    }
 
-    override fun finishRefresh(success: Boolean, state: State) {
+    override fun finishRefresh(success: Boolean, footerState: State) {
         mSmartRefreshLayout.finishRefresh(success)
         if (mLoadMoreEnable) {
-            loadMoreState = state
-            onLoadMoreListener?.onStateChanged(state)
+            loadMoreState = footerState
+            onLoadMoreListener?.onStateChanged(footerState)
         }
         markIdle()
     }
