@@ -1,6 +1,8 @@
 package com.qw.recyclerview.core
 
 import android.content.Context
+import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.collection.ArrayMap
 
@@ -28,4 +30,14 @@ interface IItemViewType {
 
 interface ItemViewDelegate {
     fun onCreateViewHolder(context: Context, parent: ViewGroup): BaseViewHolder
+}
+
+abstract class AbsItemViewDelegate(private val layoutId: Int) : ItemViewDelegate {
+    final override fun onCreateViewHolder(context: Context, parent: ViewGroup): BaseViewHolder {
+        return onCreateViewHolder(LayoutInflater.from(context).inflate(layoutId, parent, false))
+    }
+
+    abstract fun onCreateViewHolder(view: View): BaseViewHolder
+
+
 }

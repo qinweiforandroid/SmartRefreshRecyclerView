@@ -17,9 +17,42 @@ import com.scwang.smart.refresh.layout.SmartRefreshLayout
  * Created by qinwei on 2022/1/9 2:46 下午
  * email: qinwei_it@163.com
  */
-abstract class SmartListCompat<T> constructor(
-    private val mRecyclerView: RecyclerView, mSmartRefreshLayout: SmartRefreshLayout
+abstract class SmartListCompat<T>(
+    private val mRecyclerView: RecyclerView,
+    mSmartRefreshLayout: SmartRefreshLayout
 ) : ListCompat<T>(mRecyclerView) {
+
+    class MultiTypeBuilder {
+        private val mMultiType = MultiTypeUseCase()
+        fun register(
+            viewType: Int,
+            delegate: ItemViewDelegate
+        ): MultiTypeBuilder {
+            mMultiType.register(viewType, delegate)
+            return this
+        }
+
+        fun <T> create(
+            mRecyclerView: RecyclerView,
+            mSmartRefreshLayout: SmartRefreshLayout
+        ): SmartListCompat<T> {
+            return object : SmartListCompat<T>(mRecyclerView, mSmartRefreshLayout) {
+                override fun onCreateBaseViewHolder(
+                    parent: ViewGroup, viewType: Int
+                ): BaseViewHolder {
+                    return mMultiType.onCreateViewHolder(parent, viewType)
+                }
+
+                override fun getItemViewTypeByPosition(position: Int): Int {
+                    val item = modules[position]
+                    if (item is IItemViewType) {
+                        return item.getItemViewType()
+                    }
+                    throw IllegalArgumentException("module must be impl IItemViewType interface")
+                }
+            }
+        }
+    }
 
     private var onLoadMoreListener: OnLoadMoreListener? = null
     private var loadMore: AbsLoadMore? = null

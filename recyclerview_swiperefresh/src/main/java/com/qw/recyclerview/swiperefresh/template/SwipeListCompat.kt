@@ -6,7 +6,10 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.qw.recyclerview.core.BaseViewHolder
+import com.qw.recyclerview.core.IItemViewType
 import com.qw.recyclerview.core.ISmartRecyclerView
+import com.qw.recyclerview.core.ItemViewDelegate
+import com.qw.recyclerview.core.MultiTypeUseCase
 import com.qw.recyclerview.core.OnLoadMoreListener
 import com.qw.recyclerview.core.SRLog
 import com.qw.recyclerview.layout.MyGridLayoutManager
@@ -24,6 +27,39 @@ abstract class SwipeListCompat<T> constructor(
     private val mRecyclerView: RecyclerView,
     mSwipeRefreshLayout: SwipeRefreshLayout
 ) : ListCompat<T>(mRecyclerView) {
+
+    class MultiTypeBuilder {
+        private val mMultiType = MultiTypeUseCase()
+        fun register(
+            viewType: Int,
+            delegate: ItemViewDelegate
+        ): MultiTypeBuilder {
+            mMultiType.register(viewType, delegate)
+            return this
+        }
+
+        fun <T> create(
+            mRecyclerView: RecyclerView,
+            mSmartRefreshLayout: SwipeRefreshLayout
+        ): SwipeListCompat<T> {
+            return object : SwipeListCompat<T>(mRecyclerView, mSmartRefreshLayout) {
+                override fun onCreateBaseViewHolder(
+                    parent: ViewGroup, viewType: Int
+                ): BaseViewHolder {
+                    return mMultiType.onCreateViewHolder(parent, viewType)
+                }
+
+                override fun getItemViewTypeByPosition(position: Int): Int {
+                    val item = modules[position]
+                    if (item is IItemViewType) {
+                        return item.getItemViewType()
+                    }
+                    throw IllegalArgumentException("module must be impl IItemViewType interface")
+                }
+            }
+        }
+    }
+
     private var onLoadMoreListener: OnLoadMoreListener? = null
     private var loadMore: AbsLoadMore? = null
     private val typeLoadMore = -1

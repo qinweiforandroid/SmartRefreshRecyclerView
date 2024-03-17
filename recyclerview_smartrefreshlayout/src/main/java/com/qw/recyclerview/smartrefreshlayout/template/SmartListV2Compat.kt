@@ -4,8 +4,11 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.RecyclerView
 import com.qw.recyclerview.core.BaseViewHolder
+import com.qw.recyclerview.core.IItemViewType
 import com.qw.recyclerview.template.ListCompat
 import com.qw.recyclerview.core.ISmartRecyclerView
+import com.qw.recyclerview.core.ItemViewDelegate
+import com.qw.recyclerview.core.MultiTypeUseCase
 import com.qw.recyclerview.smartrefreshlayout.SmartV2RecyclerView
 import com.scwang.smart.refresh.layout.SmartRefreshLayout
 
@@ -18,6 +21,39 @@ abstract class SmartListV2Compat<T> constructor(
     mRecyclerView: RecyclerView,
     mSmartRefreshLayout: SmartRefreshLayout
 ) : ListCompat<T>(mRecyclerView) {
+
+    class MultiTypeBuilder {
+        private val mMultiType = MultiTypeUseCase()
+        fun register(
+            viewType: Int,
+            delegate: ItemViewDelegate
+        ): MultiTypeBuilder {
+            mMultiType.register(viewType, delegate)
+            return this
+        }
+
+        fun <T> create(
+            mRecyclerView: RecyclerView,
+            mSmartRefreshLayout: SmartRefreshLayout
+        ): SmartListV2Compat<T> {
+            return object : SmartListV2Compat<T>(mRecyclerView, mSmartRefreshLayout) {
+                override fun onCreateBaseViewHolder(
+                    parent: ViewGroup, viewType: Int
+                ): BaseViewHolder {
+                    return mMultiType.onCreateViewHolder(parent, viewType)
+                }
+
+                override fun getItemViewTypeByPosition(position: Int): Int {
+                    val item = modules[position]
+                    if (item is IItemViewType) {
+                        return item.getItemViewType()
+                    }
+                    throw IllegalArgumentException("module must be impl IItemViewType interface")
+                }
+            }
+        }
+    }
+
     val smart: ISmartRecyclerView = SmartV2RecyclerView(mRecyclerView, mSmartRefreshLayout).apply {
         (mRecyclerView.itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
         mRecyclerView.overScrollMode = RecyclerView.OVER_SCROLL_NEVER
