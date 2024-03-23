@@ -11,10 +11,12 @@ import com.qw.recyclerview.core.ISmartRecyclerView
 import com.qw.recyclerview.core.ItemViewDelegate
 import com.qw.recyclerview.core.MultiTypeUseCase
 import com.qw.recyclerview.core.OnLoadMoreListener
+import com.qw.recyclerview.core.OnRefreshListener
 import com.qw.recyclerview.core.SRLog
 import com.qw.recyclerview.layout.MyGridLayoutManager
 import com.qw.recyclerview.loadmore.AbsLoadMore
 import com.qw.recyclerview.loadmore.State
+import com.qw.recyclerview.page.IPage
 import com.qw.recyclerview.swiperefresh.SwipeRecyclerView
 import com.qw.recyclerview.template.ListCompat
 
@@ -23,7 +25,7 @@ import com.qw.recyclerview.template.ListCompat
  * Created by qinwei on 2022/1/9 2:46 下午
  * email: qinwei_it@163.com
  */
-abstract class SwipeListCompat<T> constructor(
+abstract class SwipeListCompat<T>(
     private val mRecyclerView: RecyclerView,
     mSwipeRefreshLayout: SwipeRefreshLayout
 ) : ListCompat<T>(mRecyclerView) {
@@ -60,6 +62,7 @@ abstract class SwipeListCompat<T> constructor(
         }
     }
 
+    private lateinit var page: IPage
     private var onLoadMoreListener: OnLoadMoreListener? = null
     private var loadMore: AbsLoadMore? = null
     private val typeLoadMore = -1
@@ -70,28 +73,13 @@ abstract class SwipeListCompat<T> constructor(
         setLoadMoreEnable(false)
     }
 
+    @Deprecated(message = "use setUpLoadMore and setOnLoadMoreListener to replace")
     fun supportLoadMore(
         loadMore: AbsLoadMore,
         onLoadMoreListener: OnLoadMoreListener
     ) {
-        this.loadMore = loadMore
-        this.loadMore!!.setOnRetryListener {
-            this.loadMore!!.onStateChanged(State.LOADING)
-            adapter.notifyItemChanged(adapter.itemCount - 1)
-            onLoadMoreListener.onLoadMore()
-        }
-        this.onLoadMoreListener = onLoadMoreListener
-        smart.setOnLoadMoreListener(object : OnLoadMoreListener {
-            override fun onLoadMore() {
-                onLoadMoreListener.onLoadMore()
-            }
-
-            override fun onStateChanged(state: State) {
-                loadMore.onStateChanged(state)
-                adapter.notifyItemChanged(adapter.itemCount - 1)
-            }
-        })
-        smart.setLoadMoreEnable(true)
+        setUpLoadMore(loadMore)
+        setOnLoadMoreListener(onLoadMoreListener)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
@@ -160,6 +148,69 @@ abstract class SwipeListCompat<T> constructor(
                     }
                 }
             }
+        }
+    }
+
+    fun setUpPage(page: IPage): SwipeListCompat<T> {
+        this.page = page
+        return this
+    }
+
+
+    fun setUpLayoutManager(layoutManager: RecyclerView.LayoutManager): SwipeListCompat<T> {
+        setLayoutManager(layoutManager)
+        return this
+    }
+
+    fun setUpLoadMore(loadMore: AbsLoadMore): SwipeListCompat<T> {
+        this.loadMore = loadMore
+        loadMore.setOnRetryListener {
+            this.loadMore!!.onStateChanged(State.LOADING)
+            adapter.notifyItemChanged(adapter.itemCount - 1)
+            onLoadMoreListener?.onLoadMore()
+        }
+        return this
+    }
+
+    fun setOnLoadMoreListener(onLoadMoreListener: OnLoadMoreListener): SwipeListCompat<T> {
+        this.onLoadMoreListener = onLoadMoreListener
+        smart.setOnLoadMoreListener(object : OnLoadMoreListener {
+            override fun onLoadMore() {
+                onLoadMoreListener.onLoadMore()
+            }
+
+            override fun onStateChanged(state: State) {
+                loadMore?.onStateChanged(state)
+                adapter.notifyItemChanged(adapter.itemCount - 1)
+            }
+        })
+        return this
+    }
+
+    fun setOnRefreshListener(onRefreshListener: OnRefreshListener): SwipeListCompat<T> {
+        smart.setOnRefreshListener(onRefreshListener)
+        return this
+    }
+
+    fun notifyDataChanged(it: ArrayList<T>) {
+        if (smart.isPull()) {
+            modules.clear()
+            modules.addAll(it)
+            smart.finishRefresh(true)
+            adapter.notifyDataSetChanged()
+        } else {
+            val size = modules.size
+            modules.addAll(it)
+            smart.finishLoadMore(true, !page.hasMore())
+            adapter.notifyItemRangeInserted(size, it.size)
+        }
+    }
+
+    fun notifyError() {
+        if (smart.isPull()) {
+            smart.finishRefresh(false)
+        } else {
+            smart.finishLoadMore(false, false)
         }
     }
 }

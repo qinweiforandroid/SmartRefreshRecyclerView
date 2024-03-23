@@ -1,9 +1,11 @@
 package com.qw.recyclerview.sample.ui.swipe
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
@@ -31,60 +33,41 @@ class SwipeCompatActivity : AppCompatActivity() {
         bind = SwipeRefreshLayoutActivityBinding.inflate(layoutInflater)
         setContentView(bind.root)
         mVM = ViewModelProvider(this)[SwipeCompatVM::class.java]
-        mVM.result.observe(this) {
-            if (mVM.isFirstPage()) {
-                mList.modules.clear()
-                mList.modules.addAll(it)
-                mList.finishRefresh(true)
-                mList.adapter.notifyDataSetChanged()
-            } else {
-                val size = mList.modules.size
-                mList.modules.addAll(it)
-                mList.finishLoadMore(true, !mVM.hasMore())
-                mList.adapter.notifyItemRangeInserted(size, it.size)
-            }
-        }
-        mList =
-            object : SwipeListCompat<String>(bind.mRecyclerView, bind.mSwipeRefreshLayout) {
-                override fun onCreateBaseViewHolder(
-                    parent: ViewGroup,
-                    viewType: Int
-                ): BaseViewHolder {
-                    return Holder(
-                        LayoutInflater.from(this@SwipeCompatActivity)
-                            .inflate(android.R.layout.simple_list_item_1, parent, false)
-                    )
-                }
+        mList = object : SwipeListCompat<String>(bind.mRecyclerView, bind.mSwipeRefreshLayout) {
+            override fun onCreateBaseViewHolder(parent: ViewGroup, viewType: Int) = Holder(
+                LayoutInflater.from(this@SwipeCompatActivity)
+                    .inflate(android.R.layout.simple_list_item_1, parent, false)
+            )
 
-                inner class Holder(itemView: View) : BaseViewHolder(itemView) {
-                    override fun initData(position: Int) {
-                        val label: TextView = itemView as TextView
-                        val text = mList.modules[position]
-                        label.text = text
-                    }
+            inner class Holder(itemView: View) : BaseViewHolder(itemView) {
+                override fun initData(position: Int) {
+                    val label: TextView = itemView as TextView
+                    val text = mList.modules[position]
+                    label.text = text
                 }
             }
+        }.setUpPage(mVM.page)
+
         val loadMore = DefaultLoadMore()
             .setEmptyHint("我是有底线的……")
             .setFailHint("哎呦，加载失败了")
             .setLoadingHint("努力加载中")
         mList.supportLoadMore(loadMore, object : OnLoadMoreListener {
             override fun onLoadMore() {
-                Handler(Looper.myLooper()!!).postDelayed({
-                    mVM.loadMore()
-                }, 1000)
+                mVM.loadMore()
             }
         })
-        mList.setLayoutManager(MyLinearLayoutManager(this))
-        mList.smart.setRefreshEnable(true)
+
+        mVM.result.observe(this, mList::notifyDataChanged)
+        mList.smart.setLayoutManager(MyLinearLayoutManager(this))
+            .setRefreshEnable(true)
             .setOnRefreshListener(object : OnRefreshListener {
                 override fun onRefresh() {
-                    Handler(Looper.myLooper()!!).postDelayed({
-                        mVM.refresh()
-                    }, 1000)
+                    mVM.refresh()
                 }
             }).autoRefresh()
     }
+
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_recyclerview, menu)
@@ -96,9 +79,11 @@ class SwipeCompatActivity : AppCompatActivity() {
             R.id.action_linearLayout -> {
                 mList.setLayoutManager(MyLinearLayoutManager(this))
             }
+
             R.id.action_gridLayout -> {
                 mList.setLayoutManager(mList.getGridLayoutManager(2))
             }
+
             R.id.action_staggeredGridLayout -> {
                 mList.setLayoutManager(
                     MyStaggeredGridLayoutManager(

@@ -10,7 +10,6 @@ interface ISmartRecyclerView {
         const val REFRESH_UP = 2
     }
 
-
     fun getRecyclerView(): RecyclerView
 
     /**
@@ -54,6 +53,17 @@ interface ISmartRecyclerView {
      */
     fun isLoadMoreEnable(): Boolean
 
+
+    /**
+     * 是否正在刷新
+     */
+    fun isPull(): Boolean
+
+    /**
+     * 是否是正在加载更多
+     */
+    fun isUp(): Boolean
+
     /**
      * 自动刷新
      */
@@ -76,5 +86,8 @@ interface ISmartRecyclerView {
     )
 
 
+    /**
+     * 加载更多结束状态控制
+     */
     fun finishLoadMore(success: Boolean, noMoreData: Boolean)
 }

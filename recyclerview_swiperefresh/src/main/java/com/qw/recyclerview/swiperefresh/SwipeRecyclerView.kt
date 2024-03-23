@@ -133,6 +133,14 @@ class SwipeRecyclerView(
         return mLoadMoreEnable
     }
 
+    override fun isPull(): Boolean {
+        return state == ISmartRecyclerView.REFRESH_PULL || state == ISmartRecyclerView.REFRESH_IDLE
+    }
+
+    override fun isUp(): Boolean {
+        return state == ISmartRecyclerView.REFRESH_UP
+    }
+
     override fun autoRefresh() {
         if (mRefreshEnable) {
             state = ISmartRecyclerView.REFRESH_PULL

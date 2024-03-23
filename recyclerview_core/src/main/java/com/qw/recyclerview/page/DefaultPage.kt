@@ -29,7 +29,7 @@ class DefaultPage : IPage {
     override fun isFirstPage(): Boolean {
         return mWillLoadPage == 1
     }
-    
+
 
     override fun hasMore(): Boolean {
         return mCurrentPage != mLastPage
@@ -44,5 +44,9 @@ class DefaultPage : IPage {
 
     fun getCurrentPage(): Int {
         return mCurrentPage
+    }
+
+    fun getWillPage(): Int {
+        return mWillLoadPage
     }
 }
