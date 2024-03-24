@@ -42,16 +42,16 @@ dependencies {
     implementation 'com.github.qinweiforandroid.QNetwork:network-env:1.0.0.0104'
     implementation 'com.github.qinweiforandroid.QNetwork:network-retrofit:1.0.0.0104'
 
-    implementation 'com.github.qinweiforandroid.SmartRefreshRecyclerView:recyclerview-core:4.1.0323'
-    implementation 'com.github.qinweiforandroid.SmartRefreshRecyclerView:recyclerview-drag:4.1.0323'
-    implementation 'com.github.qinweiforandroid.SmartRefreshRecyclerView:recyclerview-footer:4.1.0323'
-    implementation 'com.github.qinweiforandroid.SmartRefreshRecyclerView:recyclerview-smartrefreshlayout:4.1.0323'
-    implementation 'com.github.qinweiforandroid.SmartRefreshRecyclerView:recyclerview-swiperefresh:4.1.0323'
-//    implementation project(':recyclerview_swiperefresh')
-//    implementation project(':recyclerview_smartrefreshlayout')
-//    implementation project(':recyclerview_footer')
-//    implementation project(':recyclerview_drag')
-//    implementation project(':recyclerview_core')
+//    implementation 'com.github.qinweiforandroid.SmartRefreshRecyclerView:recyclerview-core:4.1.0323'
+//    implementation 'com.github.qinweiforandroid.SmartRefreshRecyclerView:recyclerview-drag:4.1.0323'
+//    implementation 'com.github.qinweiforandroid.SmartRefreshRecyclerView:recyclerview-footer:4.1.0323'
+//    implementation 'com.github.qinweiforandroid.SmartRefreshRecyclerView:recyclerview-smartrefreshlayout:4.1.0323'
+//    implementation 'com.github.qinweiforandroid.SmartRefreshRecyclerView:recyclerview-swiperefresh:4.1.0323'
+    implementation project(':recyclerview_swiperefresh')
+    implementation project(':recyclerview_smartrefreshlayout')
+    implementation project(':recyclerview_footer')
+    implementation project(':recyclerview_drag')
+    implementation project(':recyclerview_core')
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'

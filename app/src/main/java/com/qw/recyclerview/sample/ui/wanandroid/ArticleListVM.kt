@@ -1,6 +1,5 @@
 package com.qw.recyclerview.sample.ui.wanandroid
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -15,7 +14,7 @@ import kotlinx.coroutines.launch
  */
 class ArticleListVM : ViewModel() {
 
-    val page = DefaultPage()
+    val page = DefaultPage(0)
     val articles = MutableLiveData<Result<ArrayList<ArticleBean>>>()
     fun onRefresh() {
         page.pullToDown()
@@ -32,7 +31,10 @@ class ArticleListVM : ViewModel() {
             try {
                 val response = SmartRefreshRepository.loadArticles(page.getWillPage())
                 if (response.errorCode == 0) {
-                    articles.value = Result.success(response.data.datas!!)
+                    val pageCount = response.data.pageCount ?: 0
+                    articles.value = Result.success(response.data.datas!!.apply {
+                        page.onPageChanged(page.getWillPage() >= pageCount)
+                    })
                 } else {
                     articles.value = Result.failure(RuntimeException(response.errorMsg))
                 }
