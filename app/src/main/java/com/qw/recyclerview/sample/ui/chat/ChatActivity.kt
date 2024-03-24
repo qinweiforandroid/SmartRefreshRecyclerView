@@ -8,7 +8,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.qw.recyclerview.core.AbsItemViewDelegate
 import com.qw.recyclerview.core.BaseViewHolder
 import com.qw.recyclerview.sample.R
-import com.qw.recyclerview.smartrefreshlayout.template.SmartListCompat
+import com.qw.recyclerview.smartrefreshlayout.SmartRecyclerView
+import com.qw.recyclerview.template.SmartListCompat
 import com.scwang.smart.refresh.layout.SmartRefreshLayout
 
 /**
@@ -22,12 +23,12 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val mSmartRefreshLayout = findViewById<SmartRefreshLayout>(R.id.mSmartRefreshLayout)
-        val mRecyclerView = findViewById<RecyclerView>(R.id.mRecyclerView)
+        val srl = findViewById<SmartRefreshLayout>(R.id.mSmartRefreshLayout)
+        val rv = findViewById<RecyclerView>(R.id.mRecyclerView)
         list = SmartListCompat.MultiTypeBuilder()
             .register(Message.MSG_TXT_IN, MessageInItemViewDelegate())
             .register(Message.MSG_TXT_TO, MessageToItemViewDelegate())
-            .create(mRecyclerView, mSmartRefreshLayout)
+            .create(SmartRecyclerView(rv, srl))
         list.modules.add(sendMessage("我是要在交一个月的房租，还是押金就可以了"))
         list.modules.add(receiverMessage("你交一个月的房租吧，你退房时我看一下水电煤结清就退你押金"))
         list.modules.add(sendMessage("我是要在交一个月的房租，还是押金就可以了"))

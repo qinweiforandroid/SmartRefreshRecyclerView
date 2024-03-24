@@ -60,10 +60,6 @@ class SwipeRecyclerView(
             onRefreshListener?.onRefresh()
         }
         mSwipeRefreshLayout.isEnabled = mRefreshEnable
-
-        if (mRecyclerView.adapter == null) {
-            throw IllegalArgumentException("RecyclerView must be setAdapter")
-        }
     }
 
     private fun markIdle() {

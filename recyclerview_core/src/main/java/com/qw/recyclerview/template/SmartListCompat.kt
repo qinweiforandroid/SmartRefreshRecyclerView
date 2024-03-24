@@ -1,10 +1,9 @@
-package com.qw.recyclerview.swiperefresh.template
+package com.qw.recyclerview.template
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.qw.recyclerview.core.BaseViewHolder
 import com.qw.recyclerview.core.IItemViewType
 import com.qw.recyclerview.core.ISmartRecyclerView
@@ -17,18 +16,27 @@ import com.qw.recyclerview.layout.MyGridLayoutManager
 import com.qw.recyclerview.loadmore.AbsLoadMore
 import com.qw.recyclerview.loadmore.State
 import com.qw.recyclerview.page.IPage
-import com.qw.recyclerview.swiperefresh.SwipeRecyclerView
-import com.qw.recyclerview.template.ListCompat
 
 /**
  * SwipeRefreshRecyclerView模版组件
  * Created by qinwei on 2022/1/9 2:46 下午
  * email: qinwei_it@163.com
  */
-abstract class SwipeListCompat<T>(
-    private val mRecyclerView: RecyclerView,
-    mSwipeRefreshLayout: SwipeRefreshLayout
-) : ListCompat<T>(mRecyclerView) {
+abstract class SmartListCompat<T>(private val smart: ISmartRecyclerView) :
+    ListCompat<T>(smart.getRecyclerView()) {
+
+    private lateinit var page: IPage
+    private var onLoadMoreListener: OnLoadMoreListener? = null
+    private var loadMore: AbsLoadMore? = null
+    private val typeLoadMore = -1
+
+    init {
+        smart.apply {
+            (getRecyclerView().itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
+            setRefreshEnable(false)
+            setLoadMoreEnable(false)
+        }
+    }
 
     class MultiTypeBuilder {
         private val mMultiType = MultiTypeUseCase()
@@ -40,11 +48,8 @@ abstract class SwipeListCompat<T>(
             return this
         }
 
-        fun <T> create(
-            mRecyclerView: RecyclerView,
-            mSmartRefreshLayout: SwipeRefreshLayout
-        ): SwipeListCompat<T> {
-            return object : SwipeListCompat<T>(mRecyclerView, mSmartRefreshLayout) {
+        fun <T> create(smart: ISmartRecyclerView): SmartListCompat<T> {
+            return object : SmartListCompat<T>(smart) {
                 override fun onCreateBaseViewHolder(
                     parent: ViewGroup, viewType: Int
                 ): BaseViewHolder {
@@ -60,17 +65,6 @@ abstract class SwipeListCompat<T>(
                 }
             }
         }
-    }
-
-    private lateinit var page: IPage
-    private var onLoadMoreListener: OnLoadMoreListener? = null
-    private var loadMore: AbsLoadMore? = null
-    private val typeLoadMore = -1
-
-    val smart: ISmartRecyclerView = SwipeRecyclerView(mRecyclerView, mSwipeRefreshLayout).apply {
-        (mRecyclerView.itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
-        setRefreshEnable(false)
-        setLoadMoreEnable(false)
     }
 
     @Deprecated(message = "use setUpLoadMore and setOnLoadMoreListener to replace")
@@ -138,7 +132,7 @@ abstract class SwipeListCompat<T>(
     }
 
     fun getGridLayoutManager(spanCount: Int): MyGridLayoutManager {
-        return MyGridLayoutManager(mRecyclerView.context, spanCount).apply {
+        return MyGridLayoutManager(smart.getRecyclerView().context, spanCount).apply {
             spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
                 override fun getSpanSize(position: Int): Int {
                     return if (isLoadMoreShow(position)) {
@@ -151,18 +145,27 @@ abstract class SwipeListCompat<T>(
         }
     }
 
-    fun setUpPage(page: IPage): SwipeListCompat<T> {
+    fun setUpPage(page: IPage): SmartListCompat<T> {
         this.page = page
         return this
     }
 
+    fun setLoadMoreEnable(isEnabled: Boolean): SmartListCompat<T> {
+        this.smart.setLoadMoreEnable(isEnabled)
+        return this
+    }
 
-    fun setUpLayoutManager(layoutManager: RecyclerView.LayoutManager): SwipeListCompat<T> {
+    fun setRefreshEnable(isEnabled: Boolean): SmartListCompat<T> {
+        this.smart.setRefreshEnable(isEnabled)
+        return this
+    }
+
+    fun setUpLayoutManager(layoutManager: RecyclerView.LayoutManager): SmartListCompat<T> {
         setLayoutManager(layoutManager)
         return this
     }
 
-    fun setUpLoadMore(loadMore: AbsLoadMore): SwipeListCompat<T> {
+    fun setUpLoadMore(loadMore: AbsLoadMore): SmartListCompat<T> {
         this.loadMore = loadMore
         loadMore.setOnRetryListener {
             this.loadMore!!.onStateChanged(State.LOADING)
@@ -172,7 +175,7 @@ abstract class SwipeListCompat<T>(
         return this
     }
 
-    fun setOnLoadMoreListener(onLoadMoreListener: OnLoadMoreListener): SwipeListCompat<T> {
+    fun setOnLoadMoreListener(onLoadMoreListener: OnLoadMoreListener): SmartListCompat<T> {
         this.onLoadMoreListener = onLoadMoreListener
         smart.setOnLoadMoreListener(object : OnLoadMoreListener {
             override fun onLoadMore() {
@@ -187,7 +190,7 @@ abstract class SwipeListCompat<T>(
         return this
     }
 
-    fun setOnRefreshListener(onRefreshListener: OnRefreshListener): SwipeListCompat<T> {
+    fun setOnRefreshListener(onRefreshListener: OnRefreshListener): SmartListCompat<T> {
         smart.setOnRefreshListener(onRefreshListener)
         return this
     }
@@ -205,6 +208,7 @@ abstract class SwipeListCompat<T>(
             adapter.notifyItemRangeInserted(size, it.size)
         }
     }
+
 
     fun notifyError() {
         if (smart.isPull()) {

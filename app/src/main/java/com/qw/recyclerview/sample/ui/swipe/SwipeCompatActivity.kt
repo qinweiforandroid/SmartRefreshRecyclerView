@@ -18,13 +18,15 @@ import com.qw.recyclerview.layout.MyLinearLayoutManager
 import com.qw.recyclerview.layout.MyStaggeredGridLayoutManager
 import com.qw.recyclerview.sample.R
 import com.qw.recyclerview.sample.databinding.SwipeRefreshLayoutActivityBinding
-import com.qw.recyclerview.swiperefresh.template.SwipeListCompat
+import com.qw.recyclerview.smartrefreshlayout.SmartRecyclerView
+import com.qw.recyclerview.swiperefresh.SwipeRecyclerView
+import com.qw.recyclerview.template.SmartListCompat
 
 /**
  * Created by qinwei on 2021/7/1 20:38
  */
 class SwipeCompatActivity : AppCompatActivity() {
-    private lateinit var mList: SwipeListCompat<String>
+    private lateinit var mList: SmartListCompat<String>
     private lateinit var bind: SwipeRefreshLayoutActivityBinding
     private lateinit var mVM: SwipeCompatVM
 
@@ -33,7 +35,8 @@ class SwipeCompatActivity : AppCompatActivity() {
         bind = SwipeRefreshLayoutActivityBinding.inflate(layoutInflater)
         setContentView(bind.root)
         mVM = ViewModelProvider(this)[SwipeCompatVM::class.java]
-        mList = object : SwipeListCompat<String>(bind.mRecyclerView, bind.mSwipeRefreshLayout) {
+        val smart = SwipeRecyclerView(bind.mRecyclerView, bind.mSwipeRefreshLayout)
+        mList = object : SmartListCompat<String>(smart) {
             override fun onCreateBaseViewHolder(parent: ViewGroup, viewType: Int) = Holder(
                 LayoutInflater.from(this@SwipeCompatActivity)
                     .inflate(android.R.layout.simple_list_item_1, parent, false)
@@ -46,28 +49,28 @@ class SwipeCompatActivity : AppCompatActivity() {
                     label.text = text
                 }
             }
-        }.setUpPage(mVM.page)
-
+        }
         val loadMore = DefaultLoadMore()
             .setEmptyHint("我是有底线的……")
             .setFailHint("哎呦，加载失败了")
             .setLoadingHint("努力加载中")
-        mList.supportLoadMore(loadMore, object : OnLoadMoreListener {
-            override fun onLoadMore() {
-                mVM.loadMore()
-            }
-        })
-
         mVM.result.observe(this, mList::notifyDataChanged)
-        mList.smart.setLayoutManager(MyLinearLayoutManager(this))
+        mList.setUpPage(mVM.page)
+            .setUpLoadMore(loadMore)
+            .setUpLayoutManager(MyLinearLayoutManager(this))
+            .setLoadMoreEnable(true)
             .setRefreshEnable(true)
             .setOnRefreshListener(object : OnRefreshListener {
                 override fun onRefresh() {
                     mVM.refresh()
                 }
+            })
+            .setOnLoadMoreListener(object : OnLoadMoreListener {
+                override fun onLoadMore() {
+                    mVM.loadMore()
+                }
             }).autoRefresh()
     }
-
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_recyclerview, menu)

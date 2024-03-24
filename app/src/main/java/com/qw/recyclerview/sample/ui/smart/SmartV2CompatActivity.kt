@@ -29,8 +29,16 @@ class SmartV2CompatActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         bind = SmartRefreshLayoutActivityBinding.inflate(layoutInflater)
         setContentView(bind.root)
-        mList = object :
-            SmartListV2Compat<String>(bind.mRecyclerView, bind.mSmartRefreshLayout) {
+        val rv = bind.mRecyclerView
+        val srl = bind.mSmartRefreshLayout
+        mList = object : SmartListV2Compat<String>(rv, srl) {
+
+            override fun onCreateBaseViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
+                return Holder(
+                    LayoutInflater.from(this@SmartV2CompatActivity)
+                        .inflate(android.R.layout.simple_list_item_1, parent, false)
+                )
+            }
 
             inner class Holder(itemView: View) : BaseViewHolder(itemView) {
                 override fun initData(position: Int) {
@@ -38,13 +46,6 @@ class SmartV2CompatActivity : AppCompatActivity() {
                     val text = mList.modules[position]
                     label.text = text
                 }
-            }
-
-            override fun onCreateBaseViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
-                return Holder(
-                    LayoutInflater.from(this@SmartV2CompatActivity)
-                        .inflate(android.R.layout.simple_list_item_1, parent, false)
-                )
             }
         }
         mList.smart.setLayoutManager(LinearLayoutManager(this))
@@ -56,8 +57,7 @@ class SmartV2CompatActivity : AppCompatActivity() {
                         loadMore()
                     }, 1000)
                 }
-            })
-            .setOnRefreshListener(object : OnRefreshListener {
+            }).setOnRefreshListener(object : OnRefreshListener {
                 override fun onRefresh() {
                     Handler(Looper.myLooper()!!).postDelayed({
                         refresh()
@@ -94,9 +94,11 @@ class SmartV2CompatActivity : AppCompatActivity() {
             R.id.action_linearLayout -> {
                 mList.setLayoutManager(MyLinearLayoutManager(this))
             }
+
             R.id.action_gridLayout -> {
                 mList.setLayoutManager(GridLayoutManager(this, 2))
             }
+
             R.id.action_staggeredGridLayout -> {
                 mList.setLayoutManager(
                     MyStaggeredGridLayoutManager(

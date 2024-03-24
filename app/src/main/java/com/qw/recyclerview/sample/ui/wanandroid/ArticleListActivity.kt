@@ -14,7 +14,8 @@ import com.qw.recyclerview.footer.DefaultLoadMore
 import com.qw.recyclerview.layout.MyLinearLayoutManager
 import com.qw.recyclerview.sample.R
 import com.qw.recyclerview.sample.repository.entities.ArticleBean
-import com.qw.recyclerview.swiperefresh.template.SwipeListCompat
+import com.qw.recyclerview.swiperefresh.SwipeRecyclerView
+import com.qw.recyclerview.template.SmartListCompat
 
 /**
  * Created by qinwei on 2024/3/23 16:09
@@ -23,7 +24,7 @@ import com.qw.recyclerview.swiperefresh.template.SwipeListCompat
 class ArticleListActivity : AppCompatActivity(R.layout.activity_article_list) {
 
     private lateinit var mVM: ArticleListVM
-    private lateinit var list: SwipeListCompat<ArticleBean>
+    private lateinit var list: SmartListCompat<ArticleBean>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,7 +39,7 @@ class ArticleListActivity : AppCompatActivity(R.layout.activity_article_list) {
                 list.notifyDataChanged(data)
             }
         }
-        list = object : SwipeListCompat<ArticleBean>(rv, swipe) {
+        list = object : SmartListCompat<ArticleBean>(SwipeRecyclerView(rv, swipe)) {
             override fun onCreateBaseViewHolder(parent: ViewGroup, viewType: Int) =
                 object : BaseViewHolder(
                     layoutInflater.inflate(
@@ -61,8 +62,9 @@ class ArticleListActivity : AppCompatActivity(R.layout.activity_article_list) {
                     }
                 }
         }
-        list.smart.setLoadMoreEnable(true).setRefreshEnable(true)
-        list.setUpPage(mVM.page)
+        list.setLoadMoreEnable(true)
+            .setRefreshEnable(true)
+            .setUpPage(mVM.page)
             .setUpLayoutManager(MyLinearLayoutManager(this))
             .setUpLoadMore(DefaultLoadMore())
             .setOnLoadMoreListener(object : OnLoadMoreListener {

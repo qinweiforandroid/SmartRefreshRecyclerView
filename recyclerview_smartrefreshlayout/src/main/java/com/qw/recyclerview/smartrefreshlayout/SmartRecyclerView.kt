@@ -54,12 +54,8 @@ class SmartRecyclerView(
             onRefreshListener?.onRefresh()
         }
         mSmartRefreshLayout.setEnableRefresh(mRefreshEnable)
-        //使用adapter的loadmore功能
+        //使用adapter的load more功能
         mSmartRefreshLayout.setEnableLoadMore(false)
-
-        if (mRecyclerView.adapter == null) {
-            throw IllegalArgumentException("RecyclerView must be setAdapter")
-        }
     }
 
     private fun markIdle() {

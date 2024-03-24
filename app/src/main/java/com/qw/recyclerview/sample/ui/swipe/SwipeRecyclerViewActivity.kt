@@ -136,9 +136,11 @@ class SwipeRecyclerViewActivity : AppCompatActivity() {
             R.id.action_linearLayout -> {
                 smart.setLayoutManager(LinearLayoutManager(this))
             }
+
             R.id.action_gridLayout -> {
                 smart.setLayoutManager(getGridLayoutManager(2))
             }
+
             R.id.action_staggeredGridLayout -> {
                 smart.setLayoutManager(
                     StaggeredGridLayoutManager(
@@ -168,5 +170,4 @@ class SwipeRecyclerViewActivity : AppCompatActivity() {
         }
         return manager
     }
-
 }
