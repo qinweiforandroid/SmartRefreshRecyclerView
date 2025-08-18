@@ -1,0 +1,72 @@
+[versions]
+agp = "8.7.3"
+kotlin = "1.9.0"
+coreKtx = "1.16.0"
+junit = "4.13.2"
+junitVersion = "1.2.1"
+espressoCore = "3.6.1"
+appcompat = "1.7.1"
+lifecycleViewmodelKtxVersion = "2.9.2"
+material = "1.12.0"
+activity = "1.10.1"
+constraintlayout = "2.2.1"
+
+lifecycleRuntimeKtx = "2.9.1"
+lifecycleViewmodelKtx = "2.9.1"
+activityCompose = "1.10.1"
+composeBom = "2025.04.00"
+
+#other
+glide = "4.15.1"
+networkEnv = "1.0.0.0104"
+networkRetrofit = "1.0.0.0104"
+pictureselector = "v3.11.2"
+qrowview = "1.1.0208"
+qutils = "1.1.0116"
+recyclerviewCore = "4.1.0324"
+recyclerviewFooter = "4.1.0324"
+recyclerviewSwiperefresh = "4.1.0324"
+swiperefreshlayout = "1.1.0"
+
+[libraries]
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-lifecycle-viewmodel-ktx-v292 = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtxVersion" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
+androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtx" }
+
+#compose lib
+androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
+androidx-ui = { group = "androidx.compose.ui", name = "ui" }
+androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
+androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
+androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+
+#other
+glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
+network-env = { module = "com.github.qinweiforandroid.QNetwork:network-env", version.ref = "networkEnv" }
+network-retrofit = { module = "com.github.qinweiforandroid.QNetwork:network-retrofit", version.ref = "networkRetrofit" }
+pictureselector = { module = "io.github.lucksiege:pictureselector", version.ref = "pictureselector" }
+qrowview = { module = "com.github.qinweiforandroid:QRowView", version.ref = "qrowview" }
+qutils = { module = "com.github.qinweiforandroid:QUtils", version.ref = "qutils" }
+recyclerview-core = { module = "com.github.qinweiforandroid.SmartRefreshRecyclerView:recyclerview-core", version.ref = "recyclerviewCore" }
+recyclerview-footer = { module = "com.github.qinweiforandroid.SmartRefreshRecyclerView:recyclerview-footer", version.ref = "recyclerviewFooter" }
+recyclerview-swiperefresh = { module = "com.github.qinweiforandroid.SmartRefreshRecyclerView:recyclerview-swiperefresh", version.ref = "recyclerviewSwiperefresh" }
+androidx-swiperefreshlayout = { group = "androidx.swiperefreshlayout", name = "swiperefreshlayout", version.ref = "swiperefreshlayout" }
+
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+android-library = { id = "com.android.library", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }

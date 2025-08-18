@@ -42,13 +42,13 @@ class MyApplication : Application() {
             .writeTimeout(5, TimeUnit.SECONDS)
             .retryOnConnectionFailure(true)
             .apply {
-                if (BuildConfig.DEBUG) {
+//                if (BuildConfig.DEBUG) {
 //                    val loggingInterceptor = HttpLoggingInterceptor()
 //                    loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
 //                    addInterceptor(loggingInterceptor)
                     addInterceptor(requestInterceptor)
 //                    addInterceptor(responseInterceptor)
-                }
+//                }
             }
         RequestManager.putOkHttpClient(API.domain, okHttp.build())
     }
