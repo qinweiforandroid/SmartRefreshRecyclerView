@@ -10,7 +10,6 @@ interface ISmartRecyclerView {
         const val REFRESH_UP = 2
     }
 
-
     fun getRecyclerView(): RecyclerView
 
     /**
@@ -54,22 +53,41 @@ interface ISmartRecyclerView {
      */
     fun isLoadMoreEnable(): Boolean
 
+
+    /**
+     * 是否正在刷新
+     */
+    fun isPull(): Boolean
+
+    /**
+     * 是否是正在加载更多
+     */
+    fun isUp(): Boolean
+
     /**
      * 自动刷新
      */
     fun autoRefresh()
 
-    /**
-     * 刷新完成更新ui
-     */
-    fun finishRefresh(success: Boolean)
 
     /**
      * 刷新完成更新ui
+     * case 1 隐藏更多状态: success=false State.EMPTY
+     * case 2 显示加载失败状态：success=false State.ERROR
      * @param success true刷新成功，false 刷新失敗
-     * @param state 加载更多状态
+     * @param footerState 加载更多状态
      */
-    fun finishRefresh(success: Boolean, state: State)
+    fun finishRefresh(
+        success: Boolean, footerState: State = if (success) {
+            State.IDLE
+        } else {
+            State.ERROR
+        }
+    )
 
+
+    /**
+     * 加载更多结束状态控制
+     */
     fun finishLoadMore(success: Boolean, noMoreData: Boolean)
 }

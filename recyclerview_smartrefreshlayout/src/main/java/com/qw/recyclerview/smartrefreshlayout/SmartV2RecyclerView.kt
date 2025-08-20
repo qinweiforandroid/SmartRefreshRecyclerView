@@ -31,9 +31,6 @@ class SmartV2RecyclerView(
         }
         mSmartRefreshLayout.setEnableRefresh(mRefreshEnable)
         mSmartRefreshLayout.setEnableLoadMore(mLoadMoreEnable)
-        if (mRecyclerView.adapter == null) {
-            throw IllegalArgumentException("RecyclerView must be setAdapter")
-        }
     }
 
     private fun markIdle() {
@@ -84,17 +81,22 @@ class SmartV2RecyclerView(
         return mLoadMoreEnable
     }
 
+    override fun isPull(): Boolean {
+        return state == ISmartRecyclerView.REFRESH_PULL || state == ISmartRecyclerView.REFRESH_IDLE
+    }
+
+    override fun isUp(): Boolean {
+        return state == ISmartRecyclerView.REFRESH_UP
+    }
+
     override fun autoRefresh() {
         if (mRefreshEnable) {
             mSmartRefreshLayout.autoRefresh()
         }
     }
 
-    override fun finishRefresh(success: Boolean) {
-        finishRefresh(success, State.IDLE)
-    }
 
-    override fun finishRefresh(success: Boolean, state: State) {
+    override fun finishRefresh(success: Boolean, footerState: State) {
         mSmartRefreshLayout.finishRefresh(success)
         markIdle()
     }

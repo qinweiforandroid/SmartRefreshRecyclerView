@@ -4,10 +4,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.qw.recyclerview.core.*
+import com.qw.recyclerview.core.ISmartRecyclerView
+import com.qw.recyclerview.core.OnLoadMoreListener
+import com.qw.recyclerview.core.OnRefreshListener
+import com.qw.recyclerview.core.SRLog
 import com.qw.recyclerview.layout.ILayoutManager
 import com.qw.recyclerview.loadmore.State
-import java.lang.IllegalArgumentException
 
 /**
  * 下拉刷新: 由SwipeRefreshLayout提供
@@ -40,6 +42,7 @@ class SwipeRecyclerView(
                     State.EMPTY -> {
                         return
                     }
+
                     else -> {
                     }
                 }
@@ -59,10 +62,6 @@ class SwipeRecyclerView(
             onRefreshListener?.onRefresh()
         }
         mSwipeRefreshLayout.isEnabled = mRefreshEnable
-
-        if (mRecyclerView.adapter == null) {
-            throw IllegalArgumentException("RecyclerView must be setAdapter")
-        }
     }
 
     private fun markIdle() {
@@ -132,6 +131,14 @@ class SwipeRecyclerView(
         return mLoadMoreEnable
     }
 
+    override fun isPull(): Boolean {
+        return state == ISmartRecyclerView.REFRESH_PULL || state == ISmartRecyclerView.REFRESH_IDLE
+    }
+
+    override fun isUp(): Boolean {
+        return state == ISmartRecyclerView.REFRESH_UP
+    }
+
     override fun autoRefresh() {
         if (mRefreshEnable) {
             state = ISmartRecyclerView.REFRESH_PULL
@@ -140,22 +147,12 @@ class SwipeRecyclerView(
         }
     }
 
-    override fun finishRefresh(success: Boolean) {
-        finishRefresh(
-            success, if (success) {
-                State.IDLE
-            } else {
-                State.ERROR
-            }
-        )
-    }
-
-    override fun finishRefresh(success: Boolean, state: State) {
+    override fun finishRefresh(success: Boolean, footerState: State) {
         SRLog.d("SwipeRecyclerView finishRefresh success:$success")
         mSwipeRefreshLayout.isRefreshing = false
         if (mLoadMoreEnable) {
-            loadMoreState = state
-            onLoadMoreListener?.onStateChanged(state)
+            loadMoreState = footerState
+            onLoadMoreListener?.onStateChanged(footerState)
         }
         markIdle()
     }

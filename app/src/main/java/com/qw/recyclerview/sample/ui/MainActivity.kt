@@ -13,7 +13,9 @@ import com.qw.recyclerview.sample.ui.swipe.SwipeCompatActivity
 import com.qw.recyclerview.sample.ui.smart.SmartV2RecyclerViewActivity
 import com.qw.recyclerview.sample.ui.smart.SmartCompatActivity
 import com.qw.recyclerview.sample.ui.smart.SmartV2CompatActivity
+import com.qw.recyclerview.sample.ui.stick.StickHeaderListActivity
 import com.qw.recyclerview.sample.ui.viewpager.ViewPagerActivity
+import com.qw.recyclerview.sample.ui.wanandroid.ArticleListActivity
 
 class MainActivity : AppCompatActivity() {
     private lateinit var bind: ActivityMainBinding
@@ -33,6 +35,9 @@ class MainActivity : AppCompatActivity() {
         bind.mSwipeRefreshRecyclerViewSample3Btn.setOnClickListener {
             startActivity(Intent(this, SwipeCompatActivity::class.java))
         }
+        bind.mSwipeRefreshRecyclerViewSample4Btn.setOnClickListener {
+            startActivity(Intent(this, ArticleListActivity::class.java))
+        }
         bind.mSmartRefreshLayoutRecyclerViewSampleBtn.setOnClickListener {
             startActivity(Intent(this, SmartV2RecyclerViewActivity::class.java))
         }
@@ -50,6 +55,9 @@ class MainActivity : AppCompatActivity() {
         }
         bind.mViewPagerBtn.setOnClickListener {
             startActivity(Intent(this, ViewPagerActivity::class.java))
+        }
+        bind.mStickBtn.setOnClickListener {
+            startActivity(Intent(this, StickHeaderListActivity::class.java))
         }
     }
 }

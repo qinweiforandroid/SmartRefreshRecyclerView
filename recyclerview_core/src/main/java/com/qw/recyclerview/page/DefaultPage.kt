@@ -4,13 +4,13 @@ package com.qw.recyclerview.page
  * Created by qinwei on 2022/6/27 21:41
  * email: qinwei_it@163.com
  */
-class DefaultPage : IPage {
+class DefaultPage(private val firstPage: Int = 1) : IPage {
     private var mCurrentPage = 0
-    private var mWillLoadPage = 1
+    private var mWillLoadPage = firstPage
     private var mLastPage = -1
 
     override fun pullToDown() {
-        mWillLoadPage = 1
+        mWillLoadPage = firstPage
     }
 
     override fun pullToUp() {
@@ -27,9 +27,9 @@ class DefaultPage : IPage {
      * clear data  add new data notify refresh
      */
     override fun isFirstPage(): Boolean {
-        return mWillLoadPage == 1
+        return mWillLoadPage == firstPage
     }
-    
+
 
     override fun hasMore(): Boolean {
         return mCurrentPage != mLastPage
@@ -44,5 +44,9 @@ class DefaultPage : IPage {
 
     fun getCurrentPage(): Int {
         return mCurrentPage
+    }
+
+    fun getWillPage(): Int {
+        return mWillLoadPage
     }
 }

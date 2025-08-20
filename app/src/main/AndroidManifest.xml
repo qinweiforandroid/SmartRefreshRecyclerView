@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <uses-permission android:name="android.permission.INTERNET"/>
     <application
         android:name=".MyApplication"
         android:allowBackup="true"
@@ -46,6 +47,12 @@
             android:exported="true" />
         <activity
             android:name=".ui.viewpager.ViewPagerActivity"
+            android:exported="true" />
+        <activity
+            android:name=".ui.stick.StickHeaderListActivity"
+            android:exported="true" />
+        <activity
+            android:name=".ui.wanandroid.ArticleListActivity"
             android:exported="true" />
     </application>
 </manifest>

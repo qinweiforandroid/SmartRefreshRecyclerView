@@ -5,13 +5,16 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.qw.recyclerview.core.BaseListAdapter
 import com.qw.recyclerview.core.BaseViewHolder
+import com.qw.recyclerview.core.IItemViewType
+import com.qw.recyclerview.core.ItemViewDelegate
+import com.qw.recyclerview.core.MultiTypeUseCase
 
 /**
  * ListCompat列表组件，内置adapter和数据源
  * Created by qinwei on 2022/1/9 2:46 下午
  * email: qinwei_it@163.com
  */
-abstract class ListCompat<T> constructor(private val mRecyclerView: RecyclerView) {
+abstract class ListCompat<T>(private val mRecyclerView: RecyclerView) {
     val modules = ArrayList<T>()
     val adapter = object : BaseListAdapter() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
@@ -96,5 +99,37 @@ abstract class ListCompat<T> constructor(private val mRecyclerView: RecyclerView
 
     fun setLayoutManager(layoutManager: RecyclerView.LayoutManager) {
         mRecyclerView.layoutManager = layoutManager
+    }
+
+    class MultiTypeBuilder {
+
+        private val mMultiType = MultiTypeUseCase()
+
+        fun register(
+            viewType: Int,
+            delegate: ItemViewDelegate
+        ): MultiTypeBuilder {
+            mMultiType.register(viewType, delegate)
+            return this
+        }
+
+        fun <T> create(
+            mRecyclerView: RecyclerView
+        ): ListCompat<T> {
+            return object : ListCompat<T>(mRecyclerView) {
+
+                override fun getItemViewType(position: Int): Int {
+                    val item = modules[position]
+                    if (item is IItemViewType) {
+                        return item.getItemViewType()
+                    }
+                    throw IllegalArgumentException("module must be impl IItemViewType interface")
+                }
+
+                override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
+                    return mMultiType.onCreateViewHolder(parent, viewType)
+                }
+            }
+        }
     }
 }

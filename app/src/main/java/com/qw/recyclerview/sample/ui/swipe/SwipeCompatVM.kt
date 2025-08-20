@@ -1,5 +1,7 @@
 package com.qw.recyclerview.sample.ui.swipe
 
+import android.os.Handler
+import android.os.Looper
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.ViewModel
 import com.qw.recyclerview.page.DefaultPage
@@ -9,18 +11,20 @@ import com.qw.recyclerview.page.DefaultPage
  * email: qinwei_it@163.com
  */
 class SwipeCompatVM : ViewModel() {
-    private val page = DefaultPage()
+    val page = DefaultPage()
     val result: MediatorLiveData<ArrayList<String>> = MediatorLiveData()
     private var size = 0
     fun refresh() {
-        page.pullToDown()
-        val list = ArrayList<String>()
-        for (i in 0..19) {
-            list.add("" + i)
-        }
-        size = list.size
-        page.onPageChanged()
-        result.value = list
+        Handler(Looper.myLooper()!!).postDelayed({
+            page.pullToDown()
+            val list = ArrayList<String>()
+            for (i in 0..19) {
+                list.add("" + i)
+            }
+            size = list.size
+            page.onPageChanged()
+            result.value = list
+        }, 1000)
     }
 
     fun hasMore(): Boolean {
@@ -28,14 +32,16 @@ class SwipeCompatVM : ViewModel() {
     }
 
     fun loadMore() {
-        page.pullToUp()
-        val list = ArrayList<String>()
-        for (i in size until size + 20) {
-            list.add("" + i)
-        }
-        size += list.size
-        page.onPageChanged(size > 70)
-        result.value = list
+        Handler(Looper.myLooper()!!).postDelayed({
+            page.pullToUp()
+            val list = ArrayList<String>()
+            for (i in size until size + 20) {
+                list.add("" + i)
+            }
+            size += list.size
+            page.onPageChanged(size > 70)
+            result.value = list
+        }, 1000)
     }
 
     fun isFirstPage(): Boolean {

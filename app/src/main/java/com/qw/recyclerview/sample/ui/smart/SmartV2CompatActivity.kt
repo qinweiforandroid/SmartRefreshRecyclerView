@@ -16,21 +16,31 @@ import com.qw.recyclerview.layout.MyLinearLayoutManager
 import com.qw.recyclerview.layout.MyStaggeredGridLayoutManager
 import com.qw.recyclerview.sample.R
 import com.qw.recyclerview.sample.databinding.SmartRefreshLayoutActivityBinding
-import com.qw.recyclerview.smartrefreshlayout.template.SmartListV2Compat
+import com.qw.recyclerview.smartrefreshlayout.SmartV2RecyclerView
+import com.qw.recyclerview.template.SmartListCompat
 
 /**
  * Created by qinwei on 2021/7/1 20:38
  */
 class SmartV2CompatActivity : AppCompatActivity() {
-    private lateinit var mList: SmartListV2Compat<String>
+    private lateinit var mList: SmartListCompat<String>
     private lateinit var bind: SmartRefreshLayoutActivityBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         bind = SmartRefreshLayoutActivityBinding.inflate(layoutInflater)
         setContentView(bind.root)
-        mList = object :
-            SmartListV2Compat<String>(bind.mRecyclerView, bind.mSmartRefreshLayout) {
+        val rv = bind.mRecyclerView
+        val srl = bind.mSmartRefreshLayout
+        val smart = SmartV2RecyclerView(rv, srl)
+        mList = object : SmartListCompat<String>(smart) {
+
+            override fun onCreateBaseViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
+                return Holder(
+                    LayoutInflater.from(this@SmartV2CompatActivity)
+                        .inflate(android.R.layout.simple_list_item_1, parent, false)
+                )
+            }
 
             inner class Holder(itemView: View) : BaseViewHolder(itemView) {
                 override fun initData(position: Int) {
@@ -39,15 +49,8 @@ class SmartV2CompatActivity : AppCompatActivity() {
                     label.text = text
                 }
             }
-
-            override fun onCreateBaseViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
-                return Holder(
-                    LayoutInflater.from(this@SmartV2CompatActivity)
-                        .inflate(android.R.layout.simple_list_item_1, parent, false)
-                )
-            }
         }
-        mList.smart.setLayoutManager(LinearLayoutManager(this))
+        mList.setUpLayoutManager(LinearLayoutManager(this))
             .setRefreshEnable(true)
             .setLoadMoreEnable(true)
             .setOnLoadMoreListener(object : OnLoadMoreListener {
@@ -56,8 +59,7 @@ class SmartV2CompatActivity : AppCompatActivity() {
                         loadMore()
                     }, 1000)
                 }
-            })
-            .setOnRefreshListener(object : OnRefreshListener {
+            }).setOnRefreshListener(object : OnRefreshListener {
                 override fun onRefresh() {
                     Handler(Looper.myLooper()!!).postDelayed({
                         refresh()
@@ -71,7 +73,7 @@ class SmartV2CompatActivity : AppCompatActivity() {
         for (i in 0..19) {
             mList.modules.add("" + i)
         }
-        mList.smart.finishRefresh(true)
+        mList.finishRefresh(true)
         mList.adapter.notifyDataSetChanged()
     }
 
@@ -80,7 +82,7 @@ class SmartV2CompatActivity : AppCompatActivity() {
         for (i in size until size + 20) {
             mList.modules.add("" + i)
         }
-        mList.smart.finishLoadMore(true, mList.modules.size > 100)
+        mList.finishLoadMore(true, mList.modules.size > 100)
         mList.adapter.notifyItemRangeInserted(size, 20)
     }
 
@@ -94,9 +96,11 @@ class SmartV2CompatActivity : AppCompatActivity() {
             R.id.action_linearLayout -> {
                 mList.setLayoutManager(MyLinearLayoutManager(this))
             }
+
             R.id.action_gridLayout -> {
                 mList.setLayoutManager(GridLayoutManager(this, 2))
             }
+
             R.id.action_staggeredGridLayout -> {
                 mList.setLayoutManager(
                     MyStaggeredGridLayoutManager(

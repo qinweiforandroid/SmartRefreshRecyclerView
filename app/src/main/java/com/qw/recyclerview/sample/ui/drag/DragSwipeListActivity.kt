@@ -14,20 +14,19 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.qw.recyclerview.core.*
-import com.qw.recyclerview.drag.BaseTouchViewHolder
-import com.qw.recyclerview.drag.ItemTouchCallback
 import com.qw.recyclerview.layout.MyLinearLayoutManager
 import com.qw.recyclerview.layout.MyStaggeredGridLayoutManager
 import com.qw.recyclerview.sample.R
 import com.qw.recyclerview.sample.databinding.SwipeRefreshLayoutActivityBinding
 import com.qw.recyclerview.sample.ui.swipe.SwipeCompatVM
-import com.qw.recyclerview.swiperefresh.template.SwipeListCompat
+import com.qw.recyclerview.swiperefresh.SwipeRecyclerView
+import com.qw.recyclerview.template.SmartListCompat
 
 /**
  * Created by qinwei on 2021/7/1 20:38
  */
 class DragSwipeListActivity : AppCompatActivity() {
-    private lateinit var mList: SwipeListCompat<String>
+    private lateinit var mList: SmartListCompat<String>
     private lateinit var bind: SwipeRefreshLayoutActivityBinding
     private lateinit var mVM: SwipeCompatVM
 
@@ -51,7 +50,8 @@ class DragSwipeListActivity : AppCompatActivity() {
         }
         bind.mRecyclerView.layoutManager = LinearLayoutManager(this)
         bind.mRecyclerView.itemAnimator = DefaultItemAnimator()
-        mList = object : SwipeListCompat<String>(bind.mRecyclerView, bind.mSwipeRefreshLayout) {
+        val smart = SwipeRecyclerView(bind.mRecyclerView, bind.mSwipeRefreshLayout)
+        mList = object : SmartListCompat<String>(smart) {
             override fun onCreateBaseViewHolder(
                 parent: ViewGroup, viewType: Int
             ): BaseViewHolder {
@@ -100,13 +100,14 @@ class DragSwipeListActivity : AppCompatActivity() {
             }
         }).attachToRecyclerView(bind.mRecyclerView)
         Log.d("drag", "attachToRecyclerView")
-        mList.smart.setRefreshEnable(true).setOnRefreshListener(object : OnRefreshListener {
-            override fun onRefresh() {
-                Handler(Looper.myLooper()!!).postDelayed({
-                    mVM.refresh()
-                }, 1000)
-            }
-        }).autoRefresh()
+        mList.setRefreshEnable(true)
+            .setOnRefreshListener(object : OnRefreshListener {
+                override fun onRefresh() {
+                    Handler(Looper.myLooper()!!).postDelayed({
+                        mVM.refresh()
+                    }, 1000)
+                }
+            }).autoRefresh()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.qw.recyclerview.core.*
-import com.qw.recyclerview.footer.DefaultLoadMore
+import com.qw.recyclerview.loadmore.DefaultLoadMore
 import com.qw.recyclerview.loadmore.State
 import com.qw.recyclerview.sample.R
 import com.qw.recyclerview.sample.databinding.SwipeRefreshLayoutActivityBinding
@@ -136,9 +136,11 @@ class SwipeRecyclerViewActivity : AppCompatActivity() {
             R.id.action_linearLayout -> {
                 smart.setLayoutManager(LinearLayoutManager(this))
             }
+
             R.id.action_gridLayout -> {
                 smart.setLayoutManager(getGridLayoutManager(2))
             }
+
             R.id.action_staggeredGridLayout -> {
                 smart.setLayoutManager(
                     StaggeredGridLayoutManager(
@@ -168,5 +170,4 @@ class SwipeRecyclerViewActivity : AppCompatActivity() {
         }
         return manager
     }
-
 }

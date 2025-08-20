@@ -3,19 +3,24 @@ package com.qw.recyclerview.sample.ui.smart
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.qw.recyclerview.core.BaseViewHolder
 import com.qw.recyclerview.core.OnLoadMoreListener
 import com.qw.recyclerview.core.OnRefreshListener
-import com.qw.recyclerview.footer.DefaultLoadMore
+import com.qw.recyclerview.loadmore.DefaultLoadMore
 import com.qw.recyclerview.layout.MyLinearLayoutManager
 import com.qw.recyclerview.layout.MyStaggeredGridLayoutManager
 import com.qw.recyclerview.sample.R
 import com.qw.recyclerview.sample.databinding.SmartRefreshLayoutActivityBinding
-import com.qw.recyclerview.smartrefreshlayout.template.SmartListCompat
+import com.qw.recyclerview.smartrefreshlayout.SmartRecyclerView
+import com.qw.recyclerview.template.SmartListCompat
 
 /**
  * Created by qinwei on 2021/7/1 20:38
@@ -28,27 +33,30 @@ class SmartCompatActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         bind = SmartRefreshLayoutActivityBinding.inflate(layoutInflater)
         setContentView(bind.root)
-        mList = object : SmartListCompat<String>(bind.mRecyclerView, bind.mSmartRefreshLayout) {
-            override fun onCreateBaseViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
-                return Holder(
-                    LayoutInflater.from(this@SmartCompatActivity)
-                        .inflate(android.R.layout.simple_list_item_1, parent, false)
-                )
-            }
+        val smart = SmartRecyclerView(bind.mRecyclerView, bind.mSmartRefreshLayout)
+        mList = object : SmartListCompat<String>(smart) {
+            override fun onCreateBaseViewHolder(parent: ViewGroup, viewType: Int) = Holder(
+                LayoutInflater.from(this@SmartCompatActivity)
+                    .inflate(android.R.layout.simple_list_item_1, parent, false)
+            )
         }
-        mList.supportLoadMore(DefaultLoadMore(), object : OnLoadMoreListener {
-            override fun onLoadMore() {
-                Handler(Looper.myLooper()!!).postDelayed({
-                    loadMore()
-                }, 1000)
-            }
-        })
-        mList.smart.setLayoutManager(MyLinearLayoutManager(this)).setRefreshEnable(true)
-            .setLoadMoreEnable(true).setOnRefreshListener(object : OnRefreshListener {
+        mList.setRefreshEnable(true)
+            .setLoadMoreEnable(true)
+            .setUpLayoutManager(MyLinearLayoutManager(this))
+            .setUpLoadMore(DefaultLoadMore())
+            .setOnLoadMoreListener(object : OnLoadMoreListener {
+                override fun onLoadMore() {
+                    Handler(Looper.myLooper()!!).postDelayed({
+                        loadMore()
+                    }, 1000)
+                }
+            })
+            .setOnRefreshListener(object : OnRefreshListener {
                 override fun onRefresh() {
                     refresh()
                 }
             }).autoRefresh()
+
     }
 
     inner class Holder(itemView: View) : BaseViewHolder(itemView) {
@@ -64,7 +72,7 @@ class SmartCompatActivity : AppCompatActivity() {
         for (i in size until size + 20) {
             mList.modules.add("" + i)
         }
-        mList.smart.finishLoadMore(success = false, noMoreData = mList.modules.size > 100)
+        mList.finishLoadMore(success = false, noMoreData = mList.modules.size > 100)
         mList.adapter.notifyItemRangeInserted(size, 20)
     }
 
@@ -74,7 +82,7 @@ class SmartCompatActivity : AppCompatActivity() {
             for (i in 0..19) {
                 mList.modules.add("" + i)
             }
-            mList.smart.finishRefresh(true)
+            mList.finishRefresh(true)
             mList.adapter.notifyDataSetChanged()
         }, 1000)
     }
