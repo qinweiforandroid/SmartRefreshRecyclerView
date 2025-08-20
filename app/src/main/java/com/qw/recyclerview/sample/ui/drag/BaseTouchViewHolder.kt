@@ -1,4 +1,4 @@
-package com.qw.recyclerview.drag
+package com.qw.recyclerview.sample.ui.drag
 
 import android.view.View
 import com.qw.recyclerview.core.BaseViewHolder

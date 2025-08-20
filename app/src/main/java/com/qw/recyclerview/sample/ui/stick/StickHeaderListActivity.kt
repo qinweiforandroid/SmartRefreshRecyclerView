@@ -1,18 +1,15 @@
 package com.qw.recyclerview.sample.ui.stick
 
-import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
-import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
+import com.qw.recyclerview.core.AbsItemViewDelegate
 import com.qw.recyclerview.core.BaseViewHolder
 import com.qw.recyclerview.core.IItemViewType
-import com.qw.recyclerview.core.ItemViewDelegate
-import com.qw.recyclerview.core.MultiTypeUseCase
 import com.qw.recyclerview.sample.R
 import com.qw.recyclerview.template.ListCompat
 
@@ -30,49 +27,30 @@ class StickHeaderListActivity : AppCompatActivity() {
         setContentView(R.layout.activity_stick_header)
         mStickyRecyclerView = findViewById(R.id.mStickyRecyclerView)
         mStickyHeadContainer = findViewById(R.id.mStickyHeadContainer)
-        val mMultiTypeUseCase = MultiTypeUseCase()
-        mMultiTypeUseCase.register(1, object : ItemViewDelegate {
-            override fun onCreateViewHolder(context: Context, parent: ViewGroup): BaseViewHolder {
-                return Holder(layoutInflater.inflate(R.layout.stick_item_layout,
-                    parent,
-                    false))
-            }
-
-            inner class Holder(itemView: View) : BaseViewHolder(itemView) {
-                val label = itemView as TextView
-                override fun initData(position: Int) {
-                    val item = model as Header
-                    label.setBackgroundColor(Color.RED)
-                    label.setTextColor(Color.WHITE)
-                    label.text = item.title
+        val list = ListCompat.MultiTypeBuilder()
+            .register(1, object : AbsItemViewDelegate(R.layout.stick_item_layout) {
+                override fun onCreateViewHolder(view: View) = Holder(view)
+                inner class Holder(itemView: View) : BaseViewHolder(itemView) {
+                    val label = itemView as TextView
+                    override fun initData(position: Int) {
+                        val item = model as Header
+                        label.setBackgroundColor(Color.RED)
+                        label.setTextColor(Color.WHITE)
+                        label.text = item.title
+                    }
                 }
-
-            }
-        })
-        mMultiTypeUseCase.register(2, object : ItemViewDelegate {
-            override fun onCreateViewHolder(context: Context, parent: ViewGroup): BaseViewHolder {
-                return Holder(layoutInflater.inflate(R.layout.stick_item_layout,
-                    parent,
-                    false))
-            }
-
-            inner class Holder(itemView: View) : BaseViewHolder(itemView) {
-                val label = itemView as TextView
-                override fun initData(position: Int) {
-                    val item = model as Item
-                    label.text = item.title
+            })
+            .register(2, object : AbsItemViewDelegate(R.layout.stick_item_layout) {
+                override fun onCreateViewHolder(view: View) = Holder(view)
+                inner class Holder(itemView: View) : BaseViewHolder(itemView) {
+                    val label = itemView as TextView
+                    override fun initData(position: Int) {
+                        val item = model as Item
+                        label.text = item.title
+                    }
                 }
-            }
-        })
-        val list = object : ListCompat<IItemViewType>(mStickyRecyclerView) {
-            override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
-                return mMultiTypeUseCase.onCreateViewHolder(parent, viewType)
-            }
+            }).create<IItemViewType>(mStickyRecyclerView)
 
-            override fun getItemViewType(position: Int): Int {
-                return modules[position].getItemViewType()
-            }
-        }
         mStickyRecyclerView.addItemDecoration(StickyItemDecoration(mStickyHeadContainer, 1).apply {
             setOnStickyChangeListener(object : OnStickyChangeListener {
                 override fun onScrollable(offset: Int) {
@@ -90,9 +68,11 @@ class StickHeaderListActivity : AppCompatActivity() {
                 val item = list.modules[pos] as Header
                 val label = mStickyHeadContainer.findViewById<TextView>(R.id.label)
                 label.setOnClickListener {
-                    Toast.makeText(this@StickHeaderListActivity,
+                    Toast.makeText(
+                        this@StickHeaderListActivity,
                         item.title,
-                        Toast.LENGTH_SHORT).show()
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
                 label.setBackgroundColor(Color.RED)
                 label.setTextColor(Color.WHITE)

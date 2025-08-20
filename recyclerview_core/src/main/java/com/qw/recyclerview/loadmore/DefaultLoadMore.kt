@@ -1,4 +1,4 @@
-package com.qw.recyclerview.footer
+package com.qw.recyclerview.loadmore
 
 import android.view.LayoutInflater
 import android.view.View
@@ -8,10 +8,9 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.annotation.LayoutRes
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.qw.recyclerview.loadmore.AbsLoadMore
-import com.qw.recyclerview.core.SRLog
-import com.qw.recyclerview.loadmore.State
 import com.qw.recyclerview.core.BaseViewHolder
+import com.qw.recyclerview.core.R
+import com.qw.recyclerview.core.SRLog
 
 /**
  * @author qinwei

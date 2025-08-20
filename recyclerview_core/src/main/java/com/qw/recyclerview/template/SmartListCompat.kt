@@ -86,7 +86,7 @@ abstract class SmartListCompat<T>(private val smart: ISmartRecyclerView) :
 
     override fun getItemCount(): Int {
         var count = super.getItemCount()
-        if (smart.isLoadMoreEnable()) {
+        if (smart.isLoadMoreEnable() && loadMore != null) {
             count++
         }
         return count
@@ -104,7 +104,7 @@ abstract class SmartListCompat<T>(private val smart: ISmartRecyclerView) :
     protected open fun getItemViewTypeByPosition(position: Int): Int = 0
 
     private fun isLoadMoreShow(position: Int): Boolean {
-        return smart.isLoadMoreEnable() && adapter.itemCount - 1 == position
+        return smart.isLoadMoreEnable() && adapter.itemCount - 1 == position && loadMore != null
     }
 
     fun autoRefresh() {
@@ -183,8 +183,10 @@ abstract class SmartListCompat<T>(private val smart: ISmartRecyclerView) :
             }
 
             override fun onStateChanged(state: State) {
-                loadMore?.onStateChanged(state)
-                adapter.notifyItemChanged(adapter.itemCount - 1)
+                loadMore?.let {
+                    it.onStateChanged(state)
+                    adapter.notifyItemChanged(adapter.itemCount - 1)
+                }
             }
         })
         return this

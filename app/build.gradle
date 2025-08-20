@@ -52,8 +52,6 @@ dependencies {
 //    implementation 'com.github.qinweiforandroid.SmartRefreshRecyclerView:recyclerview-swiperefresh:4.1.0323'
     implementation project(':recyclerview_swiperefresh')
     implementation project(':recyclerview_smartrefreshlayout')
-    implementation project(':recyclerview_footer')
-    implementation project(':recyclerview_drag')
     implementation project(':recyclerview_core')
     implementation libs.androidx.swiperefreshlayout
     testImplementation libs.junit

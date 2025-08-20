@@ -31,9 +31,6 @@ class SmartV2RecyclerView(
         }
         mSmartRefreshLayout.setEnableRefresh(mRefreshEnable)
         mSmartRefreshLayout.setEnableLoadMore(mLoadMoreEnable)
-        if (mRecyclerView.adapter == null) {
-            throw IllegalArgumentException("RecyclerView must be setAdapter")
-        }
     }
 
     private fun markIdle() {

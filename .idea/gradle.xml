@@ -12,8 +12,6 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/recyclerview_core" />
-            <option value="$PROJECT_DIR$/recyclerview_drag" />
-            <option value="$PROJECT_DIR$/recyclerview_footer" />
             <option value="$PROJECT_DIR$/recyclerview_smartrefreshlayout" />
             <option value="$PROJECT_DIR$/recyclerview_swiperefresh" />
           </set>

@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.qw.recyclerview.core.BaseViewHolder
 import com.qw.recyclerview.core.OnLoadMoreListener
 import com.qw.recyclerview.core.OnRefreshListener
-import com.qw.recyclerview.footer.DefaultLoadMore
+import com.qw.recyclerview.loadmore.DefaultLoadMore
 import com.qw.recyclerview.layout.MyLinearLayoutManager
 import com.qw.recyclerview.layout.MyStaggeredGridLayoutManager
 import com.qw.recyclerview.sample.R

@@ -10,7 +10,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.qw.recyclerview.core.BaseViewHolder
 import com.qw.recyclerview.core.OnLoadMoreListener
 import com.qw.recyclerview.core.OnRefreshListener
-import com.qw.recyclerview.footer.DefaultLoadMore
+import com.qw.recyclerview.loadmore.DefaultLoadMore
 import com.qw.recyclerview.layout.MyLinearLayoutManager
 import com.qw.recyclerview.sample.R
 import com.qw.recyclerview.sample.repository.entities.ArticleBean
@@ -32,22 +32,15 @@ class ArticleListActivity : AppCompatActivity(R.layout.activity_article_list) {
         val swipe = findViewById<SwipeRefreshLayout>(R.id.mSwipeRefreshLayout)
         mVM = ViewModelProvider(this)[ArticleListVM::class.java]
         mVM.articles.observe(this) {
-            val data = it.getOrNull()
-            if (data == null) {
-                list.notifyError()
+            if (it.isSuccess) {
+                list.notifyDataChanged(it.getOrNull()!!)
             } else {
-                list.notifyDataChanged(data)
+                list.notifyError()
             }
         }
         list = object : SmartListCompat<ArticleBean>(SwipeRecyclerView(rv, swipe)) {
             override fun onCreateBaseViewHolder(parent: ViewGroup, viewType: Int) =
-                object : BaseViewHolder(
-                    layoutInflater.inflate(
-                        R.layout.activity_article_item,
-                        parent,
-                        false
-                    )
-                ) {
+                object : BaseViewHolder(layoutInflater.inflate(R.layout.activity_article_item, parent, false)) {
                     val mTitleLabel = itemView.findViewById<TextView>(R.id.mItemTitleLabel)
                     val mItemAuthorLabel = itemView.findViewById<TextView>(R.id.mItemAuthorLabel)
                     override fun initData(position: Int) {

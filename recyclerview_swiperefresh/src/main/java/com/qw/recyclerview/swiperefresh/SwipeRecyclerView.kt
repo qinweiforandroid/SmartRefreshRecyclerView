@@ -4,10 +4,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.qw.recyclerview.core.*
+import com.qw.recyclerview.core.ISmartRecyclerView
+import com.qw.recyclerview.core.OnLoadMoreListener
+import com.qw.recyclerview.core.OnRefreshListener
+import com.qw.recyclerview.core.SRLog
 import com.qw.recyclerview.layout.ILayoutManager
 import com.qw.recyclerview.loadmore.State
-import java.lang.IllegalArgumentException
 
 /**
  * 下拉刷新: 由SwipeRefreshLayout提供
