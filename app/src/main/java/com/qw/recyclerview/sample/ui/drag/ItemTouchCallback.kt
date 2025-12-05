@@ -59,13 +59,13 @@ abstract class ItemTouchCallback : ItemTouchHelper.Callback() {
         y: Int
     ) {
         super.onMoved(recyclerView, viewHolder, fromPos, target, toPos, x, y)
-        onMoved(viewHolder.adapterPosition, target.adapterPosition)
+        onMoved(viewHolder.getBindingAdapterPosition(), target.getBindingAdapterPosition())
     }
 
     abstract fun onMoved(from: Int, target: Int)
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-        onSwiped(direction, viewHolder.adapterPosition)
+        onSwiped(direction, viewHolder.getBindingAdapterPosition())
     }
 
     abstract fun onSwiped(direction: Int, position: Int)

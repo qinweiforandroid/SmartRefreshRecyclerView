@@ -48,7 +48,7 @@ class ViewPagerActivity : AppCompatActivity(), OnPageChangeListener {
                 }
 
                 override fun onPageShow() {
-                    Log.d(TAG, "onPageShow $adapterPosition")
+                    Log.d(TAG, "onPageShow ${getBindingAdapterPosition()}")
                 }
             }
         }

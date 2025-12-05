@@ -41,9 +41,6 @@ data class Message(
                         MSG_EMO_TO
                     }
 
-                    else -> {
-                        MSG_NOT_SUPPORT
-                    }
                 }
             }
 
@@ -57,9 +54,6 @@ data class Message(
                         MSG_EMO_IN
                     }
 
-                    else -> {
-                        MSG_NOT_SUPPORT
-                    }
                 }
             }
         }
