@@ -40,7 +40,7 @@ dependencies {
     implementation libs.androidx.appcompat
     implementation libs.androidx.core.ktx
     implementation libs.material
-    implementation libs.androidx.lifecycle.viewmodel.ktx.v292
+    implementation libs.androidx.lifecycle.viewmodel.ktx
     implementation libs.androidx.constraintlayout
     implementation 'com.github.qinweiforandroid.QNetwork:network-env:1.0.0.0104'
     implementation 'com.github.qinweiforandroid.QNetwork:network-retrofit:1.0.0.0104'
