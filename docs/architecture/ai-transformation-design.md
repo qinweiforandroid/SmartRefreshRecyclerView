@@ -45,6 +45,7 @@
 - 小步迭代，避免一次性大改。
 - 优先内部抽象，尽量不破坏现有公开 API。
 - 先收敛重复，再补文档，再补测试，最后做更深层结构演进。
+- 方案发生变化时，先更新设计文档，再执行代码或后续任务。
 - 所有重要决策都沉淀为文档，方便 AI 和人工协作。
 
 ## 5. 目标结构
@@ -73,9 +74,11 @@
 
 ### 阶段一：内部去重
 
-- 抽取公共滚动加载更多逻辑到 `recyclerview_core`
-- 统一刷新状态和加载更多状态的管理方式
-- 保持现有外部调用方式不变
+- 以组合方式抽取公共滚动加载更多逻辑到 `recyclerview_core`
+- 保持宿主 UI 容器各自的 refresh 能力，不做 refresh 大一统抽象
+- 新增 `ScrollLoadMoreCoordinator`，统一 `scroll + load more` 行为
+- 将 `finishLoadMore(success, noMoreData)` 收敛为结果型接口 `LoadMoreResult`
+- 保持现有外部调用方式基本兼容
 
 ### 阶段二：文档和示例整理
 
@@ -101,12 +104,14 @@
 ### PR1
 
 - 抽取公共 load more 逻辑
+- 引入 `ScrollLoadMoreCoordinator`
+- 引入 `LoadMoreResult` 并保留旧接口兼容
 
 ### PR2
 
-- 新建文档目录
-- 沉淀改造方案和问题思考记录
-- 整理 README
+- 对外接入体验整理
+- 重写 README，统一推荐接入路径
+- 补充 sample 映射和迁移说明
 
 ### PR3
 
@@ -152,7 +157,29 @@ smart.finishLoadMore(LoadMoreResult.ERROR)
 - 新代码与 sample 优先使用结果型接口
 - 后续 README 与迁移文档统一以结果型接口为主
 
-## 10. 后续记录方式
+## 10. 当前已落地的阶段一结论
+
+### 10.1 去重方式
+
+阶段一并没有采用继承基类的方式去重，而是采用组合方案：
+
+- 宿主类：`SmartRecyclerView`、`SwipeRecyclerView`
+- 公共组件：`ScrollLoadMoreCoordinator`
+
+### 10.2 职责边界
+
+- 宿主管理 refresh
+- coordinator 管理 scroll + load more
+- `finishRefresh(success, footerState)` 继续由宿主解释
+- load more 完成结果优先使用 `LoadMoreResult`
+
+### 10.3 设计原因
+
+- 主流 refresh 容器本身已经有 refresh 能力
+- 当前项目更缺少的是横向可复用的 load more 能力
+- 组合比继承更适合后续扩展、定位问题和补测试
+
+## 11. 后续记录方式
 
 后续每次设计变化、问题分析、方案取舍，都优先记录到：
 

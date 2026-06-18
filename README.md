@@ -1,47 +1,110 @@
 # SmartRefreshRecyclerView
-一个超强列表显示框架
 
-* 支持下拉刷新
-* 支持加载更多
-* 支持线性列表
-* 支持网格列表
-* 支持瀑布流列表
-* 可定制加载更多的样式
-* 支持drag排序，swipe左右滑动删除
+一个面向 Android 列表场景的刷新与加载更多能力库，提供：
 
-## 1、How To Use
+- 下拉刷新
+- 上拉加载更多
+- 线性列表 / 网格 / 瀑布流支持
+- 可定制的 load more UI
+- `SmartListCompat` 模板能力
+- drag / swipe 示例
 
-**Step 1.** Add the JitPack repository to your build file
+## 模块说明
+
+当前项目主要包含以下模块：
+
+- `recyclerview-core`
+  - 核心抽象、模板能力、load more 状态与公共逻辑
+
+- `recyclerview-swiperefresh`
+  - 基于 `SwipeRefreshLayout` 的实现
+  - 适合大多数普通列表刷新场景
+
+- `recyclerview-smartrefreshlayout`
+  - 基于 `SmartRefreshLayout` 的实现
+  - 适合项目已经使用该刷新体系的场景
+
+- `app`
+  - sample 工程
+  - 用于演示不同接入方式与交互场景
+
+## 当前仓库基线
+
+当前仓库源码的构建基线为：
+
+- `minSdk = 23`
+- `compileSdk = 36`
+- `targetSdk = 36`
+- `Java = 17`
+- `Kotlin = 2.2.x`
+
+## 推荐接入路线
+
+如果你是第一次接这个库，建议按下面顺序选：
+
+1. 普通列表刷新 + 加载更多
+   先看 `SwipeRecyclerView`
+
+2. 想减少样板代码、快速搭列表
+   先看 `SmartListCompat + SwipeRecyclerView`
+
+3. 项目已经在使用 `SmartRefreshLayout`
+   再看 `SmartRecyclerView` 或 `SmartV2RecyclerView`
+
+## 快速开始
+
+### 1. 添加仓库
 
 ```groovy
-	allprojects {
-		repositories {
-			...
-			maven { url 'https://jitpack.io' }
-		}
-	}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+        maven { url 'https://jitpack.io' }
+    }
+}
 ```
 
-**Step 2.** Add the dependency [![](https://jitpack.io/v/qinweiforandroid/SmartRefreshRecyclerView.svg)](https://jitpack.io/#qinweiforandroid/SmartRefreshRecyclerView)
+### 2. 添加依赖
+
+注意：
+
+- `recyclerview-core` 需要显式依赖
+- `recyclerview-swiperefresh` / `recyclerview-smartrefreshlayout` 不应视为可单独替代 core
+- 当前仓库中的本地发布版本名与对外 JitPack tag 不是同一套语义
+- README 以下示例按 JitPack 接入方式说明
+
+以当前仓库中使用的 release tag 风格为例：
 
 ```groovy
-//核心组件（必须）
-api 'com.github.qinweiforandroid.SmartRefreshRecyclerView:recyclerview-core:3.0.1104'
-//使用smartrefreshlayout库实现的下拉刷新
-api 'com.github.qinweiforandroid.SmartRefreshRecyclerView:recyclerview-smartrefreshlayout:3.0.1104'
-//使用swiperefreshlayout库实现的下拉刷新（推荐）
-api 'com.github.qinweiforandroid.SmartRefreshRecyclerView:recyclerview-swiperefresh:3.0.1104'
-//用到加载更多需要引入
-api 'com.github.qinweiforandroid.SmartRefreshRecyclerView:recyclerview-footer:3.0.1104'
+def smartRvVersion = "4.1.0324" // 请替换为你要接入的 release tag
+
+dependencies {
+    implementation "com.github.qinweiforandroid.SmartRefreshRecyclerView:recyclerview-core:$smartRvVersion"
+    implementation "com.github.qinweiforandroid.SmartRefreshRecyclerView:recyclerview-swiperefresh:$smartRvVersion"
+}
 ```
 
-以recyclerview-swiperefresh为例
+如果你使用 `SmartRefreshLayout` 体系：
 
-### 1.1、xml引入布局
+```groovy
+def smartRvVersion = "4.1.0324" // 请替换为你要接入的 release tag
+
+dependencies {
+    implementation "com.github.qinweiforandroid.SmartRefreshRecyclerView:recyclerview-core:$smartRvVersion"
+    implementation "com.github.qinweiforandroid.SmartRefreshRecyclerView:recyclerview-smartrefreshlayout:$smartRvVersion"
+}
+```
+
+## 基础用法：SwipeRecyclerView
+
+### 布局
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.swiperefreshlayout.widget.SwipeRefreshLayout 	xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/mSwipeRefreshLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -53,213 +116,208 @@ api 'com.github.qinweiforandroid.SmartRefreshRecyclerView:recyclerview-footer:3.
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 ```
 
-### 1.2、代码实现
+### 代码
 
 ```kotlin
-fun setUpView(){
-  //1.配置RecyclerView
-  val mRecyclerView = findViewById<RecyclerView>(R.id.mRecyclerView)
-  mRecyclerView.layoutManager = LinearLayoutManager(this)
-  adapter = ListAdapter()
-  mRecyclerView.adapter = adapter
-
-  //2.配置SwipeRefreshLayout
-  val mSwipeRefreshLayout = findViewById<SwipeRefreshLayout>(R.id.mSwipeRefreshLayout)
-  //3.配置SwipeRecyclerView
-  val smart = SwipeRecyclerView(mRecyclerView, mSwipeRefreshLayout)
-  .setRefreshEnable(true)//启用下拉刷新
-  .setLoadMoreEnable(true)//启用加载更多
-  .setOnRefreshListener(object : OnRefreshListener {
-    override fun onRefresh() {
-      //下拉刷新回调
-    }
-  })
-  .setOnLoadMoreListener(object : OnLoadMoreListener {
-    override fun onLoadMore() {
-      //滑动到列表底部触发
-    }
-
-    override fun onStateChanged(state: State) {
-     //处理加载更多UI显示
-    }
-  })
-  //触发下拉刷新
-  smart.autoRefresh()
-}
-```
-
-ListAdapter
-
-```kotlin
-internal inner class ListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    override fun getItemCount(): Int {
-        return modules.size
-    }
-
+private lateinit var smart: ISmartRecyclerView
+private val adapter = object : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return object : BaseViewHolder(LayoutInflater.from(this@SwipeRefreshLayout1Activity).inflate(android.R.layout.simple_list_item_1, parent, false)) {
-            private val label: TextView = itemView as TextView
-            override fun initData(position: Int) {
-                val text = modules[position]
-                label.text = text
+        TODO("create your item view holder")
+    }
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) = Unit
+
+    override fun getItemCount(): Int = 0
+}
+
+fun setUpView() {
+    val recyclerView = findViewById<RecyclerView>(R.id.mRecyclerView)
+    recyclerView.layoutManager = LinearLayoutManager(this)
+    recyclerView.adapter = adapter
+
+    val swipeRefreshLayout = findViewById<SwipeRefreshLayout>(R.id.mSwipeRefreshLayout)
+
+    smart = SwipeRecyclerView(recyclerView, swipeRefreshLayout)
+        .setRefreshEnable(true)
+        .setLoadMoreEnable(true)
+        .setOnRefreshListener(object : OnRefreshListener {
+            override fun onRefresh() {
+                refresh()
             }
-        }
-    }
-
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {}
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int, payloads: List<Any>) {
-        (holder as BaseViewHolder).initData(position, payloads)
-    }
-}
-
-abstract class BaseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-    abstract fun initData(position: Int)
-    open fun initData(position: Int, payloads: List<Any>) {
-        initData(position)
-    }
-}
-```
-
-
-
-## 2、扩展的一些工具
-
-### 2.1、`ListCompat<T>`
-
-* 不用自己定义数据源
-* 不用自己写adapter
-
-```kotlin
-val modules = ArrayList<T>()
-val adapter = object : BaseListAdapter(){}
-```
-
-**引入布局**
-
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/mRecyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-</androidx.constraintlayout.widget.ConstraintLayout>
-```
-
-**代码实现**
-
-```kotlin
-class Recycler2Activity : AppCompatActivity() {
-    private lateinit var bind: RecyclerviewLayoutActivityBinding
-    private lateinit var listComponent: BaseListComponent<String>
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        bind = RecyclerviewLayoutActivityBinding.inflate(layoutInflater)
-        setContentView(bind.root)
-        listComponent = object : BaseListComponent<String>(bind.mRecyclerView) {
-            override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
-                return object : BaseViewHolder(
-                    LayoutInflater.from(this@Recycler2Activity)
-                        .inflate(android.R.layout.simple_list_item_1, parent, false)
-                ) {
-                    override fun initData(position: Int) {
-                        val label: TextView = itemView as TextView
-                        val text = modules[position]
-                        label.text = text
-                    }
-                }
+        })
+        .setOnLoadMoreListener(object : OnLoadMoreListener {
+            override fun onLoadMore() {
+                loadMore()
             }
-        }
-        listComponent.setLayoutManager(LinearLayoutManager(this))
-        for (i in 0..19) {
-          listComponent.modules.add("" + i)
-        }
-        listComponent.adapter.notifyDataSetChanged()
-    }
+
+            override fun onStateChanged(state: State) {
+                // 更新 load more UI
+            }
+        })
+
+    smart.autoRefresh()
 }
 ```
 
-### 2.2、`SwipeListCompat<T>`
+## 推荐的 load more 完成方式
 
-推荐使用此组建来实现列表的需求
-
-* 对SwipeRecyclerView二次封装
-* 支持动态配置加载更多样式
-* 下拉刷新，上拉加载更多
-
-**引入布局**
-
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.swiperefreshlayout.widget.SwipeRefreshLayout 	xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/mSwipeRefreshLayout"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/mRecyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-```
-
-**代码实现**
+当前推荐使用结果型接口：
 
 ```kotlin
-override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-    bind = SwipeRefreshLayoutActivityBinding.inflate(layoutInflater)
-    setContentView(bind.root)
-    val mList = object : SwipeListCompat<String>(bind.mRecyclerView, bind.mSwipeRefreshLayout) {
-      override fun onCreateBaseViewHolder(
+smart.finishLoadMore(LoadMoreResult.SUCCESS)
+smart.finishLoadMore(LoadMoreResult.NO_MORE)
+smart.finishLoadMore(LoadMoreResult.ERROR)
+```
+
+含义如下：
+
+- `SUCCESS`
+  - 加载成功，后续还有更多数据
+
+- `NO_MORE`
+  - 加载成功，但没有更多数据
+
+- `ERROR`
+  - 加载失败
+
+旧接口仍兼容：
+
+```kotlin
+smart.finishLoadMore(success = true, noMoreData = false)
+```
+
+但新代码不建议继续使用这种布尔组合写法。
+
+## SmartListCompat
+
+如果你不想反复写 adapter、modules 和 load more footer 逻辑，可以直接用 `SmartListCompat`。
+
+更接近实际项目的推荐写法是：
+
+```kotlin
+val smart = SwipeRecyclerView(bind.mRecyclerView, bind.mSwipeRefreshLayout)
+val loadMore = DefaultLoadMore()
+
+val list = object : SmartListCompat<String>(smart) {
+    override fun onCreateBaseViewHolder(
         parent: ViewGroup,
         viewType: Int
-      ): BaseViewHolder {
-        return Holder(
-          LayoutInflater.from(this@SwipeComponentActivity)
-          .inflate(android.R.layout.simple_list_item_1, parent, false)
-        )
-      }
-
-      inner class Holder(itemView: View) : BaseViewHolder(itemView) {
-        override fun initData(position: Int) {
-          val label: TextView = itemView as TextView
-          val text = mList.modules[position]
-          label.text = text
+    ): BaseViewHolder {
+        return object : BaseViewHolder(
+            LayoutInflater.from(parent.context)
+                .inflate(android.R.layout.simple_list_item_1, parent, false)
+        ) {
+            override fun initData(position: Int) {
+                val label = itemView as TextView
+                label.text = modules[position]
+            }
         }
-      }
     }
-  //构建加载更多UI组件（这里可自行扩展样式）
-    val loadMore = DefaultLoadMore()
-        .setEmptyHint("我是有底线的……")
-        .setFailHint("哎呦，加载失败了")
-        .setLoadingHint("努力加载中")
-  //SwipeListCompat 配置 loadmore
-    mList.supportLoadMore(loadMore, object : OnLoadMoreListener {
-        override fun onLoadMore() {
+}
 
+list.setUpLoadMore(loadMore)
+    .setRefreshEnable(true)
+    .setLoadMoreEnable(true)
+    .setOnRefreshListener(object : OnRefreshListener {
+        override fun onRefresh() {
+            refresh()
         }
     })
-    mList.setLayoutManager(MyLinearLayoutManager(this))
-    mList.smart.setRefreshEnable(true)
-         .setOnRefreshListener(object : OnRefreshListener {
-             override fun onRefresh() {
- 
-             }
-         }).autoRefresh()
-}
+    .setOnLoadMoreListener(object : OnLoadMoreListener {
+        override fun onLoadMore() {
+            loadMore()
+        }
+    })
 ```
 
-## 3、联系我
+如果你已经有分页对象或 ViewModel，可以继续结合：
 
-有什么问题可以加QQ、QQ群（备注来源）或发邮件沟通
+```kotlin
+viewModel.result.observe(this, list::notifyDataChanged)
+```
 
-* QQ群：139402565
-* QQ：435231045
-* 邮箱：qinwei_it@163.com
+错误场景可以直接使用：
 
+```kotlin
+list.notifyError()
+```
+
+## SmartRefreshLayout 路线
+
+如果你的项目已经使用 `SmartRefreshLayout`，可以选择：
+
+- `SmartRecyclerView`
+  - 宿主保留自己的 refresh 能力
+  - 内部复用公共的 `ScrollLoadMoreCoordinator`
+
+- `SmartV2RecyclerView`
+  - 使用 `SmartRefreshLayout` 自带的 load more 机制
+
+建议：
+
+- 如果你希望和 `SwipeRecyclerView` 保持一致的项目级 load more 语义，优先看 `SmartRecyclerView`
+- 如果你已经依赖并习惯 `SmartRefreshLayout` 原生 load more 生命周期，再考虑 `SmartV2RecyclerView`
+
+## Sample 对照表
+
+当前 sample 页面与能力对应关系如下：
+
+- `SwipeRecyclerViewActivity`
+  - 基础 `SwipeRecyclerView`
+
+- `SwipeCompatActivity`
+  - `SmartListCompat + SwipeRecyclerView`
+
+- `SmartCompatActivity`
+  - `SmartListCompat + SmartRecyclerView`
+
+- `SmartV2RecyclerViewActivity`
+  - 基础 `SmartV2RecyclerView`
+
+- `SmartV2CompatActivity`
+  - `SmartListCompat + SmartV2RecyclerView`
+
+- `ArticleListActivity`
+  - 分页真实示例
+
+- `DragSwipeListActivity`
+  - 拖拽 / 侧滑交互示例
+
+- `ChatActivity`
+  - 多类型列表示例
+
+- `StickHeaderListActivity`
+  - 吸顶效果示例
+
+- `ViewPagerActivity`
+  - ViewPager 风格滑动示例
+
+## 迁移说明
+
+如果你在旧代码里使用的是：
+
+```kotlin
+finishLoadMore(success, noMoreData)
+```
+
+建议逐步迁移为：
+
+```kotlin
+finishLoadMore(LoadMoreResult.SUCCESS)
+finishLoadMore(LoadMoreResult.NO_MORE)
+finishLoadMore(LoadMoreResult.ERROR)
+```
+
+迁移原则：
+
+- 旧接口可以继续用
+- 旧接口当前已标记为 deprecated
+- 新代码优先使用 `LoadMoreResult`
+- README、sample 和后续设计文档都以结果型接口为主
+
+## 文档
+
+项目内部设计记录见：
+
+- `docs/architecture/`
+- `docs/logs/`
