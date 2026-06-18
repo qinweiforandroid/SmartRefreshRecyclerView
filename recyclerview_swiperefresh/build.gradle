@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    compileSdk 35
+    compileSdk 36
 
     defaultConfig {
-        minSdkVersion 16
-        targetSdkVersion 35
+        minSdkVersion 23
+        targetSdkVersion 36
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -31,12 +31,9 @@ android {
     namespace 'com.qw.recyclerview.swiperefresh'
 }
 dependencies {
-    implementation libs.androidx.lifecycle.viewmodel.ktx
     implementation libs.androidx.core.ktx
-    implementation libs.androidx.appcompat
-    implementation libs.material
-    implementation libs.androidx.constraintlayout
     implementation libs.androidx.swiperefreshlayout
+    implementation libs.androidx.recyclerview
     compileOnly project(':recyclerview_core')
     testImplementation libs.junit
     androidTestImplementation libs.androidx.junit
