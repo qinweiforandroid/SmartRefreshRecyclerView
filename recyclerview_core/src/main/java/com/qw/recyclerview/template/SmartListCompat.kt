@@ -11,8 +11,6 @@ import com.qw.recyclerview.core.ItemViewDelegate
 import com.qw.recyclerview.core.MultiTypeUseCase
 import com.qw.recyclerview.core.OnLoadMoreListener
 import com.qw.recyclerview.core.OnRefreshListener
-import com.qw.recyclerview.core.SRLog
-import com.qw.recyclerview.layout.MyGridLayoutManager
 import com.qw.recyclerview.loadmore.AbsLoadMore
 import com.qw.recyclerview.loadmore.LoadMoreResult
 import com.qw.recyclerview.loadmore.State
@@ -26,10 +24,15 @@ import com.qw.recyclerview.page.IPage
 abstract class SmartListCompat<T>(private val smart: ISmartRecyclerView) :
     ListCompat<T>(smart.getRecyclerView()) {
 
-    private lateinit var page: IPage
-    private var onLoadMoreListener: OnLoadMoreListener? = null
-    private var loadMore: AbsLoadMore? = null
-    private val typeLoadMore = -1
+    private val loadMoreFooterDelegate = LoadMoreFooterDelegate(
+        smart = smart,
+        adapterProvider = { adapter }
+    )
+    private val pagingDataDelegate = PagingDataDelegate(
+        smart = smart,
+        modulesProvider = { modules },
+        adapterProvider = { adapter }
+    )
 
     init {
         smart.apply {
@@ -73,40 +76,32 @@ abstract class SmartListCompat<T>(private val smart: ISmartRecyclerView) :
         loadMore: AbsLoadMore,
         onLoadMoreListener: OnLoadMoreListener
     ) {
-        setUpLoadMore(loadMore)
+        setLoadMoreView(loadMore)
         setOnLoadMoreListener(onLoadMoreListener)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
-        if (viewType == typeLoadMore) {
-            SRLog.d("SwipeListCompat onCreateViewHolder load more type")
-            return loadMore!!.onCreateLoadMoreViewHolder(parent)
+        return loadMoreFooterDelegate.onCreateViewHolder(parent, viewType) {
+            onCreateBaseViewHolder(parent, viewType)
         }
-        return onCreateBaseViewHolder(parent, viewType)
     }
 
     override fun getItemCount(): Int {
-        var count = super.getItemCount()
-        if (smart.isLoadMoreEnable() && loadMore != null) {
-            count++
-        }
-        return count
+        return super.getItemCount() + loadMoreFooterDelegate.getExtraItemCount()
     }
 
     override fun getItemViewType(position: Int): Int {
-        if (isLoadMoreShow(position)) {
-            return typeLoadMore
+        return loadMoreFooterDelegate.resolveItemViewType(
+            position = position,
+            dataItemCount = super.getItemCount()
+        ) {
+            getItemViewTypeByPosition(position)
         }
-        return getItemViewTypeByPosition(position)
     }
 
     protected abstract fun onCreateBaseViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder
 
     protected open fun getItemViewTypeByPosition(position: Int): Int = 0
-
-    private fun isLoadMoreShow(position: Int): Boolean {
-        return smart.isLoadMoreEnable() && adapter.itemCount - 1 == position && loadMore != null
-    }
 
     fun autoRefresh() {
         smart.autoRefresh()
@@ -143,23 +138,25 @@ abstract class SmartListCompat<T>(private val smart: ISmartRecyclerView) :
         finishLoadMore(LoadMoreResult.from(success, noMoreData))
     }
 
-    fun getGridLayoutManager(spanCount: Int): MyGridLayoutManager {
-        return MyGridLayoutManager(smart.getRecyclerView().context, spanCount).apply {
-            spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
-                override fun getSpanSize(position: Int): Int {
-                    return if (isLoadMoreShow(position)) {
-                        spanCount
-                    } else {
-                        1
-                    }
-                }
-            }
-        }
+    fun getGridLayoutManager(spanCount: Int): GridLayoutManager {
+        return loadMoreFooterDelegate.createGridLayoutManager(
+            recyclerView = smart.getRecyclerView(),
+            spanCount = spanCount,
+            dataItemCountProvider = { super.getItemCount() }
+        )
     }
 
-    fun setUpPage(page: IPage): SmartListCompat<T> {
-        this.page = page
+    fun setPaging(page: IPage): SmartListCompat<T> {
+        pagingDataDelegate.setPage(page)
         return this
+    }
+
+    @Deprecated(
+        message = "Use setPaging(page) instead.",
+        replaceWith = ReplaceWith("setPaging(page)")
+    )
+    fun setUpPage(page: IPage): SmartListCompat<T> {
+        return setPaging(page)
     }
 
     fun setLoadMoreEnable(isEnabled: Boolean): SmartListCompat<T> {
@@ -177,30 +174,21 @@ abstract class SmartListCompat<T>(private val smart: ISmartRecyclerView) :
         return this
     }
 
-    fun setUpLoadMore(loadMore: AbsLoadMore): SmartListCompat<T> {
-        this.loadMore = loadMore
-        loadMore.setOnRetryListener {
-            this.loadMore!!.onStateChanged(State.LOADING)
-            adapter.notifyItemChanged(adapter.itemCount - 1)
-            onLoadMoreListener?.onLoadMore()
-        }
+    fun setLoadMoreView(loadMore: AbsLoadMore): SmartListCompat<T> {
+        loadMoreFooterDelegate.setLoadMore(loadMore)
         return this
     }
 
-    fun setOnLoadMoreListener(onLoadMoreListener: OnLoadMoreListener): SmartListCompat<T> {
-        this.onLoadMoreListener = onLoadMoreListener
-        smart.setOnLoadMoreListener(object : OnLoadMoreListener {
-            override fun onLoadMore() {
-                onLoadMoreListener.onLoadMore()
-            }
+    @Deprecated(
+        message = "Use setLoadMoreView(loadMore) instead.",
+        replaceWith = ReplaceWith("setLoadMoreView(loadMore)")
+    )
+    fun setUpLoadMore(loadMore: AbsLoadMore): SmartListCompat<T> {
+        return setLoadMoreView(loadMore)
+    }
 
-            override fun onStateChanged(state: State) {
-                loadMore?.let {
-                    it.onStateChanged(state)
-                    adapter.notifyItemChanged(adapter.itemCount - 1)
-                }
-            }
-        })
+    fun setOnLoadMoreListener(onLoadMoreListener: OnLoadMoreListener): SmartListCompat<T> {
+        loadMoreFooterDelegate.setOnLoadMoreListener(onLoadMoreListener)
         return this
     }
 
@@ -209,32 +197,27 @@ abstract class SmartListCompat<T>(private val smart: ISmartRecyclerView) :
         return this
     }
 
-    fun notifyDataChanged(it: ArrayList<T>) {
-        if (smart.isPull()) {
-            modules.clear()
-            modules.addAll(it)
-            smart.finishRefresh(true)
-            adapter.notifyDataSetChanged()
-        } else {
-            val size = modules.size
-            modules.addAll(it)
-            smart.finishLoadMore(
-                if (page.hasMore()) {
-                    LoadMoreResult.SUCCESS
-                } else {
-                    LoadMoreResult.NO_MORE
-                }
-            )
-            adapter.notifyItemRangeInserted(size, it.size)
-        }
+    fun submitPageData(it: ArrayList<T>) {
+        pagingDataDelegate.submitPageData(it)
     }
 
+    @Deprecated(
+        message = "Use submitPageData(data) instead.",
+        replaceWith = ReplaceWith("submitPageData(it)")
+    )
+    fun notifyDataChanged(it: ArrayList<T>) {
+        submitPageData(it)
+    }
 
+    fun submitPageError() {
+        pagingDataDelegate.submitPageError()
+    }
+
+    @Deprecated(
+        message = "Use submitPageError() instead.",
+        replaceWith = ReplaceWith("submitPageError()")
+    )
     fun notifyError() {
-        if (smart.isPull()) {
-            smart.finishRefresh(false)
-        } else {
-            smart.finishLoadMore(LoadMoreResult.ERROR)
-        }
+        submitPageError()
     }
 }

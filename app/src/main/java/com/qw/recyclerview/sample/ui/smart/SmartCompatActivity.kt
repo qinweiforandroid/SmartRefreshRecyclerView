@@ -44,7 +44,7 @@ class SmartCompatActivity : AppCompatActivity() {
         mList.setRefreshEnable(true)
             .setLoadMoreEnable(true)
             .setUpLayoutManager(MyLinearLayoutManager(this))
-            .setUpLoadMore(DefaultLoadMore())
+            .setLoadMoreView(DefaultLoadMore())
             .setOnLoadMoreListener(object : OnLoadMoreListener {
                 override fun onLoadMore() {
                     Handler(Looper.myLooper()!!).postDelayed({

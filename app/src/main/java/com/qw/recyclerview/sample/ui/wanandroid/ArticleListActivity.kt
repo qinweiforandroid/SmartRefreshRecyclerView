@@ -33,9 +33,9 @@ class ArticleListActivity : AppCompatActivity(R.layout.activity_article_list) {
         mVM = ViewModelProvider(this)[ArticleListVM::class.java]
         mVM.articles.observe(this) {
             if (it.isSuccess) {
-                list.notifyDataChanged(it.getOrNull()!!)
+                list.submitPageData(it.getOrNull()!!)
             } else {
-                list.notifyError()
+                list.submitPageError()
             }
         }
         list = object : SmartListCompat<ArticleBean>(SwipeRecyclerView(rv, swipe)) {
@@ -57,9 +57,9 @@ class ArticleListActivity : AppCompatActivity(R.layout.activity_article_list) {
         }
         list.setLoadMoreEnable(true)
             .setRefreshEnable(true)
-            .setUpPage(mVM.page)
+            .setPaging(mVM.page)
             .setUpLayoutManager(MyLinearLayoutManager(this))
-            .setUpLoadMore(DefaultLoadMore())
+            .setLoadMoreView(DefaultLoadMore())
             .setOnLoadMoreListener(object : OnLoadMoreListener {
                 override fun onLoadMore() {
                     mVM.onLoadMore()
