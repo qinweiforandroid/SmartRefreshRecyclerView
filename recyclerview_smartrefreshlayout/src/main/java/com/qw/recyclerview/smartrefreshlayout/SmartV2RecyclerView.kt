@@ -4,6 +4,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.qw.recyclerview.core.OnLoadMoreListener
 import com.qw.recyclerview.core.OnRefreshListener
 import com.qw.recyclerview.core.ISmartRecyclerView
+import com.qw.recyclerview.loadmore.LoadMoreResult
 import com.qw.recyclerview.loadmore.State
 import com.scwang.smart.refresh.layout.SmartRefreshLayout
 
@@ -101,10 +102,24 @@ class SmartV2RecyclerView(
         markIdle()
     }
 
+    override fun finishLoadMore(result: LoadMoreResult) {
+        if (!mLoadMoreEnable) {
+            return
+        }
+        mSmartRefreshLayout.finishLoadMore(300, result.success, result.noMoreData)
+    }
+
+    @Deprecated(
+        message = "Use finishLoadMore(result) to avoid ambiguous boolean combinations.",
+        replaceWith = ReplaceWith(
+            expression = "finishLoadMore(LoadMoreResult.from(success, noMoreData))",
+            imports = ["com.qw.recyclerview.loadmore.LoadMoreResult"]
+        )
+    )
     override fun finishLoadMore(success: Boolean, noMoreData: Boolean) {
         if (!mLoadMoreEnable) {
             return
         }
-        mSmartRefreshLayout.finishLoadMore(300, success, noMoreData)
+        finishLoadMore(LoadMoreResult.from(success, noMoreData))
     }
 }

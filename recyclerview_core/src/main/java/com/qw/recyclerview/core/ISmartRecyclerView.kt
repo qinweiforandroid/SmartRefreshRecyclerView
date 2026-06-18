@@ -1,6 +1,7 @@
 package com.qw.recyclerview.core
 
 import androidx.recyclerview.widget.RecyclerView
+import com.qw.recyclerview.loadmore.LoadMoreResult
 import com.qw.recyclerview.loadmore.State
 
 interface ISmartRecyclerView {
@@ -89,5 +90,19 @@ interface ISmartRecyclerView {
     /**
      * 加载更多结束状态控制
      */
-    fun finishLoadMore(success: Boolean, noMoreData: Boolean)
+    fun finishLoadMore(result: LoadMoreResult)
+
+    /**
+     * 加载更多结束状态控制
+     */
+    @Deprecated(
+        message = "Use finishLoadMore(result) to avoid ambiguous boolean combinations.",
+        replaceWith = ReplaceWith(
+            expression = "finishLoadMore(LoadMoreResult.from(success, noMoreData))",
+            imports = ["com.qw.recyclerview.loadmore.LoadMoreResult"]
+        )
+    )
+    fun finishLoadMore(success: Boolean, noMoreData: Boolean) {
+        finishLoadMore(LoadMoreResult.from(success, noMoreData))
+    }
 }

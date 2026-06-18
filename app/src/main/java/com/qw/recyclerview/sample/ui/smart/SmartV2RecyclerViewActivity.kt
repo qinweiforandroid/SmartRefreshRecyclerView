@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.qw.recyclerview.core.*
+import com.qw.recyclerview.loadmore.LoadMoreResult
 import com.qw.recyclerview.sample.R
 import com.qw.recyclerview.sample.databinding.SmartRefreshLayoutActivityBinding
 import com.qw.recyclerview.smartrefreshlayout.SmartV2RecyclerView
@@ -56,7 +57,13 @@ class SmartV2RecyclerViewActivity : AppCompatActivity() {
             for (i in size until size + 20) {
                 modules.add("" + i)
             }
-            smart.finishLoadMore(true, modules.size > 100)
+            smart.finishLoadMore(
+                if (modules.size > 100) {
+                    LoadMoreResult.NO_MORE
+                } else {
+                    LoadMoreResult.SUCCESS
+                }
+            )
             adapter.notifyDataSetChanged()
         }, 1000)
     }

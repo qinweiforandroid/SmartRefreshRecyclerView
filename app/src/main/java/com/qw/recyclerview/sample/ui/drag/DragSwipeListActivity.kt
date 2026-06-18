@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.qw.recyclerview.core.*
 import com.qw.recyclerview.layout.MyLinearLayoutManager
 import com.qw.recyclerview.layout.MyStaggeredGridLayoutManager
+import com.qw.recyclerview.loadmore.LoadMoreResult
 import com.qw.recyclerview.sample.R
 import com.qw.recyclerview.sample.databinding.SwipeRefreshLayoutActivityBinding
 import com.qw.recyclerview.sample.ui.swipe.SwipeCompatVM
@@ -44,7 +45,13 @@ class DragSwipeListActivity : AppCompatActivity() {
             } else {
                 val size = mList.modules.size
                 mList.modules.addAll(it)
-                mList.finishLoadMore(true, !mVM.hasMore())
+                mList.finishLoadMore(
+                    if (mVM.hasMore()) {
+                        LoadMoreResult.SUCCESS
+                    } else {
+                        LoadMoreResult.NO_MORE
+                    }
+                )
                 mList.adapter.notifyItemRangeInserted(size, it.size)
             }
         }

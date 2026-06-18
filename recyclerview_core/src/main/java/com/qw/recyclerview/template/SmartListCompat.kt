@@ -14,6 +14,7 @@ import com.qw.recyclerview.core.OnRefreshListener
 import com.qw.recyclerview.core.SRLog
 import com.qw.recyclerview.layout.MyGridLayoutManager
 import com.qw.recyclerview.loadmore.AbsLoadMore
+import com.qw.recyclerview.loadmore.LoadMoreResult
 import com.qw.recyclerview.loadmore.State
 import com.qw.recyclerview.page.IPage
 
@@ -127,8 +128,19 @@ abstract class SmartListCompat<T>(private val smart: ISmartRecyclerView) :
         smart.finishRefresh(success, state)
     }
 
+    fun finishLoadMore(result: LoadMoreResult) {
+        smart.finishLoadMore(result)
+    }
+
+    @Deprecated(
+        message = "Use finishLoadMore(result) to avoid ambiguous boolean combinations.",
+        replaceWith = ReplaceWith(
+            expression = "finishLoadMore(LoadMoreResult.from(success, noMoreData))",
+            imports = ["com.qw.recyclerview.loadmore.LoadMoreResult"]
+        )
+    )
     fun finishLoadMore(success: Boolean, noMoreData: Boolean) {
-        smart.finishLoadMore(success, noMoreData)
+        finishLoadMore(LoadMoreResult.from(success, noMoreData))
     }
 
     fun getGridLayoutManager(spanCount: Int): MyGridLayoutManager {
@@ -206,7 +218,13 @@ abstract class SmartListCompat<T>(private val smart: ISmartRecyclerView) :
         } else {
             val size = modules.size
             modules.addAll(it)
-            smart.finishLoadMore(true, !page.hasMore())
+            smart.finishLoadMore(
+                if (page.hasMore()) {
+                    LoadMoreResult.SUCCESS
+                } else {
+                    LoadMoreResult.NO_MORE
+                }
+            )
             adapter.notifyItemRangeInserted(size, it.size)
         }
     }
@@ -216,7 +234,7 @@ abstract class SmartListCompat<T>(private val smart: ISmartRecyclerView) :
         if (smart.isPull()) {
             smart.finishRefresh(false)
         } else {
-            smart.finishLoadMore(false, false)
+            smart.finishLoadMore(LoadMoreResult.ERROR)
         }
     }
 }

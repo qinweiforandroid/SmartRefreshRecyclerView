@@ -14,6 +14,7 @@ import com.qw.recyclerview.core.OnRefreshListener
 import com.qw.recyclerview.core.BaseViewHolder
 import com.qw.recyclerview.layout.MyLinearLayoutManager
 import com.qw.recyclerview.layout.MyStaggeredGridLayoutManager
+import com.qw.recyclerview.loadmore.LoadMoreResult
 import com.qw.recyclerview.sample.R
 import com.qw.recyclerview.sample.databinding.SmartRefreshLayoutActivityBinding
 import com.qw.recyclerview.smartrefreshlayout.SmartV2RecyclerView
@@ -82,7 +83,13 @@ class SmartV2CompatActivity : AppCompatActivity() {
         for (i in size until size + 20) {
             mList.modules.add("" + i)
         }
-        mList.finishLoadMore(true, mList.modules.size > 100)
+        mList.finishLoadMore(
+            if (mList.modules.size > 100) {
+                LoadMoreResult.NO_MORE
+            } else {
+                LoadMoreResult.SUCCESS
+            }
+        )
         mList.adapter.notifyItemRangeInserted(size, 20)
     }
 

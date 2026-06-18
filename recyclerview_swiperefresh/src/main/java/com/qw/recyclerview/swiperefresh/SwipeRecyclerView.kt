@@ -1,14 +1,13 @@
 package com.qw.recyclerview.swiperefresh
 
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.qw.recyclerview.core.ISmartRecyclerView
 import com.qw.recyclerview.core.OnLoadMoreListener
 import com.qw.recyclerview.core.OnRefreshListener
+import com.qw.recyclerview.core.ScrollLoadMoreCoordinator
 import com.qw.recyclerview.core.SRLog
-import com.qw.recyclerview.layout.ILayoutManager
+import com.qw.recyclerview.loadmore.LoadMoreResult
 import com.qw.recyclerview.loadmore.State
 
 /**
@@ -22,40 +21,23 @@ class SwipeRecyclerView(
 ) : ISmartRecyclerView {
 
     private var mRefreshEnable: Boolean = false
-    private var mLoadMoreEnable: Boolean = false
     private var onRefreshListener: OnRefreshListener? = null
-    private var onLoadMoreListener: OnLoadMoreListener? = null
     private var state = ISmartRecyclerView.REFRESH_IDLE
+    private val loadMoreCoordinator = ScrollLoadMoreCoordinator(
+        recyclerView = mRecyclerView,
+        logTag = "SwipeRecyclerView",
+        host = object : ScrollLoadMoreCoordinator.Host {
+            override fun canTriggerLoadMore(): Boolean {
+                return state == ISmartRecyclerView.REFRESH_IDLE
+            }
 
-    private var loadMoreState = State.IDLE
+            override fun onLoadMoreTriggered() {
+                state = ISmartRecyclerView.REFRESH_UP
+            }
+        }
+    )
 
     init {
-        mRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                super.onScrollStateChanged(recyclerView, newState)
-                SRLog.d("SwipeRecyclerView onScrollStateChanged newState:$newState")
-                if (!mLoadMoreEnable) return
-                if (onLoadMoreListener == null) return
-                when (loadMoreState) {
-                    State.NO_MORE,
-                    State.ERROR,
-                    State.EMPTY -> {
-                        return
-                    }
-
-                    else -> {
-                    }
-                }
-                if (state != ISmartRecyclerView.REFRESH_IDLE) return
-
-                if (newState == RecyclerView.SCROLL_STATE_IDLE && checkedIsNeedLoadMore()) {
-                    state = ISmartRecyclerView.REFRESH_UP
-                    onLoadMoreListener?.onStateChanged(State.LOADING)
-                    SRLog.d("SwipeRecyclerView onScrollStateChanged onLoadMore")
-                    onLoadMoreListener?.onLoadMore()
-                }
-            }
-        })
         mSwipeRefreshLayout.setOnRefreshListener {
             state = ISmartRecyclerView.REFRESH_PULL
             SRLog.d("SwipeRecyclerView onRefresh")
@@ -66,25 +48,6 @@ class SwipeRecyclerView(
 
     private fun markIdle() {
         state = ISmartRecyclerView.REFRESH_IDLE
-    }
-
-    private fun checkedIsNeedLoadMore(): Boolean {
-        var lastVisiblePosition = 0
-        val layoutManager: RecyclerView.LayoutManager = mRecyclerView.layoutManager!!
-        if (layoutManager is LinearLayoutManager) {
-            lastVisiblePosition = layoutManager.findLastVisibleItemPosition()
-        } else if (layoutManager is StaggeredGridLayoutManager) {
-            lastVisiblePosition =
-                layoutManager.findLastCompletelyVisibleItemPositions(null)[layoutManager
-                    .findLastCompletelyVisibleItemPositions(
-                        null
-                    ).size - 1]
-        } else {
-            if (layoutManager is ILayoutManager) {
-                lastVisiblePosition = layoutManager.getLastVisibleItemPosition()
-            }
-        }
-        return mRecyclerView.adapter!!.itemCount - lastVisiblePosition <= 5
     }
 
     override fun getRecyclerView(): RecyclerView {
@@ -107,7 +70,7 @@ class SwipeRecyclerView(
     }
 
     override fun setOnLoadMoreListener(onLoadMoreListener: OnLoadMoreListener): ISmartRecyclerView {
-        this.onLoadMoreListener = onLoadMoreListener
+        loadMoreCoordinator.setOnLoadMoreListener(onLoadMoreListener)
         return this
     }
 
@@ -123,12 +86,12 @@ class SwipeRecyclerView(
 
 
     override fun setLoadMoreEnable(isEnabled: Boolean): ISmartRecyclerView {
-        mLoadMoreEnable = isEnabled
+        loadMoreCoordinator.setLoadMoreEnable(isEnabled)
         return this
     }
 
     override fun isLoadMoreEnable(): Boolean {
-        return mLoadMoreEnable
+        return loadMoreCoordinator.isLoadMoreEnable()
     }
 
     override fun isPull(): Boolean {
@@ -150,28 +113,25 @@ class SwipeRecyclerView(
     override fun finishRefresh(success: Boolean, footerState: State) {
         SRLog.d("SwipeRecyclerView finishRefresh success:$success")
         mSwipeRefreshLayout.isRefreshing = false
-        if (mLoadMoreEnable) {
-            loadMoreState = footerState
-            onLoadMoreListener?.onStateChanged(footerState)
-        }
+        loadMoreCoordinator.syncLoadMoreState(footerState)
         markIdle()
     }
 
+    override fun finishLoadMore(result: LoadMoreResult) {
+        SRLog.d("SwipeRecyclerView finishLoadMore result:$result")
+        loadMoreCoordinator.finishLoadMore(result)
+        markIdle()
+    }
+
+    @Deprecated(
+        message = "Use finishLoadMore(result) to avoid ambiguous boolean combinations.",
+        replaceWith = ReplaceWith(
+            expression = "finishLoadMore(LoadMoreResult.from(success, noMoreData))",
+            imports = ["com.qw.recyclerview.loadmore.LoadMoreResult"]
+        )
+    )
     override fun finishLoadMore(success: Boolean, noMoreData: Boolean) {
         SRLog.d("SwipeRecyclerView finishLoadMore success:$success ,noMoreData:$noMoreData")
-        if (!mLoadMoreEnable) {
-            return
-        }
-        loadMoreState = if (success) {
-            if (noMoreData) {
-                State.NO_MORE
-            } else {
-                State.IDLE
-            }
-        } else {
-            State.ERROR
-        }
-        onLoadMoreListener?.onStateChanged(loadMoreState)
-        markIdle()
+        finishLoadMore(LoadMoreResult.from(success, noMoreData))
     }
 }
