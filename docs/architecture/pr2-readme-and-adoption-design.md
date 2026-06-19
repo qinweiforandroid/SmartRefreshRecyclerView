@@ -93,9 +93,9 @@ README 应明确说明：
 README 应明确区分：
 
 - 推荐接口
-  - `setLoadMoreResult(result: LoadMoreResult)`
+  - `setLoadMoreState(state: LoadMoreState)`
 
-并明确说明 `LoadMoreResult` 只表达结果语义，不承载第三方控件的布尔参数。
+并明确说明 `LoadMoreState` 直接表达 footer UI 状态，不承载第三方控件的布尔参数。
 
 ## 7. README 建议结构
 
@@ -140,7 +140,7 @@ README 应明确区分：
 
 README 中建议补充：
 
-- 推荐统一使用 `setLoadMoreResult(LoadMoreResult.*)`
+- 推荐统一使用 `setLoadMoreState(LoadMoreState.*)`
 - 如果只需要基础列表刷新与加载更多，优先采用 `SwipeRecyclerView`
 
 ## 10. 预计改动文件

@@ -16,7 +16,7 @@ import com.qw.recyclerview.core.OnRefreshListener
 import com.qw.recyclerview.core.BaseViewHolder
 import com.qw.recyclerview.layout.MyLinearLayoutManager
 import com.qw.recyclerview.layout.MyStaggeredGridLayoutManager
-import com.qw.recyclerview.loadmore.LoadMoreResult
+import com.qw.recyclerview.loadmore.LoadMoreState
 import com.qw.recyclerview.sample.R
 import com.qw.recyclerview.sample.databinding.SmartRefreshLayoutActivityBinding
 import com.qw.recyclerview.smartrefreshlayout.SmartV2RecyclerView
@@ -92,9 +92,9 @@ class SmartV2CompatActivity : AppCompatActivity() {
         }
         mList.setLoadMoreResult(
             if (mList.modules.size > 100) {
-                LoadMoreResult.NO_MORE
+                LoadMoreState.NO_MORE
             } else {
-                LoadMoreResult.SUCCESS
+                LoadMoreState.SUCCESS
             }
         )
         mList.adapter.notifyItemRangeInserted(size, 20)

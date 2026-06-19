@@ -7,7 +7,7 @@ import com.qw.recyclerview.core.OnLoadMoreListener
 import com.qw.recyclerview.core.OnRefreshListener
 import com.qw.recyclerview.core.ScrollLoadMoreCoordinator
 import com.qw.recyclerview.core.SRLog
-import com.qw.recyclerview.loadmore.LoadMoreResult
+import com.qw.recyclerview.loadmore.LoadMoreState
 
 /**
  * 下拉刷新: 由SwipeRefreshLayout提供
@@ -107,9 +107,9 @@ class SwipeRecyclerView(
         markIdle()
     }
 
-    override fun setLoadMoreResult(result: LoadMoreResult) {
-        SRLog.d("SwipeRecyclerView setLoadMoreResult result:$result")
-        loadMoreCoordinator.finishLoadMore(result)
+    override fun setLoadMoreState(state: LoadMoreState) {
+        SRLog.d("SwipeRecyclerView setLoadMoreResult result:$state")
+        loadMoreCoordinator.finishLoadMore(state)
         markIdle()
     }
 }

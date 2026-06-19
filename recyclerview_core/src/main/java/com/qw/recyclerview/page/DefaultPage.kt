@@ -5,52 +5,64 @@ package com.qw.recyclerview.page
  * email: qinwei_it@163.com
  */
 class DefaultPage(private val firstPage: Int = 1) : IPage {
-    private var mCurrentPage = 0
-    private var mWillLoadPage = firstPage
-    private var mLastPage = -1
+    private var currentPage = 0
+    private var willLoadPage = firstPage
+    private var lastPage = -1
+    private var pageState = PageState()
 
-    override fun prepareRefresh() {
-        mWillLoadPage = firstPage
+    override val state: PageState
+        get() = pageState
+
+    override fun onLoadFirstPage() {
+        willLoadPage = firstPage
+        pageState = pageState.copy(
+            action = PageAction.REFRESH,
+            phase = PagePhase.LOADING,
+            isFirstPage = true
+        )
     }
 
-    override fun prepareLoadMore() {
-        mWillLoadPage = mCurrentPage + 1
+    override fun onLoadNextPage() {
+        willLoadPage = currentPage + 1
+        pageState = pageState.copy(
+            action = PageAction.LOAD_MORE,
+            phase = PagePhase.LOADING,
+            isFirstPage = false
+        )
     }
 
-    /**
-     * case 1:  mWillLoadPage=2
-     * pull down mWillLoadPage=1, req error mCurrentPage=0 isFirstPage() true
-     * check data is empty  if true state view show error else toast error msg
-     *
-     * case 2:  mWillLoadPage=2
-     * pull down mWillLoadPage=1, req ok  mCurrentPage=1 isFirstPage() true
-     * clear data  add new data notify refresh
-     */
-    override fun isFirstPageRequest(): Boolean {
-        return mWillLoadPage == firstPage
+    override fun isLoadFirstPage(): Boolean {
+        return pageState.isFirstPage
     }
-
 
     override fun hasNextPage(): Boolean {
-        return mCurrentPage != mLastPage
+        return pageState.hasNextPage
     }
 
-    override fun commitLoadSuccess(hasNextPage: Boolean) {
-        mCurrentPage = mWillLoadPage
+    override fun onLoadSuccess(hasNextPage: Boolean) {
+        currentPage = willLoadPage
         if (!hasNextPage) {
-            mLastPage = mCurrentPage
+            lastPage = currentPage
         }
+        pageState = pageState.copy(
+            phase = PagePhase.IDLE,
+            hasNextPage = hasNextPage,
+            isFirstPage = currentPage == firstPage
+        )
     }
 
-    override fun commitLoadFailure() {
-        mWillLoadPage = mCurrentPage
+    override fun onLoadFailure() {
+        willLoadPage = currentPage
+        pageState = pageState.copy(
+            phase = PagePhase.ERROR
+        )
     }
 
-    fun getRequestPage(): Int {
-        return mWillLoadPage
+    fun getWillLoadPage(): Int {
+        return willLoadPage
     }
 
     fun getCurrentPage(): Int {
-        return mCurrentPage
+        return currentPage
     }
 }

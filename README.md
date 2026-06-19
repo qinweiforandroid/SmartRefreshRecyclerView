@@ -161,12 +161,13 @@ fun setUpView() {
 
 ## 推荐的 load more 完成方式
 
-当前推荐使用结果型接口：
+当前推荐使用 load more 状态接口：
 
 ```kotlin
-smart.setLoadMoreResult(LoadMoreResult.SUCCESS)
-smart.setLoadMoreResult(LoadMoreResult.NO_MORE)
-smart.setLoadMoreResult(LoadMoreResult.ERROR)
+smart.setLoadMoreState(LoadMoreState.SUCCESS)
+smart.setLoadMoreState(LoadMoreState.HIDDEN)
+smart.setLoadMoreState(LoadMoreState.NO_MORE)
+smart.setLoadMoreState(LoadMoreState.ERROR)
 ```
 
 含义如下：
@@ -180,13 +181,17 @@ smart.setLoadMoreResult(LoadMoreResult.ERROR)
 - `ERROR`
   - 加载失败
 
-`LoadMoreResult` 当前只表达结果语义：
+- `HIDDEN`
+  - 隐藏 load more 视图
+
+`LoadMoreState` 当前直接表达 load more UI 状态：
 
 - `SUCCESS`
+- `HIDDEN`
 - `NO_MORE`
 - `ERROR`
 
-具体 footer 状态、以及像 `SmartRefreshLayout` 这类第三方控件需要的布尔参数映射，交由具体实现类内部处理。
+像 `SmartRefreshLayout` 这类第三方控件需要的布尔参数映射，交由具体实现类内部处理。
 
 ## SmartListCompat
 
@@ -297,9 +302,38 @@ list.submitPageError()
 当前统一使用：
 
 ```kotlin
-setLoadMoreResult(LoadMoreResult.SUCCESS)
-setLoadMoreResult(LoadMoreResult.NO_MORE)
-setLoadMoreResult(LoadMoreResult.ERROR)
+setLoadMoreState(LoadMoreState.SUCCESS)
+setLoadMoreState(LoadMoreState.HIDDEN)
+setLoadMoreState(LoadMoreState.NO_MORE)
+setLoadMoreState(LoadMoreState.ERROR)
+```
+
+## 分页状态
+
+`IPage` 当前会输出分页状态以驱动 UI：
+
+- `PageAction`
+  - `REFRESH`
+  - `LOAD_MORE`
+
+- `PagePhase`
+  - `IDLE`
+  - `LOADING`
+  - `ERROR`
+
+- `PageState`
+  - 当前行为
+  - 当前阶段
+  - 是否还有下一页
+  - 当前是否为第一页请求
+
+推荐分页事件入口：
+
+```kotlin
+page.onLoadFirstPage()
+page.onLoadNextPage()
+page.onLoadSuccess(hasNextPage = true)
+page.onLoadFailure()
 ```
 
 ## 文档

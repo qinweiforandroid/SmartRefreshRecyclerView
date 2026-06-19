@@ -12,7 +12,7 @@ import com.qw.recyclerview.core.MultiTypeUseCase
 import com.qw.recyclerview.core.OnLoadMoreListener
 import com.qw.recyclerview.core.OnRefreshListener
 import com.qw.recyclerview.loadmore.AbsLoadMore
-import com.qw.recyclerview.loadmore.LoadMoreResult
+import com.qw.recyclerview.loadmore.LoadMoreState
 import com.qw.recyclerview.page.IPage
 
 /**
@@ -100,8 +100,8 @@ abstract class SmartListCompat<T>(private val smart: ISmartRecyclerView) :
         smart.setRefreshing(refreshing, afterRefreshCompleted)
     }
 
-    fun setLoadMoreResult(result: LoadMoreResult) {
-        smart.setLoadMoreResult(result)
+    fun setLoadMoreResult(result: LoadMoreState) {
+        smart.setLoadMoreState(result)
     }
 
     fun getGridLayoutManager(spanCount: Int): GridLayoutManager {
@@ -148,10 +148,18 @@ abstract class SmartListCompat<T>(private val smart: ISmartRecyclerView) :
     }
 
     fun submitPageData(it: ArrayList<T>) {
-        pagingDataDelegate.submitPageData(it)
+        if (pagingDataDelegate.isInitialized) {
+            pagingDataDelegate.onPageLoadSuccess(it)
+        } else {
+            modules.clear()
+            modules.addAll(it)
+            adapter.notifyDataSetChanged()
+        }
     }
 
     fun submitPageError() {
-        pagingDataDelegate.submitPageError()
+        if (pagingDataDelegate.isInitialized) {
+            pagingDataDelegate.onPageLoadFailure()
+        }
     }
 }

@@ -14,35 +14,41 @@ import kotlinx.coroutines.launch
  */
 class ArticleListVM : ViewModel() {
 
-    val page = DefaultPage(0)
+    private lateinit var page: DefaultPage
     val articles = MutableLiveData<Result<ArrayList<ArticleBean>>>()
+    fun injectPage(page: DefaultPage) {
+        this.page = page
+    }
+
     fun onRefresh() {
-        page.prepareRefresh()
+        page.onLoadFirstPage()
         loadData()
     }
 
     fun onLoadMore() {
-        page.prepareLoadMore()
+        page.onLoadNextPage()
         loadData()
     }
 
     private fun loadData() {
         viewModelScope.launch {
             try {
-                val response = SmartRefreshRepository.loadArticles(page.getRequestPage())
+                val response = SmartRefreshRepository.loadArticles(page.getWillLoadPage())
                 if (response.errorCode == 0) {
                     val pageCount = response.data.pageCount ?: 0
                     articles.value = Result.success(response.data.datas!!.apply {
-                        page.commitLoadSuccess(page.getRequestPage() < pageCount)
+                        page.onLoadSuccess(page.getWillLoadPage() < pageCount)
                     })
                 } else {
-                    page.commitLoadFailure()
+                    page.onLoadFailure()
                     articles.value = Result.failure(RuntimeException(response.errorMsg))
                 }
             } catch (e: Exception) {
-                page.commitLoadFailure()
+                page.onLoadFailure()
                 articles.value = Result.failure(e)
             }
         }
     }
+
+
 }

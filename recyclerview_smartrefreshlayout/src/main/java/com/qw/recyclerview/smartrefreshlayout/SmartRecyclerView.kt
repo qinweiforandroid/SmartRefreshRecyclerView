@@ -5,7 +5,7 @@ import com.qw.recyclerview.core.ISmartRecyclerView
 import com.qw.recyclerview.core.OnLoadMoreListener
 import com.qw.recyclerview.core.OnRefreshListener
 import com.qw.recyclerview.core.ScrollLoadMoreCoordinator
-import com.qw.recyclerview.loadmore.LoadMoreResult
+import com.qw.recyclerview.loadmore.LoadMoreState
 import com.scwang.smart.refresh.layout.SmartRefreshLayout
 
 /**
@@ -103,8 +103,8 @@ class SmartRecyclerView(
         markIdle()
     }
 
-    override fun setLoadMoreResult(result: LoadMoreResult) {
-        loadMoreCoordinator.finishLoadMore(result)
+    override fun setLoadMoreState(state: LoadMoreState) {
+        loadMoreCoordinator.finishLoadMore(state)
         markIdle()
     }
 }

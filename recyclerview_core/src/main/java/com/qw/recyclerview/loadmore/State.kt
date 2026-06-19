@@ -15,14 +15,14 @@ enum class State {
     LOADING,
 
     /**
-     * 加载失败
+     * 失败状态
      */
     ERROR,
 
     /**
-     * 空数据
+     * 隐藏
      */
-    EMPTY,
+    HIDDEN,
 
     /**
      * 没有更多数据

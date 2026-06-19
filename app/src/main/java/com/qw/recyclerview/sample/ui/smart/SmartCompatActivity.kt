@@ -17,7 +17,7 @@ import com.qw.recyclerview.core.BaseViewHolder
 import com.qw.recyclerview.core.OnLoadMoreListener
 import com.qw.recyclerview.core.OnRefreshListener
 import com.qw.recyclerview.loadmore.DefaultLoadMore
-import com.qw.recyclerview.loadmore.LoadMoreResult
+import com.qw.recyclerview.loadmore.LoadMoreState
 import com.qw.recyclerview.layout.MyLinearLayoutManager
 import com.qw.recyclerview.layout.MyStaggeredGridLayoutManager
 import com.qw.recyclerview.sample.R
@@ -80,7 +80,7 @@ class SmartCompatActivity : AppCompatActivity() {
         for (i in size until size + 20) {
             mList.modules.add("" + i)
         }
-        mList.setLoadMoreResult(LoadMoreResult.ERROR)
+        mList.setLoadMoreResult(LoadMoreState.ERROR)
         mList.adapter.notifyItemRangeInserted(size, 20)
     }
 

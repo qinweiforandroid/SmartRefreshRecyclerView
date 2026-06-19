@@ -194,33 +194,34 @@ classDiagram
 #### 负责范围
 
 - 持有 `IPage`
-- 将 `IPage` 作为“页码分页状态机”协作对象，而不是 UI 手势语义接口
-- 根据 `smart.isPull()` 判断当前是 refresh 还是 load more
+- 将 `IPage` 作为“分页状态机”协作对象，而不是 UI 手势语义接口
+- 根据 `page.state.action` 判断当前是 refresh 还是 load more
 - 分页成功时如何更新 `modules`
-- 分页成功后如何决定 `LoadMoreResult.SUCCESS / NO_MORE`
+- 分页成功后如何决定 `LoadMoreState.SUCCESS / NO_MORE`
 - 分页失败时如何落 UI
 
 #### `IPage` 的职责边界
 
-`IPage` 更适合作为轻量分页状态维护接口，而不是表达“下拉 / 上拉”这类 UI 动作。
+`IPage` 更适合作为分页状态源，而不是表达“下拉 / 上拉”这类 UI 动作。
 
 因此更推荐它承载以下语义：
 
-- 准备 refresh 请求
-- 准备 load more 请求
+- 记录加载第一页
+- 记录加载下一页
 - 提交成功请求结果
 - 提交失败请求结果
 - 判断当前是否首屏请求
 - 判断后续是否还有下一页
+- 输出当前分页状态用于驱动 UI
 
 这意味着后续命名收敛方向应尽量靠近：
 
-- `prepareRefresh()`
-- `prepareLoadMore()`
-- `isFirstPageRequest()`
+- `onLoadFirstPage()`
+- `onLoadNextPage()`
+- `isLoadFirstPage()`
 - `hasNextPage()`
-- `commitLoadSuccess(hasNextPage)`
-- `commitLoadFailure()`
+- `onLoadSuccess(hasNextPage)`
+- `onLoadFailure()`
 
 而诸如：
 
@@ -237,6 +238,15 @@ classDiagram
 - `onPageChanged()`
 
 作为推荐主语义接口对外扩散。
+
+当前 `IPage` 已经会通过 `PageState` 向上层暴露：
+
+- 当前行为：`PageAction`
+- 当前阶段：`PagePhase`
+- 是否还有下一页
+- 当前是否为第一页请求
+
+因此 `PagingDataDelegate` 当前优先基于 `page.state` 驱动 UI，而不是继续把 refresh / load more 判断完全交给宿主 smart 状态。
 
 #### 预期接管的现有逻辑
 

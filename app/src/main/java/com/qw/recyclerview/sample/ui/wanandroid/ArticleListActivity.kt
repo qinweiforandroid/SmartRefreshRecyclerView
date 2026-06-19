@@ -14,6 +14,7 @@ import com.qw.recyclerview.core.OnLoadMoreListener
 import com.qw.recyclerview.core.OnRefreshListener
 import com.qw.recyclerview.loadmore.DefaultLoadMore
 import com.qw.recyclerview.layout.MyLinearLayoutManager
+import com.qw.recyclerview.page.DefaultPage
 import com.qw.recyclerview.sample.R
 import com.qw.recyclerview.sample.repository.entities.ArticleBean
 import com.qw.recyclerview.swiperefresh.SwipeRecyclerView
@@ -62,9 +63,11 @@ class ArticleListActivity : AppCompatActivity(R.layout.activity_article_list) {
                     }
                 }
         }
+        val page = DefaultPage(1)
+        mVM.injectPage(page)
         list.setLoadMoreEnable(true)
             .setRefreshEnable(true)
-            .setPaging(mVM.page)
+            .setPaging(page)
             .setUpLayoutManager(MyLinearLayoutManager(this))
             .setLoadMoreView(DefaultLoadMore())
             .setOnLoadMoreListener(object : OnLoadMoreListener {

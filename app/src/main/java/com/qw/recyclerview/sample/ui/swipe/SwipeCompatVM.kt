@@ -16,13 +16,13 @@ class SwipeCompatVM : ViewModel() {
     private var size = 0
     fun refresh() {
         Handler(Looper.myLooper()!!).postDelayed({
-            page.prepareRefresh()
+            page.onLoadFirstPage()
             val list = ArrayList<String>()
             for (i in 0..19) {
                 list.add("" + i)
             }
             size = list.size
-            page.commitLoadSuccess(hasNextPage = true)
+            page.onLoadSuccess(hasNextPage = true)
             result.value = list
         }, 1000)
     }
@@ -33,18 +33,18 @@ class SwipeCompatVM : ViewModel() {
 
     fun loadMore() {
         Handler(Looper.myLooper()!!).postDelayed({
-            page.prepareLoadMore()
+            page.onLoadNextPage()
             val list = ArrayList<String>()
             for (i in size until size + 20) {
                 list.add("" + i)
             }
             size += list.size
-            page.commitLoadSuccess(size > 70)
+            page.onLoadSuccess(size > 70)
             result.value = list
         }, 1000)
     }
 
     fun isFirstPage(): Boolean {
-        return page.isFirstPageRequest()
+        return page.isLoadFirstPage()
     }
 }

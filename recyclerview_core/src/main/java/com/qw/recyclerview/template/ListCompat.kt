@@ -14,7 +14,7 @@ import com.qw.recyclerview.core.MultiTypeUseCase
  * Created by qinwei on 2022/1/9 2:46 下午
  * email: qinwei_it@163.com
  */
-abstract class ListCompat<T>(private val mRecyclerView: RecyclerView) {
+abstract class ListCompat<T>(val mRecyclerView: RecyclerView) {
     val modules = ArrayList<T>()
     val adapter = object : BaseListAdapter() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
@@ -92,10 +92,6 @@ abstract class ListCompat<T>(private val mRecyclerView: RecyclerView) {
      * call from  RecyclerView.Adapter.onCreateViewHolder(parent: ViewGroup, viewType: Int)
      */
     protected abstract fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder
-
-    fun getRecyclerView(): RecyclerView {
-        return mRecyclerView
-    }
 
     fun setLayoutManager(layoutManager: RecyclerView.LayoutManager) {
         mRecyclerView.layoutManager = layoutManager

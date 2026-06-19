@@ -130,32 +130,34 @@
 
 ## 9. 当前已落地的接口收敛方向
 
-### 9.1 Load More 结果表达
+### 9.1 Load More 状态表达
 
 加载更多完成接口不再推荐继续使用：
 
 - `LoadMoreResult`
 
-当前已新增更明确的结果型表达：
+当前已收敛为更明确的 UI 状态表达：
 
-- `LoadMoreResult.SUCCESS`
-- `LoadMoreResult.NO_MORE`
-- `LoadMoreResult.ERROR`
+- `LoadMoreState.SUCCESS`
+- `LoadMoreState.HIDDEN`
+- `LoadMoreState.NO_MORE`
+- `LoadMoreState.ERROR`
 
 推荐调用方式：
 
 ```kotlin
-smart.setLoadMoreResult(LoadMoreResult.SUCCESS)
-smart.setLoadMoreResult(LoadMoreResult.NO_MORE)
-smart.setLoadMoreResult(LoadMoreResult.ERROR)
+smart.setLoadMoreState(LoadMoreState.SUCCESS)
+smart.setLoadMoreState(LoadMoreState.HIDDEN)
+smart.setLoadMoreState(LoadMoreState.NO_MORE)
+smart.setLoadMoreState(LoadMoreState.ERROR)
 ```
 
 ### 9.2 兼容策略
 
-- 统一由结果型接口表达 load more 结果
-- `LoadMoreResult` 只表达结果本身
-- footer 状态与第三方控件参数映射由具体实现解释
-- README 与 sample 统一以 `setLoadMoreResult` 为主
+- 统一由显式状态接口表达 load more UI 状态
+- `LoadMoreState` 直接表达 footer 的展示状态
+- 第三方控件参数映射由具体实现解释
+- README 与 sample 统一以 `setLoadMoreState` 为主
 
 ## 10. 当前已落地的阶段一结论
 
@@ -171,7 +173,20 @@ smart.setLoadMoreResult(LoadMoreResult.ERROR)
 - 宿主管理 refresh
 - coordinator 管理 scroll + load more
 - refresh 状态由宿主解释并通过 `setRefreshing(...)` 暴露
-- load more 完成结果优先使用 `LoadMoreResult`
+- load more 状态优先使用 `LoadMoreState`
+
+### 10.4 分页状态驱动 UI
+
+当前 `IPage` 已经不仅是分页行为接口，也承担分页状态源职责。
+
+它会通过 `PageState` 对外暴露：
+
+- 当前行为：`REFRESH` / `LOAD_MORE`
+- 当前阶段：`IDLE` / `LOADING` / `ERROR`
+- 是否还有下一页
+- 当前是否为第一页请求
+
+`PagingDataDelegate` 当前优先根据 `page.state` 驱动 refresh / load more UI，而不再只依赖宿主的 `isPull()` 判断。
 
 ### 10.3 设计原因
 

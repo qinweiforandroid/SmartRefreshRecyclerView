@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.qw.recyclerview.core.*
 import com.qw.recyclerview.loadmore.DefaultLoadMore
-import com.qw.recyclerview.loadmore.LoadMoreResult
+import com.qw.recyclerview.loadmore.LoadMoreState
 import com.qw.recyclerview.loadmore.State
 import com.qw.recyclerview.sample.R
 import com.qw.recyclerview.sample.databinding.SwipeRefreshLayoutActivityBinding
@@ -84,11 +84,11 @@ class SwipeRecyclerViewActivity : AppCompatActivity() {
                 modules.add("" + i)
             }
             adapter.notifyDataSetChanged()
-            smart.setLoadMoreResult(
+            smart.setLoadMoreState(
                 if (modules.size > 100) {
-                    LoadMoreResult.NO_MORE
+                    LoadMoreState.NO_MORE
                 } else {
-                    LoadMoreResult.SUCCESS
+                    LoadMoreState.SUCCESS
                 }
             )
         }, 1000)

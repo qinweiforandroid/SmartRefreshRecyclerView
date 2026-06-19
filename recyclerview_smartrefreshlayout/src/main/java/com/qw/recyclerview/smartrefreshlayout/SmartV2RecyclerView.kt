@@ -4,7 +4,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.qw.recyclerview.core.OnLoadMoreListener
 import com.qw.recyclerview.core.OnRefreshListener
 import com.qw.recyclerview.core.ISmartRecyclerView
-import com.qw.recyclerview.loadmore.LoadMoreResult
+import com.qw.recyclerview.loadmore.LoadMoreState
 import com.scwang.smart.refresh.layout.SmartRefreshLayout
 
 /**
@@ -94,20 +94,21 @@ class SmartV2RecyclerView(
         markIdle()
     }
 
-    override fun setLoadMoreResult(result: LoadMoreResult) {
+    override fun setLoadMoreState(state: LoadMoreState) {
         if (!mLoadMoreEnable) {
             return
         }
-        when (result) {
-            LoadMoreResult.SUCCESS -> {
+        when (state) {
+            LoadMoreState.SUCCESS -> {
                 mSmartRefreshLayout.finishLoadMore(300, true, false)
             }
 
-            LoadMoreResult.NO_MORE -> {
+            LoadMoreState.HIDDEN,
+            LoadMoreState.NO_MORE -> {
                 mSmartRefreshLayout.finishLoadMore(300, true, true)
             }
 
-            LoadMoreResult.ERROR -> {
+            LoadMoreState.ERROR -> {
                 mSmartRefreshLayout.finishLoadMore(300, false, false)
             }
         }

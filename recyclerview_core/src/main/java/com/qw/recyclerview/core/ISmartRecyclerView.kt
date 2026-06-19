@@ -1,8 +1,7 @@
 package com.qw.recyclerview.core
 
 import androidx.recyclerview.widget.RecyclerView
-import com.qw.recyclerview.loadmore.LoadMoreResult
-import com.qw.recyclerview.loadmore.State
+import com.qw.recyclerview.loadmore.LoadMoreState
 
 interface ISmartRecyclerView {
     companion object {
@@ -60,6 +59,6 @@ interface ISmartRecyclerView {
         afterRefreshCompleted: ISmartRecyclerView.() -> Unit = {}
     )
 
-    fun setLoadMoreResult(result: LoadMoreResult)
+    fun setLoadMoreState(state: LoadMoreState)
 
 }

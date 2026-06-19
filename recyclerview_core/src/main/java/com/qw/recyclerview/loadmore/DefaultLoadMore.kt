@@ -68,7 +68,7 @@ class DefaultLoadMore : AbsLoadMore() {
                     mProgressBar.visibility = LinearLayout.GONE
                     itemView.visibility = LinearLayout.VISIBLE
                 }
-                State.EMPTY,
+                State.HIDDEN,
                 State.IDLE -> {
                     itemView.visibility = LinearLayout.INVISIBLE
                 }

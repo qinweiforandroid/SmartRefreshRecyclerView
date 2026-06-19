@@ -4,7 +4,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.qw.recyclerview.layout.ILayoutManager
-import com.qw.recyclerview.loadmore.LoadMoreResult
+import com.qw.recyclerview.loadmore.LoadMoreState
 import com.qw.recyclerview.loadmore.State
 
 /**
@@ -62,7 +62,7 @@ class ScrollLoadMoreCoordinator(
         onLoadMoreListener?.onStateChanged(state)
     }
 
-    fun finishLoadMore(result: LoadMoreResult) {
+    fun finishLoadMore(result: LoadMoreState) {
         if (!loadMoreEnable) {
             return
         }
@@ -80,7 +80,7 @@ class ScrollLoadMoreCoordinator(
         when (loadMoreState) {
             State.NO_MORE,
             State.ERROR,
-            State.EMPTY -> {
+            State.HIDDEN -> {
                 return false
             }
 
