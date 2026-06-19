@@ -66,7 +66,7 @@ class ScrollLoadMoreCoordinator(
         if (!loadMoreEnable) {
             return
         }
-        loadMoreState = result.state
+        loadMoreState = result.toState()
         onLoadMoreListener?.onStateChanged(loadMoreState)
     }
 

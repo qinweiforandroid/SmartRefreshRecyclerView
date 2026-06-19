@@ -47,12 +47,12 @@ class DragSwipeListActivity : AppCompatActivity() {
             if (mVM.isFirstPage()) {
                 mList.modules.clear()
                 mList.modules.addAll(it)
-                mList.finishRefresh(true)
+                mList.setRefreshing(false)
                 mList.adapter.notifyDataSetChanged()
             } else {
                 val size = mList.modules.size
                 mList.modules.addAll(it)
-                mList.finishLoadMore(
+                mList.setLoadMoreResult(
                     if (mVM.hasMore()) {
                         LoadMoreResult.SUCCESS
                     } else {
@@ -121,7 +121,7 @@ class DragSwipeListActivity : AppCompatActivity() {
                         mVM.refresh()
                     }, 1000)
                 }
-            }).autoRefresh()
+            }).setRefreshing(true)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

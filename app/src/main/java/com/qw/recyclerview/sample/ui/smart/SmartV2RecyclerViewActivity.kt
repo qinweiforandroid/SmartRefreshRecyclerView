@@ -55,16 +55,16 @@ class SmartV2RecyclerViewActivity : AppCompatActivity() {
                     loadMore()
                 }
             })
-        smart.autoRefresh()
+        smart.setRefreshing(true)
     }
 
     private fun loadMore() {
-        smart.getRecyclerView().postDelayed({
+        smart.recyclerView.postDelayed({
             val size = modules.size
             for (i in size until size + 20) {
                 modules.add("" + i)
             }
-            smart.finishLoadMore(
+            smart.setLoadMoreResult(
                 if (modules.size > 100) {
                     LoadMoreResult.NO_MORE
                 } else {
@@ -76,13 +76,13 @@ class SmartV2RecyclerViewActivity : AppCompatActivity() {
     }
 
     private fun refresh() {
-        smart.getRecyclerView().postDelayed({
+        smart.recyclerView.postDelayed({
             modules.clear()
             for (i in 0..19) {
                 modules.add("" + i)
             }
             adapter.notifyDataSetChanged()
-            smart.finishRefresh(true)
+            smart.setRefreshing(false)
         }, 1000)
     }
 
@@ -114,13 +114,13 @@ class SmartV2RecyclerViewActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_linearLayout -> {
-                smart.setLayoutManager(linearLayoutManager)
+                smart.recyclerView.layoutManager = linearLayoutManager
             }
             R.id.action_gridLayout -> {
-                smart.setLayoutManager(getGridLayoutManager(2))
+                smart.recyclerView.layoutManager = getGridLayoutManager(2)
             }
             R.id.action_staggeredGridLayout -> {
-                smart.setLayoutManager(getStaggeredGridLayoutManager(2))
+                smart.recyclerView.layoutManager = getStaggeredGridLayoutManager(2)
             }
         }
         return super.onOptionsItemSelected(item)

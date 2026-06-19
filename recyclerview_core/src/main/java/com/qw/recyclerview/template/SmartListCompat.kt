@@ -13,7 +13,6 @@ import com.qw.recyclerview.core.OnLoadMoreListener
 import com.qw.recyclerview.core.OnRefreshListener
 import com.qw.recyclerview.loadmore.AbsLoadMore
 import com.qw.recyclerview.loadmore.LoadMoreResult
-import com.qw.recyclerview.loadmore.State
 import com.qw.recyclerview.page.IPage
 
 /**
@@ -22,7 +21,7 @@ import com.qw.recyclerview.page.IPage
  * email: qinwei_it@163.com
  */
 abstract class SmartListCompat<T>(private val smart: ISmartRecyclerView) :
-    ListCompat<T>(smart.getRecyclerView()) {
+    ListCompat<T>(smart.recyclerView) {
 
     private val loadMoreFooterDelegate = LoadMoreFooterDelegate(
         smart = smart,
@@ -36,7 +35,7 @@ abstract class SmartListCompat<T>(private val smart: ISmartRecyclerView) :
 
     init {
         smart.apply {
-            (getRecyclerView().itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
+            (recyclerView.itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
             setRefreshEnable(false)
             setLoadMoreEnable(false)
         }
@@ -94,33 +93,20 @@ abstract class SmartListCompat<T>(private val smart: ISmartRecyclerView) :
 
     protected open fun getItemViewTypeByPosition(position: Int): Int = 0
 
-    fun autoRefresh() {
-        smart.autoRefresh()
+    fun setRefreshing(
+        refreshing: Boolean,
+        afterRefreshCompleted: ISmartRecyclerView.() -> Unit = {}
+    ) {
+        smart.setRefreshing(refreshing, afterRefreshCompleted)
     }
 
-    /**
-     * 刷新完成更新ui
-     */
-    fun finishRefresh(success: Boolean) {
-        smart.finishRefresh(success)
-    }
-
-    /**
-     * 刷新完成更新ui
-     * @param success true刷新成功，false 刷新失敗
-     * @param state 加载更多状态
-     */
-    fun finishRefresh(success: Boolean, state: State) {
-        smart.finishRefresh(success, state)
-    }
-
-    fun finishLoadMore(result: LoadMoreResult) {
-        smart.finishLoadMore(result)
+    fun setLoadMoreResult(result: LoadMoreResult) {
+        smart.setLoadMoreResult(result)
     }
 
     fun getGridLayoutManager(spanCount: Int): GridLayoutManager {
         return loadMoreFooterDelegate.createGridLayoutManager(
-            recyclerView = smart.getRecyclerView(),
+            recyclerView = smart.recyclerView,
             spanCount = spanCount,
             dataItemCountProvider = { super.getItemCount() }
         )

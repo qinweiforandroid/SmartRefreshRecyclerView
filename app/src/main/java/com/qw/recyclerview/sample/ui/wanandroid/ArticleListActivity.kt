@@ -76,6 +76,6 @@ class ArticleListActivity : AppCompatActivity(R.layout.activity_article_list) {
                 override fun onRefresh() {
                     mVM.onRefresh()
                 }
-            }).autoRefresh()
+            }).setRefreshing(true)
     }
 }

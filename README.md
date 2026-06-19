@@ -155,7 +155,7 @@ fun setUpView() {
             }
         })
 
-    smart.autoRefresh()
+    smart.setRefreshing(true)
 }
 ```
 
@@ -164,9 +164,9 @@ fun setUpView() {
 当前推荐使用结果型接口：
 
 ```kotlin
-smart.finishLoadMore(LoadMoreResult.SUCCESS)
-smart.finishLoadMore(LoadMoreResult.NO_MORE)
-smart.finishLoadMore(LoadMoreResult.ERROR)
+smart.setLoadMoreResult(LoadMoreResult.SUCCESS)
+smart.setLoadMoreResult(LoadMoreResult.NO_MORE)
+smart.setLoadMoreResult(LoadMoreResult.ERROR)
 ```
 
 含义如下：
@@ -179,6 +179,14 @@ smart.finishLoadMore(LoadMoreResult.ERROR)
 
 - `ERROR`
   - 加载失败
+
+`LoadMoreResult` 当前只表达结果语义：
+
+- `SUCCESS`
+- `NO_MORE`
+- `ERROR`
+
+具体 footer 状态、以及像 `SmartRefreshLayout` 这类第三方控件需要的布尔参数映射，交由具体实现类内部处理。
 
 ## SmartListCompat
 
@@ -289,9 +297,9 @@ list.submitPageError()
 当前统一使用：
 
 ```kotlin
-finishLoadMore(LoadMoreResult.SUCCESS)
-finishLoadMore(LoadMoreResult.NO_MORE)
-finishLoadMore(LoadMoreResult.ERROR)
+setLoadMoreResult(LoadMoreResult.SUCCESS)
+setLoadMoreResult(LoadMoreResult.NO_MORE)
+setLoadMoreResult(LoadMoreResult.ERROR)
 ```
 
 ## 文档

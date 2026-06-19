@@ -5,7 +5,6 @@ import com.qw.recyclerview.core.OnLoadMoreListener
 import com.qw.recyclerview.core.OnRefreshListener
 import com.qw.recyclerview.core.ISmartRecyclerView
 import com.qw.recyclerview.loadmore.LoadMoreResult
-import com.qw.recyclerview.loadmore.State
 import com.scwang.smart.refresh.layout.SmartRefreshLayout
 
 /**
@@ -20,6 +19,8 @@ class SmartV2RecyclerView(
     private var onRefreshListener: OnRefreshListener? = null
     private var onLoadMoreListener: OnLoadMoreListener? = null
     private var state = ISmartRecyclerView.REFRESH_IDLE
+    override val recyclerView: RecyclerView
+        get() = mRecyclerView
 
     init {
         mSmartRefreshLayout.setOnLoadMoreListener {
@@ -38,20 +39,6 @@ class SmartV2RecyclerView(
         state = ISmartRecyclerView.REFRESH_IDLE
     }
 
-    override fun getRecyclerView(): RecyclerView {
-        return mRecyclerView
-    }
-
-    override fun setLayoutManager(layoutManager: RecyclerView.LayoutManager): ISmartRecyclerView {
-        mRecyclerView.layoutManager = layoutManager
-        return this
-    }
-
-    override fun setItemAnimator(itemAnimator: RecyclerView.ItemAnimator): ISmartRecyclerView {
-        mRecyclerView.itemAnimator = itemAnimator
-        return this
-    }
-
     override fun setOnRefreshListener(onRefreshListener: OnRefreshListener): ISmartRecyclerView {
         this.onRefreshListener = onRefreshListener
         return this
@@ -62,9 +49,9 @@ class SmartV2RecyclerView(
         return this
     }
 
-    override fun setRefreshEnable(isEnabled: Boolean): ISmartRecyclerView {
-        mRefreshEnable = isEnabled
-        mSmartRefreshLayout.setEnableRefresh(isEnabled)
+    override fun setRefreshEnable(enabled: Boolean): ISmartRecyclerView {
+        mRefreshEnable = enabled
+        mSmartRefreshLayout.setEnableRefresh(enabled)
         return this
     }
 
@@ -72,9 +59,9 @@ class SmartV2RecyclerView(
         return mRefreshEnable
     }
 
-    override fun setLoadMoreEnable(isEnabled: Boolean): ISmartRecyclerView {
-        mLoadMoreEnable = isEnabled
-        mSmartRefreshLayout.setEnableLoadMore(isEnabled)
+    override fun setLoadMoreEnable(enabled: Boolean): ISmartRecyclerView {
+        mLoadMoreEnable = enabled
+        mSmartRefreshLayout.setEnableLoadMore(enabled)
         return this
     }
 
@@ -90,22 +77,39 @@ class SmartV2RecyclerView(
         return state == ISmartRecyclerView.REFRESH_UP
     }
 
-    override fun autoRefresh() {
-        if (mRefreshEnable) {
+    override fun setRefreshing(
+        refreshing: Boolean,
+        afterRefreshCompleted: ISmartRecyclerView.() -> Unit
+    ) {
+        if (refreshing) {
+            if (!mRefreshEnable) {
+                return
+            }
+            state = ISmartRecyclerView.REFRESH_PULL
             mSmartRefreshLayout.autoRefresh()
+            return
         }
-    }
-
-
-    override fun finishRefresh(success: Boolean, footerState: State) {
-        mSmartRefreshLayout.finishRefresh(success)
+        mSmartRefreshLayout.finishRefresh()
+        afterRefreshCompleted(this)
         markIdle()
     }
 
-    override fun finishLoadMore(result: LoadMoreResult) {
+    override fun setLoadMoreResult(result: LoadMoreResult) {
         if (!mLoadMoreEnable) {
             return
         }
-        mSmartRefreshLayout.finishLoadMore(300, result.success, result.noMoreData)
+        when (result) {
+            LoadMoreResult.SUCCESS -> {
+                mSmartRefreshLayout.finishLoadMore(300, true, false)
+            }
+
+            LoadMoreResult.NO_MORE -> {
+                mSmartRefreshLayout.finishLoadMore(300, true, true)
+            }
+
+            LoadMoreResult.ERROR -> {
+                mSmartRefreshLayout.finishLoadMore(300, false, false)
+            }
+        }
     }
 }

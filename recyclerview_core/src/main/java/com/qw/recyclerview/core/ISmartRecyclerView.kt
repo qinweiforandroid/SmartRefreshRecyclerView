@@ -11,17 +11,7 @@ interface ISmartRecyclerView {
         const val REFRESH_UP = 2
     }
 
-    fun getRecyclerView(): RecyclerView
-
-    /**
-     * 设置布局管理器
-     */
-    fun setLayoutManager(layoutManager: RecyclerView.LayoutManager): ISmartRecyclerView
-
-    /**
-     * 设置动画
-     */
-    fun setItemAnimator(itemAnimator: RecyclerView.ItemAnimator): ISmartRecyclerView
+    val recyclerView: RecyclerView
 
     /**
      * 设置下拉刷新listener
@@ -36,7 +26,7 @@ interface ISmartRecyclerView {
     /**
      * 启用下拉刷新
      */
-    fun setRefreshEnable(isEnabled: Boolean): ISmartRecyclerView
+    fun setRefreshEnable(enabled: Boolean): ISmartRecyclerView
 
     /**
      * 是否支持下拉刷新
@@ -46,7 +36,7 @@ interface ISmartRecyclerView {
     /**
      * 启用加载更多
      */
-    fun setLoadMoreEnable(isEnabled: Boolean): ISmartRecyclerView
+    fun setLoadMoreEnable(enabled: Boolean): ISmartRecyclerView
 
 
     /**
@@ -65,31 +55,11 @@ interface ISmartRecyclerView {
      */
     fun isUp(): Boolean
 
-    /**
-     * 自动刷新
-     */
-    fun autoRefresh()
-
-
-    /**
-     * 刷新完成更新ui
-     * case 1 隐藏更多状态: success=false State.EMPTY
-     * case 2 显示加载失败状态：success=false State.ERROR
-     * @param success true刷新成功，false 刷新失敗
-     * @param footerState 加载更多状态
-     */
-    fun finishRefresh(
-        success: Boolean, footerState: State = if (success) {
-            State.IDLE
-        } else {
-            State.ERROR
-        }
+    fun setRefreshing(
+        refreshing: Boolean,
+        afterRefreshCompleted: ISmartRecyclerView.() -> Unit = {}
     )
 
-
-    /**
-     * 加载更多结束状态控制
-     */
-    fun finishLoadMore(result: LoadMoreResult)
+    fun setLoadMoreResult(result: LoadMoreResult)
 
 }

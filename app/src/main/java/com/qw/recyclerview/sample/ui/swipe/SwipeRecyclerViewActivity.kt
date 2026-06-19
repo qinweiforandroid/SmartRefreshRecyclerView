@@ -50,7 +50,7 @@ class SwipeRecyclerViewActivity : AppCompatActivity() {
             .setLoadMoreEnable(true)
             .setOnRefreshListener(object : OnRefreshListener {
                 override fun onRefresh() {
-                    smart.getRecyclerView().postDelayed({
+                    smart.recyclerView.postDelayed({
                         refresh()
                     }, 1000)
                 }
@@ -65,7 +65,7 @@ class SwipeRecyclerViewActivity : AppCompatActivity() {
                     adapter.notifyItemChanged(adapter.itemCount - 1)
                 }
             })
-        smart.autoRefresh()
+        smart.setRefreshing(true)
     }
 
     private fun refresh() {
@@ -74,17 +74,17 @@ class SwipeRecyclerViewActivity : AppCompatActivity() {
             modules.add("" + i)
         }
         adapter.notifyDataSetChanged()
-        smart.finishRefresh(true)
+        smart.setRefreshing(false)
     }
 
     private fun loadMore() {
-        smart.getRecyclerView().postDelayed({
+        smart.recyclerView.postDelayed({
             val size = modules.size
             for (i in size until size + 20) {
                 modules.add("" + i)
             }
             adapter.notifyDataSetChanged()
-            smart.finishLoadMore(
+            smart.setLoadMoreResult(
                 if (modules.size > 100) {
                     LoadMoreResult.NO_MORE
                 } else {
@@ -141,20 +141,19 @@ class SwipeRecyclerViewActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_linearLayout -> {
-                smart.setLayoutManager(LinearLayoutManager(this))
+                smart.recyclerView.layoutManager = LinearLayoutManager(this)
             }
 
             R.id.action_gridLayout -> {
-                smart.setLayoutManager(getGridLayoutManager(2))
+                smart.recyclerView.layoutManager = getGridLayoutManager(2)
             }
 
             R.id.action_staggeredGridLayout -> {
-                smart.setLayoutManager(
+                smart.recyclerView.layoutManager =
                     StaggeredGridLayoutManager(
                         2,
                         StaggeredGridLayoutManager.VERTICAL
                     )
-                )
             }
         }
         return super.onOptionsItemSelected(item)

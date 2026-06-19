@@ -75,7 +75,7 @@ class SwipeCompatActivity : AppCompatActivity() {
                 override fun onLoadMore() {
                     mVM.loadMore()
                 }
-            }).autoRefresh()
+            }).setRefreshing(true)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

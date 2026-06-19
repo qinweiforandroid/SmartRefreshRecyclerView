@@ -73,7 +73,7 @@ class SmartV2CompatActivity : AppCompatActivity() {
                         refresh()
                     }, 1000)
                 }
-            }).autoRefresh()
+            }).setRefreshing(true)
     }
 
     private fun refresh() {
@@ -81,7 +81,7 @@ class SmartV2CompatActivity : AppCompatActivity() {
         for (i in 0..19) {
             mList.modules.add("" + i)
         }
-        mList.finishRefresh(true)
+        mList.setRefreshing(false)
         mList.adapter.notifyDataSetChanged()
     }
 
@@ -90,7 +90,7 @@ class SmartV2CompatActivity : AppCompatActivity() {
         for (i in size until size + 20) {
             mList.modules.add("" + i)
         }
-        mList.finishLoadMore(
+        mList.setLoadMoreResult(
             if (mList.modules.size > 100) {
                 LoadMoreResult.NO_MORE
             } else {

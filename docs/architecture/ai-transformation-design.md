@@ -77,7 +77,7 @@
 - 以组合方式抽取公共滚动加载更多逻辑到 `recyclerview_core`
 - 保持宿主 UI 容器各自的 refresh 能力，不做 refresh 大一统抽象
 - 新增 `ScrollLoadMoreCoordinator`，统一 `scroll + load more` 行为
-- 将 `finishLoadMore(success, noMoreData)` 收敛为结果型接口 `LoadMoreResult`
+- 将 load more 完成语义收敛为结果型接口 `LoadMoreResult`
 - 保持现有外部调用方式基本兼容
 
 ### 阶段二：文档和示例整理
@@ -134,7 +134,7 @@
 
 加载更多完成接口不再推荐继续使用：
 
-- `finishLoadMore(success: Boolean, noMoreData: Boolean)`
+- `LoadMoreResult`
 
 当前已新增更明确的结果型表达：
 
@@ -145,17 +145,17 @@
 推荐调用方式：
 
 ```kotlin
-smart.finishLoadMore(LoadMoreResult.SUCCESS)
-smart.finishLoadMore(LoadMoreResult.NO_MORE)
-smart.finishLoadMore(LoadMoreResult.ERROR)
+smart.setLoadMoreResult(LoadMoreResult.SUCCESS)
+smart.setLoadMoreResult(LoadMoreResult.NO_MORE)
+smart.setLoadMoreResult(LoadMoreResult.ERROR)
 ```
 
 ### 9.2 兼容策略
 
-- 保留旧布尔接口，避免一次性破坏历史调用
-- 旧接口内部统一转发到 `LoadMoreResult`
-- 新代码与 sample 优先使用结果型接口
-- 后续 README 与迁移文档统一以结果型接口为主
+- 统一由结果型接口表达 load more 结果
+- `LoadMoreResult` 只表达结果本身
+- footer 状态与第三方控件参数映射由具体实现解释
+- README 与 sample 统一以 `setLoadMoreResult` 为主
 
 ## 10. 当前已落地的阶段一结论
 
@@ -170,7 +170,7 @@ smart.finishLoadMore(LoadMoreResult.ERROR)
 
 - 宿主管理 refresh
 - coordinator 管理 scroll + load more
-- `finishRefresh(success, footerState)` 继续由宿主解释
+- refresh 状态由宿主解释并通过 `setRefreshing(...)` 暴露
 - load more 完成结果优先使用 `LoadMoreResult`
 
 ### 10.3 设计原因

@@ -93,12 +93,9 @@ README 应明确说明：
 README 应明确区分：
 
 - 推荐接口
-  - `finishLoadMore(result: LoadMoreResult)`
+  - `setLoadMoreResult(result: LoadMoreResult)`
 
-- 兼容接口
-  - `finishLoadMore(success: Boolean, noMoreData: Boolean)`
-
-并明确说明新代码优先使用结果型接口。
+并明确说明 `LoadMoreResult` 只表达结果语义，不承载第三方控件的布尔参数。
 
 ## 7. README 建议结构
 
@@ -143,8 +140,7 @@ README 应明确区分：
 
 README 中建议补充：
 
-- `finishLoadMore(success, noMoreData)` 仍可用
-- 推荐逐步迁移到 `LoadMoreResult`
+- 推荐统一使用 `setLoadMoreResult(LoadMoreResult.*)`
 - 如果只需要基础列表刷新与加载更多，优先采用 `SwipeRecyclerView`
 
 ## 10. 预计改动文件

@@ -63,7 +63,7 @@ class SmartCompatActivity : AppCompatActivity() {
                 override fun onRefresh() {
                     refresh()
                 }
-            }).autoRefresh()
+            }).setRefreshing(true)
 
     }
 
@@ -80,7 +80,7 @@ class SmartCompatActivity : AppCompatActivity() {
         for (i in size until size + 20) {
             mList.modules.add("" + i)
         }
-        mList.finishLoadMore(LoadMoreResult.ERROR)
+        mList.setLoadMoreResult(LoadMoreResult.ERROR)
         mList.adapter.notifyItemRangeInserted(size, 20)
     }
 
@@ -90,7 +90,7 @@ class SmartCompatActivity : AppCompatActivity() {
             for (i in 0..19) {
                 mList.modules.add("" + i)
             }
-            mList.finishRefresh(true)
+            mList.setRefreshing(false)
             mList.adapter.notifyDataSetChanged()
         }, 1000)
     }
