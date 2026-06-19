@@ -71,15 +71,6 @@ abstract class SmartListCompat<T>(private val smart: ISmartRecyclerView) :
         }
     }
 
-    @Deprecated(message = "use setUpLoadMore and setOnLoadMoreListener to replace")
-    fun supportLoadMore(
-        loadMore: AbsLoadMore,
-        onLoadMoreListener: OnLoadMoreListener
-    ) {
-        setLoadMoreView(loadMore)
-        setOnLoadMoreListener(onLoadMoreListener)
-    }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
         return loadMoreFooterDelegate.onCreateViewHolder(parent, viewType) {
             onCreateBaseViewHolder(parent, viewType)
@@ -127,17 +118,6 @@ abstract class SmartListCompat<T>(private val smart: ISmartRecyclerView) :
         smart.finishLoadMore(result)
     }
 
-    @Deprecated(
-        message = "Use finishLoadMore(result) to avoid ambiguous boolean combinations.",
-        replaceWith = ReplaceWith(
-            expression = "finishLoadMore(LoadMoreResult.from(success, noMoreData))",
-            imports = ["com.qw.recyclerview.loadmore.LoadMoreResult"]
-        )
-    )
-    fun finishLoadMore(success: Boolean, noMoreData: Boolean) {
-        finishLoadMore(LoadMoreResult.from(success, noMoreData))
-    }
-
     fun getGridLayoutManager(spanCount: Int): GridLayoutManager {
         return loadMoreFooterDelegate.createGridLayoutManager(
             recyclerView = smart.getRecyclerView(),
@@ -149,14 +129,6 @@ abstract class SmartListCompat<T>(private val smart: ISmartRecyclerView) :
     fun setPaging(page: IPage): SmartListCompat<T> {
         pagingDataDelegate.setPage(page)
         return this
-    }
-
-    @Deprecated(
-        message = "Use setPaging(page) instead.",
-        replaceWith = ReplaceWith("setPaging(page)")
-    )
-    fun setUpPage(page: IPage): SmartListCompat<T> {
-        return setPaging(page)
     }
 
     fun setLoadMoreEnable(isEnabled: Boolean): SmartListCompat<T> {
@@ -179,14 +151,6 @@ abstract class SmartListCompat<T>(private val smart: ISmartRecyclerView) :
         return this
     }
 
-    @Deprecated(
-        message = "Use setLoadMoreView(loadMore) instead.",
-        replaceWith = ReplaceWith("setLoadMoreView(loadMore)")
-    )
-    fun setUpLoadMore(loadMore: AbsLoadMore): SmartListCompat<T> {
-        return setLoadMoreView(loadMore)
-    }
-
     fun setOnLoadMoreListener(onLoadMoreListener: OnLoadMoreListener): SmartListCompat<T> {
         loadMoreFooterDelegate.setOnLoadMoreListener(onLoadMoreListener)
         return this
@@ -201,23 +165,7 @@ abstract class SmartListCompat<T>(private val smart: ISmartRecyclerView) :
         pagingDataDelegate.submitPageData(it)
     }
 
-    @Deprecated(
-        message = "Use submitPageData(data) instead.",
-        replaceWith = ReplaceWith("submitPageData(it)")
-    )
-    fun notifyDataChanged(it: ArrayList<T>) {
-        submitPageData(it)
-    }
-
     fun submitPageError() {
         pagingDataDelegate.submitPageError()
-    }
-
-    @Deprecated(
-        message = "Use submitPageError() instead.",
-        replaceWith = ReplaceWith("submitPageError()")
-    )
-    fun notifyError() {
-        submitPageError()
     }
 }

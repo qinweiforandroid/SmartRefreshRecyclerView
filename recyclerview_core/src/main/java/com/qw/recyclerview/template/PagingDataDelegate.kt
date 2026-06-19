@@ -34,7 +34,7 @@ internal class PagingDataDelegate<T>(
         val size = modules.size
         modules.addAll(data)
         smart.finishLoadMore(
-            if (requirePage().hasMore()) {
+            if (requirePage().hasNextPage()) {
                 LoadMoreResult.SUCCESS
             } else {
                 LoadMoreResult.NO_MORE
@@ -44,6 +44,7 @@ internal class PagingDataDelegate<T>(
     }
 
     fun submitPageError() {
+        page?.commitLoadFailure()
         if (smart.isPull()) {
             smart.finishRefresh(false)
         } else {

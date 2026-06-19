@@ -180,14 +180,6 @@ smart.finishLoadMore(LoadMoreResult.ERROR)
 - `ERROR`
   - 加载失败
 
-旧接口仍兼容：
-
-```kotlin
-smart.finishLoadMore(success = true, noMoreData = false)
-```
-
-但新代码不建议继续使用这种布尔组合写法。
-
 ## SmartListCompat
 
 如果你不想反复写 adapter、modules 和 load more footer 逻辑，可以直接用 `SmartListCompat`。
@@ -215,7 +207,7 @@ val list = object : SmartListCompat<String>(smart) {
     }
 }
 
-list.setUpLoadMore(loadMore)
+list.setLoadMoreView(loadMore)
     .setRefreshEnable(true)
     .setLoadMoreEnable(true)
     .setOnRefreshListener(object : OnRefreshListener {
@@ -233,13 +225,13 @@ list.setUpLoadMore(loadMore)
 如果你已经有分页对象或 ViewModel，可以继续结合：
 
 ```kotlin
-viewModel.result.observe(this, list::notifyDataChanged)
+viewModel.result.observe(this, list::submitPageData)
 ```
 
 错误场景可以直接使用：
 
 ```kotlin
-list.notifyError()
+list.submitPageError()
 ```
 
 ## SmartRefreshLayout 路线
@@ -294,26 +286,13 @@ list.notifyError()
 
 ## 迁移说明
 
-如果你在旧代码里使用的是：
-
-```kotlin
-finishLoadMore(success, noMoreData)
-```
-
-建议逐步迁移为：
+当前统一使用：
 
 ```kotlin
 finishLoadMore(LoadMoreResult.SUCCESS)
 finishLoadMore(LoadMoreResult.NO_MORE)
 finishLoadMore(LoadMoreResult.ERROR)
 ```
-
-迁移原则：
-
-- 旧接口可以继续用
-- 旧接口当前已标记为 deprecated
-- 新代码优先使用 `LoadMoreResult`
-- README、sample 和后续设计文档都以结果型接口为主
 
 ## 文档
 

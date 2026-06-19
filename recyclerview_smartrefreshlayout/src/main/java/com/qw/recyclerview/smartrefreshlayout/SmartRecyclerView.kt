@@ -117,15 +117,4 @@ class SmartRecyclerView(
         loadMoreCoordinator.finishLoadMore(result)
         markIdle()
     }
-
-    @Deprecated(
-        message = "Use finishLoadMore(result) to avoid ambiguous boolean combinations.",
-        replaceWith = ReplaceWith(
-            expression = "finishLoadMore(LoadMoreResult.from(success, noMoreData))",
-            imports = ["com.qw.recyclerview.loadmore.LoadMoreResult"]
-        )
-    )
-    override fun finishLoadMore(success: Boolean, noMoreData: Boolean) {
-        finishLoadMore(LoadMoreResult.from(success, noMoreData))
-    }
 }

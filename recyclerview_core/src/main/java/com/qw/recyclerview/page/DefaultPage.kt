@@ -9,11 +9,11 @@ class DefaultPage(private val firstPage: Int = 1) : IPage {
     private var mWillLoadPage = firstPage
     private var mLastPage = -1
 
-    override fun pullToDown() {
+    override fun prepareRefresh() {
         mWillLoadPage = firstPage
     }
 
-    override fun pullToUp() {
+    override fun prepareLoadMore() {
         mWillLoadPage = mCurrentPage + 1
     }
 
@@ -26,27 +26,31 @@ class DefaultPage(private val firstPage: Int = 1) : IPage {
      * pull down mWillLoadPage=1, req ok  mCurrentPage=1 isFirstPage() true
      * clear data  add new data notify refresh
      */
-    override fun isFirstPage(): Boolean {
+    override fun isFirstPageRequest(): Boolean {
         return mWillLoadPage == firstPage
     }
 
 
-    override fun hasMore(): Boolean {
+    override fun hasNextPage(): Boolean {
         return mCurrentPage != mLastPage
     }
 
-    override fun onPageChanged(isLastPage: Boolean) {
+    override fun commitLoadSuccess(hasNextPage: Boolean) {
         mCurrentPage = mWillLoadPage
-        if (isLastPage) {
+        if (!hasNextPage) {
             mLastPage = mCurrentPage
         }
     }
 
-    fun getCurrentPage(): Int {
-        return mCurrentPage
+    override fun commitLoadFailure() {
+        mWillLoadPage = mCurrentPage
     }
 
-    fun getWillPage(): Int {
+    fun getRequestPage(): Int {
         return mWillLoadPage
+    }
+
+    fun getCurrentPage(): Int {
+        return mCurrentPage
     }
 }

@@ -194,10 +194,49 @@ classDiagram
 #### 负责范围
 
 - 持有 `IPage`
+- 将 `IPage` 作为“页码分页状态机”协作对象，而不是 UI 手势语义接口
 - 根据 `smart.isPull()` 判断当前是 refresh 还是 load more
 - 分页成功时如何更新 `modules`
 - 分页成功后如何决定 `LoadMoreResult.SUCCESS / NO_MORE`
 - 分页失败时如何落 UI
+
+#### `IPage` 的职责边界
+
+`IPage` 更适合作为轻量分页状态维护接口，而不是表达“下拉 / 上拉”这类 UI 动作。
+
+因此更推荐它承载以下语义：
+
+- 准备 refresh 请求
+- 准备 load more 请求
+- 提交成功请求结果
+- 提交失败请求结果
+- 判断当前是否首屏请求
+- 判断后续是否还有下一页
+
+这意味着后续命名收敛方向应尽量靠近：
+
+- `prepareRefresh()`
+- `prepareLoadMore()`
+- `isFirstPageRequest()`
+- `hasNextPage()`
+- `commitLoadSuccess(hasNextPage)`
+- `commitLoadFailure()`
+
+而诸如：
+
+- `requestPage`
+- `cursor`
+- `lastDataId`
+
+这类“具体请求参数”不应成为 `IPage` 抽象层的正式契约，而应由具体实现类自己维护。
+
+而不是继续把：
+
+- `pullToDown()`
+- `pullToUp()`
+- `onPageChanged()`
+
+作为推荐主语义接口对外扩散。
 
 #### 预期接管的现有逻辑
 

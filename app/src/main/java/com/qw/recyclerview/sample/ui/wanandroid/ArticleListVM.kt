@@ -17,28 +17,30 @@ class ArticleListVM : ViewModel() {
     val page = DefaultPage(0)
     val articles = MutableLiveData<Result<ArrayList<ArticleBean>>>()
     fun onRefresh() {
-        page.pullToDown()
+        page.prepareRefresh()
         loadData()
     }
 
     fun onLoadMore() {
-        page.pullToUp()
+        page.prepareLoadMore()
         loadData()
     }
 
     private fun loadData() {
         viewModelScope.launch {
             try {
-                val response = SmartRefreshRepository.loadArticles(page.getWillPage())
+                val response = SmartRefreshRepository.loadArticles(page.getRequestPage())
                 if (response.errorCode == 0) {
                     val pageCount = response.data.pageCount ?: 0
                     articles.value = Result.success(response.data.datas!!.apply {
-                        page.onPageChanged(page.getWillPage() >= pageCount)
+                        page.commitLoadSuccess(page.getRequestPage() < pageCount)
                     })
                 } else {
+                    page.commitLoadFailure()
                     articles.value = Result.failure(RuntimeException(response.errorMsg))
                 }
             } catch (e: Exception) {
+                page.commitLoadFailure()
                 articles.value = Result.failure(e)
             }
         }

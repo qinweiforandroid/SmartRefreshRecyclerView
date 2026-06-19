@@ -108,18 +108,4 @@ class SmartV2RecyclerView(
         }
         mSmartRefreshLayout.finishLoadMore(300, result.success, result.noMoreData)
     }
-
-    @Deprecated(
-        message = "Use finishLoadMore(result) to avoid ambiguous boolean combinations.",
-        replaceWith = ReplaceWith(
-            expression = "finishLoadMore(LoadMoreResult.from(success, noMoreData))",
-            imports = ["com.qw.recyclerview.loadmore.LoadMoreResult"]
-        )
-    )
-    override fun finishLoadMore(success: Boolean, noMoreData: Boolean) {
-        if (!mLoadMoreEnable) {
-            return
-        }
-        finishLoadMore(LoadMoreResult.from(success, noMoreData))
-    }
 }

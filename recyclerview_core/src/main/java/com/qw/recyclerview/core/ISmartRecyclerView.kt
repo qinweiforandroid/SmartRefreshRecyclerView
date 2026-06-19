@@ -92,17 +92,4 @@ interface ISmartRecyclerView {
      */
     fun finishLoadMore(result: LoadMoreResult)
 
-    /**
-     * 加载更多结束状态控制
-     */
-    @Deprecated(
-        message = "Use finishLoadMore(result) to avoid ambiguous boolean combinations.",
-        replaceWith = ReplaceWith(
-            expression = "finishLoadMore(LoadMoreResult.from(success, noMoreData))",
-            imports = ["com.qw.recyclerview.loadmore.LoadMoreResult"]
-        )
-    )
-    fun finishLoadMore(success: Boolean, noMoreData: Boolean) {
-        finishLoadMore(LoadMoreResult.from(success, noMoreData))
-    }
 }

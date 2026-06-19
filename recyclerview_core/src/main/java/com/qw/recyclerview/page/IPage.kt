@@ -5,28 +5,15 @@ package com.qw.recyclerview.page
  * email: qinwei_it@163.com
  */
 interface IPage {
-    /**
-     * 下拉
-     */
-    fun pullToDown()
+    fun prepareRefresh()
 
-    /**
-     * 上拉
-     */
-    fun pullToUp()
+    fun prepareLoadMore()
 
-    /**
-     * 是否是首页
-     */
-    fun isFirstPage(): Boolean
+    fun isFirstPageRequest(): Boolean
 
-    /**
-     * 是否有更多
-     */
-    fun hasMore(): Boolean
+    fun hasNextPage(): Boolean
 
-    /**
-     * 标记最后一页
-     */
-    fun onPageChanged(isLastPage: Boolean = false)
+    fun commitLoadSuccess(hasNextPage: Boolean)
+
+    fun commitLoadFailure()
 }
