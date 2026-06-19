@@ -11,7 +11,6 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.qw.recyclerview.core.AbsItemViewDelegate
 import com.qw.recyclerview.core.BaseViewHolder
-import com.qw.recyclerview.core.IItemViewType
 import com.qw.recyclerview.sample.R
 import com.qw.recyclerview.template.ListCompat
 
@@ -56,7 +55,15 @@ class StickHeaderListActivity : AppCompatActivity() {
                         label.text = item.title
                     }
                 }
-            }).create<IItemViewType>(mStickyRecyclerView)
+            })
+            .setItemViewTypeProvider { _, item ->
+                when (item) {
+                    is Header -> 1
+                    is Item -> 2
+                    else -> error("Unsupported item type: ${item::class.java.name}")
+                }
+            }
+            .create<Any>(mStickyRecyclerView)
 
         mStickyRecyclerView.addItemDecoration(StickyItemDecoration(mStickyHeadContainer, 1).apply {
             setOnStickyChangeListener(object : OnStickyChangeListener {
@@ -104,15 +111,7 @@ class StickHeaderListActivity : AppCompatActivity() {
         list.adapter.notifyDataSetChanged()
     }
 
-    data class Header(val title: String) : IItemViewType {
-        override fun getItemViewType(): Int {
-            return 1
-        }
-    }
+    data class Header(val title: String)
 
-    data class Item(val title: String) : IItemViewType {
-        override fun getItemViewType(): Int {
-            return 2
-        }
-    }
+    data class Item(val title: String)
 }

@@ -5,7 +5,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.qw.recyclerview.core.BaseListAdapter
 import com.qw.recyclerview.core.BaseViewHolder
-import com.qw.recyclerview.core.IItemViewType
 import com.qw.recyclerview.core.ItemViewDelegate
 import com.qw.recyclerview.core.MultiTypeUseCase
 
@@ -100,6 +99,7 @@ abstract class ListCompat<T>(val mRecyclerView: RecyclerView) {
     class MultiTypeBuilder {
 
         private val mMultiType = MultiTypeUseCase()
+        private var itemViewTypeProvider: ((position: Int, item: Any) -> Int)? = null
 
         fun register(
             viewType: Int,
@@ -109,17 +109,23 @@ abstract class ListCompat<T>(val mRecyclerView: RecyclerView) {
             return this
         }
 
+        fun setItemViewTypeProvider(
+            provider: (position: Int, item: Any) -> Int
+        ): MultiTypeBuilder {
+            itemViewTypeProvider = provider
+            return this
+        }
+
         fun <T> create(
             mRecyclerView: RecyclerView
         ): ListCompat<T> {
+            val provider = checkNotNull(itemViewTypeProvider) {
+                "MultiTypeBuilder requires setItemViewTypeProvider(...) before create(recyclerView)."
+            }
             return object : ListCompat<T>(mRecyclerView) {
 
                 override fun getItemViewType(position: Int): Int {
-                    val item = modules[position]
-                    if (item is IItemViewType) {
-                        return item.getItemViewType()
-                    }
-                    throw IllegalArgumentException("module must be impl IItemViewType interface")
+                    return provider(position, modules[position] as Any)
                 }
 
                 override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {

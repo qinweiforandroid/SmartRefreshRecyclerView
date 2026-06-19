@@ -22,6 +22,26 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
     private lateinit var list: SmartListCompat<Message>
     private val senderId = "zhang"
     private val receiverId = "li"
+    private val inViewTypeMapping = HashMap<MessageType, Int>().apply {
+        this[MessageType.txt] = Message.MSG_TXT_IN
+        this[MessageType.emo] = Message.MSG_EMO_IN
+    }
+    private val toViewTypeMapping = HashMap<MessageType, Int>().apply {
+        this[MessageType.txt] = Message.MSG_TXT_TO
+        this[MessageType.emo] = Message.MSG_EMO_TO
+    }
+
+    fun viewTypeProvider(message: Message): Int {
+        return when (message.senderId) {
+            senderId -> {
+                toViewTypeMapping[message.contentType]!!
+            }
+
+            else -> {
+                inViewTypeMapping[message.contentType]!!
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,7 +55,12 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
         list = SmartListCompat.MultiTypeBuilder()
             .register(Message.MSG_TXT_IN, MessageInItemViewDelegate())
             .register(Message.MSG_TXT_TO, MessageToItemViewDelegate())
-            .create(SmartRecyclerView(rv, srl))
+            .build(SmartRecyclerView(rv, srl), ::viewTypeProvider)
+        initData()
+    }
+
+
+    private fun initData() {
         list.modules.add(sendMessage("我是要在交一个月的房租，还是押金就可以了"))
         list.modules.add(receiverMessage("你交一个月的房租吧，你退房时我看一下水电煤结清就退你押金"))
         list.modules.add(sendMessage("我是要在交一个月的房租，还是押金就可以了"))
@@ -44,6 +69,7 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
         list.modules.add(receiverMessage("你交一个月的房租吧，你退房时我看一下水电煤结清就退你押金"))
         list.adapter.notifyDataSetChanged()
     }
+
 
     class MessageInItemViewDelegate : AbsItemViewDelegate(R.layout.activity_chat_text_in_item) {
         override fun onCreateViewHolder(view: View) = object : BaseViewHolder(view) {

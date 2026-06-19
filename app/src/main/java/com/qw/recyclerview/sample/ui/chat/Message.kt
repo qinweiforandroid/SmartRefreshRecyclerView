@@ -1,7 +1,5 @@
 package com.qw.recyclerview.sample.ui.chat
 
-import com.qw.recyclerview.core.IItemViewType
-
 /**
  * Created by qinwei on 2023/5/27 19:56
  * email: qinwei_it@163.com
@@ -20,43 +18,13 @@ data class Message(
     val timestamp: Long = 0,
     val isRead: Boolean = false,
     val percent: Int = 0
-) : IItemViewType {
+) {
     companion object {
         const val MSG_TXT_IN = 1
         const val MSG_TXT_TO = 2
         const val MSG_EMO_IN = 3
         const val MSG_EMO_TO = 4
         const val MSG_NOT_SUPPORT = 100
-    }
-
-    override fun getItemViewType(): Int {
-        return when (senderId) {
-            "zhang" -> {
-                when (contentType) {
-                    MessageType.txt -> {
-                        MSG_TXT_TO
-                    }
-
-                    MessageType.emo -> {
-                        MSG_EMO_TO
-                    }
-
-                }
-            }
-
-            else -> {
-                when (contentType) {
-                    MessageType.txt -> {
-                        MSG_TXT_IN
-                    }
-
-                    MessageType.emo -> {
-                        MSG_EMO_IN
-                    }
-
-                }
-            }
-        }
     }
 }
 

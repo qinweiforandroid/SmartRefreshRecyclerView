@@ -5,7 +5,6 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.qw.recyclerview.core.BaseViewHolder
-import com.qw.recyclerview.core.IItemViewType
 import com.qw.recyclerview.core.ISmartRecyclerView
 import com.qw.recyclerview.core.ItemViewDelegate
 import com.qw.recyclerview.core.MultiTypeUseCase
@@ -43,6 +42,7 @@ abstract class SmartListCompat<T>(private val smart: ISmartRecyclerView) :
 
     class MultiTypeBuilder {
         private val mMultiType = MultiTypeUseCase()
+
         fun register(
             viewType: Int,
             delegate: ItemViewDelegate
@@ -51,7 +51,10 @@ abstract class SmartListCompat<T>(private val smart: ISmartRecyclerView) :
             return this
         }
 
-        fun <T> create(smart: ISmartRecyclerView): SmartListCompat<T> {
+        fun <T> build(
+            smart: ISmartRecyclerView,
+            viewTypeProvider: (item: T) -> Int
+        ): SmartListCompat<T> {
             return object : SmartListCompat<T>(smart) {
                 override fun onCreateBaseViewHolder(
                     parent: ViewGroup, viewType: Int
@@ -60,11 +63,7 @@ abstract class SmartListCompat<T>(private val smart: ISmartRecyclerView) :
                 }
 
                 override fun getItemViewTypeByPosition(position: Int): Int {
-                    val item = modules[position]
-                    if (item is IItemViewType) {
-                        return item.getItemViewType()
-                    }
-                    throw IllegalArgumentException("module must be impl IItemViewType interface")
+                    return viewTypeProvider(modules[position])
                 }
             }
         }

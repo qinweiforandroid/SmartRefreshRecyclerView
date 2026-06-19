@@ -14,13 +14,17 @@ class MultiTypeUseCase {
     private val types: ArrayMap<Int, ItemViewDelegate> = ArrayMap()
 
     fun register(viewType: Int, delegate: ItemViewDelegate) {
-        if (!types.contains(viewType)) {
-            types[viewType] = delegate
+        check(!types.contains(viewType)) {
+            "Duplicate ItemViewDelegate registration for viewType=$viewType."
         }
+        types[viewType] = delegate
     }
 
     fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
-        return types[viewType]!!.onCreateViewHolder(parent.context, parent)
+        val delegate = checkNotNull(types[viewType]) {
+            "No ItemViewDelegate registered for viewType=$viewType."
+        }
+        return delegate.onCreateViewHolder(parent.context, parent)
     }
 }
 
