@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.*
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -27,6 +29,11 @@ class SmartV2RecyclerViewActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         bind = SmartRefreshLayoutActivityBinding.inflate(layoutInflater)
         setContentView(bind.root)
+        ViewCompat.setOnApplyWindowInsetsListener(bind.root) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
 
         //1.配置RecyclerView
         bind.mRecyclerView.overScrollMode = RecyclerView.OVER_SCROLL_NEVER

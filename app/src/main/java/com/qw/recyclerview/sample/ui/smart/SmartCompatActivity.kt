@@ -10,6 +10,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.qw.recyclerview.core.BaseViewHolder
 import com.qw.recyclerview.core.OnLoadMoreListener
@@ -34,6 +36,11 @@ class SmartCompatActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         bind = SmartRefreshLayoutActivityBinding.inflate(layoutInflater)
         setContentView(bind.root)
+        ViewCompat.setOnApplyWindowInsetsListener(bind.root) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
         val smart = SmartRecyclerView(bind.mRecyclerView, bind.mSmartRefreshLayout)
         mList = object : SmartListCompat<String>(smart) {
             override fun onCreateBaseViewHolder(parent: ViewGroup, viewType: Int) = Holder(

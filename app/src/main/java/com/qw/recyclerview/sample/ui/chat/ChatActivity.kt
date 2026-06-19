@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.qw.recyclerview.core.AbsItemViewDelegate
 import com.qw.recyclerview.core.BaseViewHolder
@@ -24,6 +26,11 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val srl = findViewById<SmartRefreshLayout>(R.id.mSmartRefreshLayout)
+        ViewCompat.setOnApplyWindowInsetsListener(srl) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
         val rv = findViewById<RecyclerView>(R.id.mRecyclerView)
         list = SmartListCompat.MultiTypeBuilder()
             .register(Message.MSG_TXT_IN, MessageInItemViewDelegate())

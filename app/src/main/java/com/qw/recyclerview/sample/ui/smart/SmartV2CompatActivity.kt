@@ -6,6 +6,8 @@ import android.os.Looper
 import android.view.*
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -31,6 +33,11 @@ class SmartV2CompatActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         bind = SmartRefreshLayoutActivityBinding.inflate(layoutInflater)
         setContentView(bind.root)
+        ViewCompat.setOnApplyWindowInsetsListener(bind.root) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
         val rv = bind.mRecyclerView
         val srl = bind.mSmartRefreshLayout
         val smart = SmartV2RecyclerView(rv, srl)

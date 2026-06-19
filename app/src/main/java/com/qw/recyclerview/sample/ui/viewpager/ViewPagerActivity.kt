@@ -6,6 +6,8 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -34,6 +36,11 @@ class ViewPagerActivity : AppCompatActivity(), OnPageChangeListener {
         super.onCreate(savedInstanceState)
         binding = ActivityViewpagerBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
         binding.mRecyclerView.layoutManager = LinearLayoutManager(this)
         mListCompat = object : ListCompat<String>(binding.mRecyclerView) {
             override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {

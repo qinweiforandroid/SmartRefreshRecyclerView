@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -29,6 +31,11 @@ class ArticleListActivity : AppCompatActivity(R.layout.activity_article_list) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val rv = findViewById<RecyclerView>(R.id.mRecyclerView)
+        ViewCompat.setOnApplyWindowInsetsListener(rv) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
         val swipe = findViewById<SwipeRefreshLayout>(R.id.mSwipeRefreshLayout)
         mVM = ViewModelProvider(this)[ArticleListVM::class.java]
         mVM.articles.observe(this) {

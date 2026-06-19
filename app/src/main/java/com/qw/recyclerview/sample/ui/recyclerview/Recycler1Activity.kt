@@ -7,6 +7,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.qw.recyclerview.core.BaseViewHolder
@@ -24,6 +26,11 @@ class Recycler1Activity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         bind = RecyclerviewLayoutActivityBinding.inflate(layoutInflater)
         setContentView(bind.root)
+        ViewCompat.setOnApplyWindowInsetsListener(bind.root) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
         bind.mRecyclerView.overScrollMode = RecyclerView.OVER_SCROLL_NEVER
         bind.mRecyclerView.layoutManager = LinearLayoutManager(this)
         adapter = ListAdapter()

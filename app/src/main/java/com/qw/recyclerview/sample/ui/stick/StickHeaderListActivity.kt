@@ -6,6 +6,8 @@ import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.qw.recyclerview.core.AbsItemViewDelegate
 import com.qw.recyclerview.core.BaseViewHolder
@@ -26,6 +28,11 @@ class StickHeaderListActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_stick_header)
         mStickyRecyclerView = findViewById(R.id.mStickyRecyclerView)
+        ViewCompat.setOnApplyWindowInsetsListener(mStickyRecyclerView) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
         mStickyHeadContainer = findViewById(R.id.mStickyHeadContainer)
         val list = ListCompat.MultiTypeBuilder()
             .register(1, object : AbsItemViewDelegate(R.layout.stick_item_layout) {

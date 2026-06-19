@@ -3,6 +3,9 @@ package com.qw.recyclerview.sample.ui
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.content.Intent
+import androidx.activity.enableEdgeToEdge
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import com.qw.recyclerview.sample.databinding.ActivityMainBinding
 import com.qw.recyclerview.sample.ui.chat.ChatActivity
 import com.qw.recyclerview.sample.ui.drag.DragSwipeListActivity
@@ -22,6 +25,11 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         bind = ActivityMainBinding.inflate(layoutInflater)
+        ViewCompat.setOnApplyWindowInsetsListener(bind.root) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
         setContentView(bind.root)
         bind.mRecyclerViewSample1Btn.setOnClickListener {
             startActivity(Intent(this, Recycler1Activity::class.java))
