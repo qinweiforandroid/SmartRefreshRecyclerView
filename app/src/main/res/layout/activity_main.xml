@@ -159,5 +159,19 @@
             android:layout_marginTop="8dp"
             android:text="stick" />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="recyclerview_player"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Overline" />
+
+        <Button
+            android:id="@+id/mCctvPlayerBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="CCTV/卫视播放器" />
+
     </LinearLayout>
 </ScrollView>

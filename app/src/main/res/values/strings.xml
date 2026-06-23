@@ -1,3 +1,30 @@
 <resources>
     <string name="app_name">SmartRefreshRecyclerView</string>
+    <string name="player_title">CCTV / 卫视播放器示例</string>
+    <string name="player_channel_source">频道列表：下拉优先拉取远程 M3U，失败时回退到内置示例源</string>
+    <string name="player_status_loading">正在加载频道列表…</string>
+    <string name="player_status_error">频道加载失败，已切换到内置示例源</string>
+    <string name="player_status_ready">已加载 %1$d 个频道，点击列表即可切台</string>
+    <string name="player_playing_prefix">正在播放：%1$s</string>
+    <string name="player_empty">暂无可播放频道</string>
+    <string name="player_selected">当前播放</string>
+    <string name="player_pull_to_refresh">下拉刷新频道列表</string>
+    <string name="player_demo_notice">示例仅用于播放器演示，请替换为你自己的合法频道源。</string>
+    <string name="player_fullscreen">全屏</string>
+    <string name="player_exit_fullscreen">退出全屏</string>
+    <string name="player_author_name">央视公开频道集</string>
+    <string name="player_author_meta">9个直播频道 · 筛选后公开 HLS</string>
+    <string name="player_follow">+ 关注</string>
+    <string name="player_section_channels">正在直播</string>
+    <string name="player_section_desc">点击画面显示控制层，3秒无操作自动隐藏</string>
+    <string name="player_like">点赞</string>
+    <string name="player_favorite">收藏</string>
+    <string name="player_share">分享</string>
+    <string name="player_refresh">刷新</string>
+    <string name="player_back">返回</string>
+    <string name="player_play">播放</string>
+    <string name="player_pause">暂停</string>
+    <string name="player_live_badge">LIVE</string>
+    <string name="player_source_button">频道</string>
+    <string name="player_clock_placeholder">--:--</string>
 </resources>

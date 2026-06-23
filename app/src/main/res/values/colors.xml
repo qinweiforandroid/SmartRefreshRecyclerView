@@ -7,4 +7,13 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="bili_pink">#FB7299</color>
+    <color name="bili_pink_soft">#FFF1F5</color>
+    <color name="bili_text_primary">#18191C</color>
+    <color name="bili_text_secondary">#61666D</color>
+    <color name="bili_line">#E3E5E7</color>
+    <color name="bili_page_bg">#F6F7F8</color>
+    <color name="bili_surface">#FFFFFFFF</color>
+    <color name="bili_overlay">#66000000</color>
+    <color name="bili_overlay_soft">#33000000</color>
 </resources>

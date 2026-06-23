@@ -1,0 +1,4 @@
+<resources>
+    <dimen name="player_embedded_height">220dp</dimen>
+    <dimen name="player_bili_height">248dp</dimen>
+</resources>

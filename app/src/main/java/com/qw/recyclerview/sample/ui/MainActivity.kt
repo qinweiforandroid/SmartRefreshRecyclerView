@@ -9,6 +9,7 @@ import androidx.core.view.WindowInsetsCompat
 import com.qw.recyclerview.sample.databinding.ActivityMainBinding
 import com.qw.recyclerview.sample.ui.chat.ChatActivity
 import com.qw.recyclerview.sample.ui.drag.DragSwipeListActivity
+import com.qw.recyclerview.sample.ui.player.CctvPlayerActivity
 import com.qw.recyclerview.sample.ui.recyclerview.Recycler1Activity
 import com.qw.recyclerview.sample.ui.recyclerview.Recycler2Activity
 import com.qw.recyclerview.sample.ui.swipe.SwipeRecyclerViewActivity
@@ -66,6 +67,9 @@ class MainActivity : AppCompatActivity() {
         }
         bind.mStickBtn.setOnClickListener {
             startActivity(Intent(this, StickHeaderListActivity::class.java))
+        }
+        bind.mCctvPlayerBtn.setOnClickListener {
+            startActivity(Intent(this, CctvPlayerActivity::class.java))
         }
     }
 }
