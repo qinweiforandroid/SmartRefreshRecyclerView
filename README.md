@@ -53,6 +53,28 @@
 
 ## 快速开始
 
+## 发布到 JitPack
+
+仓库内置了一键发布脚本：
+
+```bash
+./scripts/release-jitpack.sh 4.2.0701
+```
+
+这个脚本会按顺序完成：
+
+- 校验当前 Git 工作区是否干净
+- 校验目标 tag 是否已存在
+- 执行 3 个 library module 的 `assembleRelease`
+- 创建并推送 Git tag 到 `origin`
+- 输出 JitPack 构建页和最终依赖坐标
+
+如果你只想跳过本地构建检查：
+
+```bash
+./scripts/release-jitpack.sh 4.2.0701 --skip-checks
+```
+
 ### 1. 添加仓库
 
 ```groovy
